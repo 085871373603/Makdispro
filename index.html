@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAXDISPLAY</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#b71c1c">
+
+    <style>
+        /* --- RESET & BASIC STYLE --- */
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
+
+        /* --- HEADER --- */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .hamburger { font-size: 24px; cursor: pointer; color: #555; }
+        .logo { font-size: 20px; font-weight: bold; color: #333; }
+        .btn-timer-header {
+            background-color: #c62828; color: white; padding: 6px 15px;
+            border-radius: 4px; font-weight: bold; font-size: 14px; border: none;
+        }
+
+        /* --- STEPPER (INDIKATOR) --- */
+        .stepper-container {
+            background: #fff; padding: 20px; margin-top: 2px;
+            display: flex; justify-content: center;
+        }
+        .stepper { display: flex; align-items: center; width: 100%; max-width: 400px; position: relative; justify-content: space-between; }
+        
+        /* Garis penghubung di belakang */
+        .stepper::before {
+            content: ''; position: absolute; top: 15px; left: 20px; right: 20px;
+            height: 3px; background: #e0e0e0; z-index: 0;
+        }
+        
+        .step { position: relative; z-index: 1; text-align: center; background: #fff; padding: 0 5px; }
+        .circle {
+            width: 35px; height: 35px; border-radius: 50%; background-color: #e0e0e0;
+            color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 5px auto; font-size: 16px; transition: 0.3s;
+        }
+        .step-label { font-size: 12px; color: #999; font-weight: 500; }
+
+        /* Status Colors */
+        .active .circle { background-color: #ff5722; box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.2); }
+        .active .step-label { color: #ff5722; font-weight: bold; }
+        .done .circle { background-color: #4caf50; }
+
+        /* --- INFO BOX --- */
+        .info-box {
+            background-color: #fff9c4; border: 1px solid #fbc02d;
+            margin: 15px; padding: 15px; text-align: center; border-radius: 4px;
+        }
+        .info-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+        .info-desc { font-size: 13px; color: #333; }
+
+        /* --- TABLE / LIST --- */
+        .list-container { background: #fff; margin: 0 15px 15px 15px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
+        
+        .list-header {
+            display: flex; background-color: #b71c1c; color: white; padding: 12px 15px;
+            font-weight: bold; font-size: 14px;
+        }
+        .col-detail { flex: 1; }
+        .col-target { width: 80px; text-align: center; }
+        .col-status { width: 50px; text-align: right; }
+
+        .list-item {
+            display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .list-item.active-row { background-color: #fff3e0; border-left: 4px solid #ff5722; }
+        .list-item:last-child { border-bottom: none; }
+
+        .item-info { flex: 1; }
+        .item-code { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+        .item-name { font-size: 14px; font-weight: 600; color: #333; }
+
+        .item-input-container { width: 80px; display: flex; justify-content: center; }
+        .item-input {
+            width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc;
+            border-radius: 4px; font-size: 14px; outline: none;
+        }
+        .item-input:focus { border-color: #ff5722; }
+        .item-input:disabled { background-color: #f9f9f9; color: #aaa; border: 1px solid #eee; }
+
+        .item-status { width: 50px; display: flex; justify-content: flex-end; }
+        .status-icon {
+            width: 24px; height: 24px; border-radius: 50%; background-color: #eee;
+            display: flex; align-items: center; justify-content: center; color: white;
+        }
+        .status-icon.completed { background-color: #4caf50; }
+        .status-icon.pending { background-color: #eee; }
+
+        /* --- TIMER OVERLAY (MODAL) --- */
+        .timer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 200; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .timer-big { font-size: 6rem; font-weight: bold; color: #333; margin: 20px 0; font-family: monospace; }
+        .timer-info { font-size: 1.2rem; margin-bottom: 30px; color: #666; }
+        .btn-action {
+            padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; border: none;
+            background: #b71c1c; color: white; cursor: pointer; text-transform: uppercase; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.3);
+        }
+        .alarm-bg { animation: flashRed 1s infinite; background-color: #b71c1c; }
+        .alarm-bg .timer-big, .alarm-bg .timer-info { color: white; }
+        
+        @keyframes flashRed {
+            0% { background-color: #b71c1c; }
+            50% { background-color: #ff5252; }
+            100% { background-color: #b71c1c; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="hamburger">》</div>
+            <div class="logo">MAXDISPLAY</div>
+        </div>
+        <button class="btn-timer-header">TIMER</button>
+    </div>
+
+    <div class="stepper-container">
+        <div class="stepper">
+            <div class="step active" id="step1">
+                <div class="circle">1</div>
+                <div class="step-label">Input</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="circle">2</div>
+                <div class="step-label">Proses</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="circle">3</div>
+                <div class="step-label">Selesai</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <span class="info-title">Rumus: 12 Pcs = 1 Menit</span>
+        <span class="info-desc">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
+    </div>
+
+    <div class="list-container">
+        <div class="list-header">
+            <div class="col-detail">Detail Lorong</div>
+            <div class="col-target">Target</div>
+            <div class="col-status">Status</div>
+        </div>
+        <div id="lorongList">
+            </div>
+    </div>
+
+    <div class="timer-overlay" id="timerOverlay">
+        <h2 id="timerTitle">LORONG X</h2>
+        <div class="timer-big" id="timerDisplay">00:00</div>
+        <div class="timer-info">Sedang Mengerjakan...</div>
+        <button class="btn-action" id="btnNext" style="display: none;" onclick="finishLorong()">LANJUT BERIKUTNYA</button>
+    </div>
+
+    <script>
+        // Data Lorong sesuai screenshot
+        const lorongData = [
+            { code: "L01", name: "LORONG 1" },
+            { code: "L02", name: "LORONG 2" },
+            { code: "L03", name: "LORONG 3" },
+            { code: "L04", name: "LORONG 4" },
+            { code: "L05", name: "LORONG 5" },
+            { code: "L06", name: "LORONG 6" }
+        ];
+
+        let currentIndex = 0;
+        let countdownInterval;
+
+        // Render List Lorong
+        function renderList() {
+            const container = document.getElementById('lorongList');
+            container.innerHTML = '';
+
+            lorongData.forEach((item, index) => {
+                const isActive = index === currentIndex;
+                const isDone = index < currentIndex;
+                
+                // HTML String untuk baris
+                const html = `
+                    <div class="list-item ${isActive ? 'active-row' : ''}">
+                        <div class="item-info">
+                            <span class="item-code">${item.code}</span>
+                            <span class="item-name">${item.name}</span>
+                        </div>
+                        <div class="item-input-container">
+                            <input type="number" 
+                                class="item-input" 
+                                id="input-${index}" 
+                                placeholder="0" 
+                                ${isActive ? '' : 'disabled'} 
+                                onkeypress="handleEnter(event, ${index})">
+                        </div>
+                        <div class="item-status">
+                            <div class="status-icon ${isDone ? 'completed' : 'pending'}">
+                                ${isDone ? '✓' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            // Fokus ke input yang aktif
+            if (currentIndex < lorongData.length) {
+                setTimeout(() => {
+                    document.getElementById(`input-${currentIndex}`).focus();
+                }, 100);
+            }
+            
+            // Reset Stepper ke step 1 (Input) setiap render ulang list (pindah lorong)
+            setStepper(1);
+        }
+
+        // Update Tampilan Indikator (Bulat di atas)
+        function setStepper(step) {
+            // Reset classes
+            document.getElementById('step1').className = 'step';
+            document.getElementById('step2').className = 'step';
+            document.getElementById('step3').className = 'step';
+
+            if(step === 1) {
+                document.getElementById('step1').classList.add('active');
+            } else if (step === 2) {
+                document.getElementById('step1').classList.add('done'); // Step 1 selesai
+                document.getElementById('step2').classList.add('active');
+            } else if (step === 3) {
+                document.getElementById('step1').classList.add('done');
+                document.getElementById('step2').classList.add('done');
+                document.getElementById('step3').classList.add('active');
+            }
+        }
+
+        function handleEnter(e, index) {
+            if (e.key === 'Enter') {
+                const qty = parseInt(e.target.value);
+                if (qty > 0) {
+                    startProcess(qty);
+                } else {
+                    alert("Masukkan Qty lebih dari 0");
+                }
+            }
+        }
+
+        // Mulai Timer (Pindah ke Step 2)
+        function startProcess(qty) {
+            setStepper(2); // Update Indikator ke "Proses"
+
+            // Hitung Waktu
+            const minutes = qty / 12;
+            let totalSeconds = Math.ceil(minutes * 60);
+
+            // Tampilkan Overlay Timer
+            const overlay = document.getElementById('timerOverlay');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerTitle = document.getElementById('timerTitle');
+            const btnNext = document.getElementById('btnNext');
+
+            timerTitle.innerText = lorongData[currentIndex].name;
+            overlay.style.display = 'flex';
+            btnNext.style.display = 'none';
+            overlay.classList.remove('alarm-bg');
+
+            // Logic Timer
+            updateTimerText(totalSeconds);
+
+            countdownInterval = setInterval(() => {
+                totalSeconds--;
+                updateTimerText(totalSeconds);
+
+                if (totalSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    triggerAlarm();
+                }
+            }, 1000);
+        }
+
+        function updateTimerText(sec) {
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            document.getElementById('timerDisplay').innerText = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function triggerAlarm() {
+            setStepper(3); // Update Indikator ke "Selesai" (Tahap Akhir)
+            
+            const overlay = document.getElementById('timerOverlay');
+            overlay.classList.add('alarm-bg');
+            document.getElementById('timerDisplay').innerText = "WAKTU HABIS";
+            document.getElementById('btnNext').style.display = 'block';
+            
+            playBeep();
+        }
+
+        // Pindah ke lorong selanjutnya
+        function finishLorong() {
+            // Sembunyikan Overlay
+            document.getElementById('timerOverlay').style.display = 'none';
+            document.body.classList.remove('alarm-bg'); // Safety remove
+
+            // Update Index Lorong
+            currentIndex++;
+
+            if (currentIndex >= lorongData.length) {
+                alert("SEMUA LORONG SELESAI!");
+                currentIndex = 0; // Reset atau redirect
+            }
+
+            renderList(); // Render ulang list dengan status baru
+        }
+
+        // Audio Beep Sederhana
+        function playBeep() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'square';
+                osc.frequency.value = 800;
+                osc.start();
+                
+                // Pola Beep
+                const now = ctx.currentTime;
+                gain.gain.setValueAtTime(1, now);
+                gain.gain.setValueAtTime(0, now + 0.5);
+                gain.gain.setValueAtTime(1, now + 1.0);
+                gain.gain.setValueAtTime(0, now + 1.5);
+                
+                osc.stop(now + 2);
+            }
+        }
+
+        // Init
+        renderList();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker terdaftar dengan sukses:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker gagal didaftarkan:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
