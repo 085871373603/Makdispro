@@ -191,7 +191,7 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc">NOTE:JANGAN MEREFRESH APLIKASI SAAT TIMER BERJALAN!</span>
+        <span class="info-desc"><font color="red">NOTE:JANGAN MEREFRESH APLIKASI SAAT TIMER BERJALAN!</font></span>
     </div>
 
     <div class="list-container">
@@ -401,27 +401,20 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            let refreshing = false;
-
-            // Jika ada pembaruan dan SW baru mengambil alih, paksa refresh halaman!
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (!refreshing) {
-                    refreshing = true;
-                    window.location.reload(); 
-                }
-            });
-
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                // Trik menambahkan waktu acak agar HP selalu mengecek file sw.js ke server GitHub, bukan ke memori HP
+                const swUrl = './sw.js?v=' + new Date().getTime();
+                
+                navigator.serviceWorker.register(swUrl)
                     .then(registration => {
-                        console.log('ServiceWorker terdaftar');
-                        
-                        // Periksa pembaruan di latar belakang setiap kali aplikasi dibuka
-                        registration.update();
+                        console.log('SW terdaftar dengan mode Network First');
+                        registration.update(); // Paksa cek pembaruan di latar belakang
                     })
                     .catch(err => console.log('SW gagal', err));
             });
         }
     </script>
+</body>
+</html>
 </body>
 </html>
