@@ -29,11 +29,11 @@
             transition: opacity 0.5s ease;
         }
         .splash-logo {
-            width: 150px; /* Ukuran gambar logo */
-            height: 150px;
+            width: 220px; /* Ukuran gambar logo diperbesar */
+            height: 220px; /* Ukuran gambar logo diperbesar */
             border-radius: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            animation: pulse 1.5s infinite;
+            /* Animasi kedap-kedip dihapus agar gambar diam */
             margin-bottom: 20px;
         }
         .splash-text {
@@ -41,12 +41,6 @@
             font-weight: bold;
             color: #b71c1c;
             letter-spacing: 1px;
-        }
-        /* Animasi kedap-kedip perlahan pada logo */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
         /* --- HEADER --- */
@@ -160,7 +154,7 @@
 <body>
 
     <div id="splash-screen">
-        <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/150/b71c1c/ffffff?text=LOGO'">
+        <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/220/b71c1c/ffffff?text=LOGO'">
         <div class="splash-text">MEMUAT APLIKASI...</div>
     </div>
 
@@ -414,7 +408,5 @@
             });
         }
     </script>
-</body>
-</html>
 </body>
 </html>
