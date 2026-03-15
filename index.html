@@ -13,6 +13,42 @@
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
 
+        /* --- LOADING SCREEN (SPLASH SCREEN) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .splash-logo {
+            width: 150px; /* Ukuran gambar logo */
+            height: 150px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: pulse 1.5s infinite;
+            margin-bottom: 20px;
+        }
+        .splash-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #b71c1c;
+            letter-spacing: 1px;
+        }
+        /* Animasi kedap-kedip perlahan pada logo */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* --- HEADER --- */
         .header {
             display: flex; justify-content: space-between; align-items: center;
@@ -34,7 +70,6 @@
         }
         .stepper { display: flex; align-items: center; width: 100%; max-width: 400px; position: relative; justify-content: space-between; }
         
-        /* Garis penghubung di belakang */
         .stepper::before {
             content: ''; position: absolute; top: 15px; left: 20px; right: 20px;
             height: 3px; background: #e0e0e0; z-index: 0;
@@ -48,7 +83,6 @@
         }
         .step-label { font-size: 12px; color: #999; font-weight: 500; }
 
-        /* Status Colors */
         .active .circle { background-color: #ff5722; box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.2); }
         .active .step-label { color: #ff5722; font-weight: bold; }
         .done .circle { background-color: #4caf50; }
@@ -125,6 +159,11 @@
 </head>
 <body>
 
+    <div id="splash-screen">
+        <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/150/b71c1c/ffffff?text=LOGO'">
+        <div class="splash-text">MEMUAT APLIKASI...</div>
+    </div>
+
     <div class="header">
         <div class="header-left">
             <div class="hamburger">》</div>
@@ -173,7 +212,27 @@
     </div>
 
     <script>
-        // Data Lorong sesuai screenshot
+        // LOGIC LOADING SCREEN (3 DETIK)
+        window.addEventListener('load', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            
+            // Tunggu 3 detik (3000 milidetik)
+            setTimeout(() => {
+                splashScreen.style.opacity = '0'; // Buat perlahan menghilang
+                
+                // Hapus elemen setelah animasinya selesai (0.5 detik kemudian)
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    // Fokus ke input pertama setelah loading selesai
+                    if (currentIndex < lorongData.length) {
+                        const firstInput = document.getElementById(`input-${currentIndex}`);
+                        if(firstInput) firstInput.focus();
+                    }
+                }, 500);
+            }, 3000); 
+        });
+
+        // Data Lorong
         const lorongData = [
             { code: "L01", name: "LORONG 1" },
             { code: "L02", name: "LORONG 2" },
@@ -186,7 +245,6 @@
         let currentIndex = 0;
         let countdownInterval;
 
-        // Render List Lorong
         function renderList() {
             const container = document.getElementById('lorongList');
             container.innerHTML = '';
@@ -195,7 +253,6 @@
                 const isActive = index === currentIndex;
                 const isDone = index < currentIndex;
                 
-                // HTML String untuk baris
                 const html = `
                     <div class="list-item ${isActive ? 'active-row' : ''}">
                         <div class="item-info">
@@ -219,21 +276,11 @@
                 `;
                 container.innerHTML += html;
             });
-
-            // Fokus ke input yang aktif
-            if (currentIndex < lorongData.length) {
-                setTimeout(() => {
-                    document.getElementById(`input-${currentIndex}`).focus();
-                }, 100);
-            }
             
-            // Reset Stepper ke step 1 (Input) setiap render ulang list (pindah lorong)
             setStepper(1);
         }
 
-        // Update Tampilan Indikator (Bulat di atas)
         function setStepper(step) {
-            // Reset classes
             document.getElementById('step1').className = 'step';
             document.getElementById('step2').className = 'step';
             document.getElementById('step3').className = 'step';
@@ -241,7 +288,7 @@
             if(step === 1) {
                 document.getElementById('step1').classList.add('active');
             } else if (step === 2) {
-                document.getElementById('step1').classList.add('done'); // Step 1 selesai
+                document.getElementById('step1').classList.add('done');
                 document.getElementById('step2').classList.add('active');
             } else if (step === 3) {
                 document.getElementById('step1').classList.add('done');
@@ -261,17 +308,13 @@
             }
         }
 
-        // Mulai Timer (Pindah ke Step 2)
         function startProcess(qty) {
-            setStepper(2); // Update Indikator ke "Proses"
+            setStepper(2);
 
-            // Hitung Waktu
             const minutes = qty / 12;
             let totalSeconds = Math.ceil(minutes * 60);
 
-            // Tampilkan Overlay Timer
             const overlay = document.getElementById('timerOverlay');
-            const timerDisplay = document.getElementById('timerDisplay');
             const timerTitle = document.getElementById('timerTitle');
             const btnNext = document.getElementById('btnNext');
 
@@ -280,7 +323,6 @@
             btnNext.style.display = 'none';
             overlay.classList.remove('alarm-bg');
 
-            // Logic Timer
             updateTimerText(totalSeconds);
 
             countdownInterval = setInterval(() => {
@@ -302,7 +344,7 @@
         }
 
         function triggerAlarm() {
-            setStepper(3); // Update Indikator ke "Selesai" (Tahap Akhir)
+            setStepper(3);
             
             const overlay = document.getElementById('timerOverlay');
             overlay.classList.add('alarm-bg');
@@ -312,24 +354,25 @@
             playBeep();
         }
 
-        // Pindah ke lorong selanjutnya
         function finishLorong() {
-            // Sembunyikan Overlay
             document.getElementById('timerOverlay').style.display = 'none';
-            document.body.classList.remove('alarm-bg'); // Safety remove
+            document.body.classList.remove('alarm-bg');
 
-            // Update Index Lorong
             currentIndex++;
 
             if (currentIndex >= lorongData.length) {
                 alert("SEMUA LORONG SELESAI!");
-                currentIndex = 0; // Reset atau redirect
+                currentIndex = 0;
             }
 
-            renderList(); // Render ulang list dengan status baru
+            renderList();
+            // Fokus otomatis ke input lorong berikutnya
+            setTimeout(() => {
+                const nextInput = document.getElementById(`input-${currentIndex}`);
+                if (nextInput) nextInput.focus();
+            }, 100);
         }
 
-        // Audio Beep Sederhana
         function playBeep() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (AudioContext) {
@@ -342,7 +385,6 @@
                 osc.frequency.value = 800;
                 osc.start();
                 
-                // Pola Beep
                 const now = ctx.currentTime;
                 gain.gain.setValueAtTime(1, now);
                 gain.gain.setValueAtTime(0, now + 0.5);
@@ -353,7 +395,7 @@
             }
         }
 
-        // Init
+        // Init Data
         renderList();
     </script>
 
@@ -361,12 +403,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker terdaftar dengan sukses:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker gagal didaftarkan:', error);
-                    });
+                    .then(registration => console.log('SW terdaftar'))
+                    .catch(err => console.log('SW gagal', err));
             });
         }
     </script>
