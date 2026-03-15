@@ -1,30 +1,45 @@
-const CACHE_NAME = 'maxdisplay-v1';
+// GANTI ANGKA VERSI INI SETIAP KALI KAMU MENGUBAH KODE (contoh: v3, v4, dst)
+const CACHE_NAME = 'maxdisplay-v3'; 
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './logo-makdis.png' // Sesuaikan dengan nama logo kamu
 ];
 
-// Install Service Worker dan simpan file ke cache
 self.addEventListener('install', event => {
+  // PAKSA SW BARU UNTUK LANGSUNG AKTIF (Tidak perlu nunggu aplikasi ditutup)
+  self.skipWaiting(); 
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
+    })
   );
 });
 
-// Gunakan file dari cache saat offline
+self.addEventListener('activate', event => {
+  // PAKSA SW BARU MENGAMBIL ALIH SEMUA HALAMAN YANG SEDANG TERBUKA
+  event.waitUntil(self.clients.claim());
+  
+  // Hapus cache versi lama secara otomatis
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            console.log('Menghapus cache lama:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+});
+
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Jika ada di cache, gunakan itu. Jika tidak, ambil dari internet.
-        return response || fetch(event.request);
-      })
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
