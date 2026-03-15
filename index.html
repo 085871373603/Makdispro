@@ -401,9 +401,24 @@
 
     <script>
         if ('serviceWorker' in navigator) {
+            let refreshing = false;
+
+            // Jika ada pembaruan dan SW baru mengambil alih, paksa refresh halaman!
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload(); 
+                }
+            });
+
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(registration => console.log('SW terdaftar'))
+                    .then(registration => {
+                        console.log('ServiceWorker terdaftar');
+                        
+                        // Periksa pembaruan di latar belakang setiap kali aplikasi dibuka
+                        registration.update();
+                    })
                     .catch(err => console.log('SW gagal', err));
             });
         }
