@@ -13,55 +13,25 @@
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
 
-        /* --- LOADING SCREEN (SPLASH SCREEN) --- */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #f5f5f5; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        .splash-logo {
-            width: 220px; height: 220px; border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
-        }
+        /* --- LOADING SCREEN --- */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f5f5f5; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .splash-logo { width: 220px; height: 220px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .splash-text { font-size: 16px; font-weight: bold; color: #b71c1c; letter-spacing: 1px; }
 
-        /* --- POPUP PEMBARUAN PERMANEN --- */
-        #update-popup {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); /* Latar belakang gelap */
-            display: none; /* Sembunyikan default */
-            flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10000; /* Paling atas */
-        }
-        .update-box {
-            background: #fff; padding: 30px 20px; border-radius: 12px;
-            text-align: center; max-width: 320px; width: 90%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        /* --- POPUP PEMBARUAN --- */
+        #update-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; }
+        .update-box { background: #fff; padding: 30px 20px; border-radius: 12px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .update-icon { font-size: 40px; margin-bottom: 10px; }
         .update-title { font-size: 18px; font-weight: bold; color: #b71c1c; margin-bottom: 10px; }
         .update-desc { font-size: 14px; color: #555; margin-bottom: 25px; line-height: 1.5; }
-        .btn-update {
-            background-color: #b71c1c; color: white; border: none; padding: 12px 20px;
-            font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer;
-            width: 100%; box-shadow: 0 4px 6px rgba(183,28,28,0.3);
-        }
-        .btn-update:active { transform: scale(0.98); }
+        .btn-update { background-color: #b71c1c; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(183,28,28,0.3); }
 
         /* --- HEADER --- */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky; top: 0; z-index: 100;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .hamburger { font-size: 24px; cursor: pointer; color: #555; }
         .logo { font-size: 20px; font-weight: bold; color: #333; }
-        .btn-timer-header {
-            background-color: #c62828; color: white; padding: 6px 15px;
-            border-radius: 4px; font-weight: bold; font-size: 14px; border: none;
-        }
+        .btn-timer-header { background-color: #c62828; color: white; padding: 6px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; border: none; }
 
         /* --- STEPPER --- */
         .stepper-container { background: #fff; padding: 20px; margin-top: 2px; display: flex; justify-content: center; }
@@ -122,7 +92,7 @@
 
     <div id="splash-screen">
         <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/220/b71c1c/ffffff?text=LOGO'">
-        <div class="splash-text">LOADING APLIKASI...</div>
+        <div class="splash-text">MEMUAT APLIKASI...</div>
     </div>
 
     <div class="header">
@@ -152,13 +122,13 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc"><font color="red">NOTE: JANGAN MEREFRESH APLIKASI SAAT TIMER BERJALAN! KARENA MENYEBABKAN PENGERJAAN WAKTU TER-RESET</font></span>
+        <span class="info-desc"><font color="red">NOTE: JANGAN MEREFRESH HALAMAN AGAR PENGERJAAN DAN TIMER WAKTU TIDAK TER RESET!</font></span>
     </div>
 
     <div class="list-container">
         <div class="list-header">
             <div class="col-detail">Detail Lorong</div>
-            <div class="col-target">QTY TARGET</div>
+            <div class="col-target">QTY</div>
             <div class="col-status">Status</div>
         </div>
         <div id="lorongList"></div>
@@ -172,6 +142,40 @@
     </div>
 
     <script>
+        // --- SISTEM ANTI LAYAR MATI (WAKE LOCK) ---
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Layar dipaksa menyala (Wake Lock Aktif)');
+                }
+            } catch (err) {
+                console.log(`Wake Lock Error: ${err.message}`);
+            }
+        }
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+        }
+
+        // --- SISTEM ANTI CLOSE / REFRESH ---
+        let isTimerRunning = false;
+        window.addEventListener('beforeunload', function (e) {
+            if (isTimerRunning) {
+                e.preventDefault();
+                e.returnValue = 'Timer sedang berjalan! Yakin ingin membatalkan?';
+            }
+        });
+
+        // --- SISTEM WAKE LOCK SAAT BALIK KE APLIKASI ---
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible' && isTimerRunning) {
+                requestWakeLock(); // Paksa layar nyala lagi kalau user habis minimize aplikasi
+            }
+        });
+
         // LOGIC LOADING SCREEN
         window.addEventListener('load', () => {
             const splashScreen = document.getElementById('splash-screen');
@@ -226,9 +230,7 @@
         }
 
         function setStepper(step) {
-            document.getElementById('step1').className = 'step';
-            document.getElementById('step2').className = 'step';
-            document.getElementById('step3').className = 'step';
+            document.getElementById('step1').className = 'step'; document.getElementById('step2').className = 'step'; document.getElementById('step3').className = 'step';
             if(step === 1) document.getElementById('step1').classList.add('active');
             else if (step === 2) { document.getElementById('step1').classList.add('done'); document.getElementById('step2').classList.add('active'); }
             else if (step === 3) { document.getElementById('step1').classList.add('done'); document.getElementById('step2').classList.add('done'); document.getElementById('step3').classList.add('active'); }
@@ -244,8 +246,14 @@
 
         function startProcess(qty) {
             setStepper(2);
+            isTimerRunning = true;
+            requestWakeLock(); // NYALAKAN FITUR LAYAR TETAP HIDUP
+
             const minutes = qty / 12;
-            let totalSeconds = Math.ceil(minutes * 60);
+            const totalMilliseconds = Math.ceil(minutes * 60) * 1000;
+            
+            // FITUR ABSOLUTE TIMING (Tahan banting walau di minimize)
+            const targetEndTime = Date.now() + totalMilliseconds;
             
             const overlay = document.getElementById('timerOverlay');
             document.getElementById('timerTitle').innerText = lorongData[currentIndex].name;
@@ -253,11 +261,18 @@
             document.getElementById('btnNext').style.display = 'none';
             overlay.classList.remove('alarm-bg');
 
-            updateTimerText(totalSeconds);
+            updateTimerText(Math.ceil(totalMilliseconds / 1000));
+            
             countdownInterval = setInterval(() => {
-                totalSeconds--;
-                updateTimerText(totalSeconds);
-                if (totalSeconds <= 0) { clearInterval(countdownInterval); triggerAlarm(); }
+                const now = Date.now();
+                const remainingSeconds = Math.ceil((targetEndTime - now) / 1000);
+
+                if (remainingSeconds <= 0) { 
+                    clearInterval(countdownInterval); 
+                    triggerAlarm(); 
+                } else {
+                    updateTimerText(remainingSeconds);
+                }
             }, 1000);
         }
 
@@ -268,6 +283,9 @@
 
         function triggerAlarm() {
             setStepper(3);
+            isTimerRunning = false;
+            releaseWakeLock(); // IZINKAN LAYAR MATI LAGI
+
             const overlay = document.getElementById('timerOverlay');
             overlay.classList.add('alarm-bg');
             document.getElementById('timerDisplay').innerText = "WAKTU HABIS";
@@ -305,7 +323,6 @@
             let newWorker;
             let refreshing = false;
 
-            // Saat pengguna klik OK, halaman akan langsung refresh menerapkan versi baru
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     window.location.reload();
@@ -315,18 +332,11 @@
 
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('SW terdaftar, mengecek pembaruan...');
-                    
-                    // Paksa periksa update setiap kali dibuka
                     reg.update();
-
-                    // Dengarkan jika ada SW baru yang terdeteksi
                     reg.addEventListener('updatefound', () => {
                         newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
-                            // Jika SW baru sudah ter-download dan siap menggantikan yang lama
                             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // MUNCULKAN POPUP PERMANEN
                                 document.getElementById('update-popup').style.display = 'flex';
                             }
                         });
@@ -334,15 +344,11 @@
                 }).catch(err => console.log('SW gagal', err));
             });
 
-            // Aksi saat tombol di popup di-klik
             document.getElementById('btn-do-update').addEventListener('click', () => {
                 document.getElementById('btn-do-update').innerText = 'MEMPROSES...';
-                // Kirim pesan ke sw.js baru untuk segera aktif
-                if (newWorker) {
-                    newWorker.postMessage('SKIP_WAITING');
-                }
+                if (newWorker) newWorker.postMessage('SKIP_WAITING');
             });
         }
     </script>
 </body>
-    </html>
+</html>
