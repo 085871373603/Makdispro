@@ -85,8 +85,11 @@
         <div class="update-box">
             <div class="update-icon">🚀</div>
             <div class="update-title">Pembaruan Tersedia!</div>
-            <div class="update-desc">Ada versi terbaru dari aplikasi TIMER MAXDIS. Harap klik tombol di bawah untuk mengunduh ulang dan menerapkan fitur baru agar pengerjaan tetap sinkron.</div>
-            <button class="btn-update" id="btn-do-update">UPDATE SEKARANG</button>
+            <div class="update-desc">
+                Ada versi terbaru dari TIMER MAXDIS. Klik UPDATE untuk memperbarui sistem. <br><br>
+                <b>Catatan:</b> Jika logo aplikasi di layar HP belum berubah, silakan hapus aplikasi ini dan instal ulang dari link web.
+            </div>
+            <button class="btn-update" id="btn-do-update">UPDATE SISTEM SEKARANG</button>
         </div>
     </div>
 
@@ -122,13 +125,13 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc"><font color="red">NOTE: JANGAN MEREFRESH HALAMAN AGAR PENGERJAAN DAN TIMER WAKTU TIDAK TER RESET!</font></span>
+        <span class="info-desc"><font color="red">Layar akan menyala otomatis. Timer anti-jeda walau HP diminimize.</font></span>
     </div>
 
     <div class="list-container">
         <div class="list-header">
             <div class="col-detail">Detail Lorong</div>
-            <div class="col-target">QTY</div>
+            <div class="col-target">Target</div>
             <div class="col-status">Status</div>
         </div>
         <div id="lorongList"></div>
@@ -172,7 +175,7 @@
         // --- SISTEM WAKE LOCK SAAT BALIK KE APLIKASI ---
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible' && isTimerRunning) {
-                requestWakeLock(); // Paksa layar nyala lagi kalau user habis minimize aplikasi
+                requestWakeLock();
             }
         });
 
@@ -247,7 +250,7 @@
         function startProcess(qty) {
             setStepper(2);
             isTimerRunning = true;
-            requestWakeLock(); // NYALAKAN FITUR LAYAR TETAP HIDUP
+            requestWakeLock();
 
             const minutes = qty / 12;
             const totalMilliseconds = Math.ceil(minutes * 60) * 1000;
@@ -284,7 +287,7 @@
         function triggerAlarm() {
             setStepper(3);
             isTimerRunning = false;
-            releaseWakeLock(); // IZINKAN LAYAR MATI LAGI
+            releaseWakeLock(); 
 
             const overlay = document.getElementById('timerOverlay');
             overlay.classList.add('alarm-bg');
