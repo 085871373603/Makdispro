@@ -1,5 +1,5 @@
 // Ingat: Ubah angka v6 ini menjadi v7, v8, dst SETIAP KALI kamu update kode/logo
-const CACHE_NAME = 'maxdisplay-v9'; 
+const CACHE_NAME = 'maxdisplay-v1.0'; 
 const urlsToCache = [
   './',
   './index.html',
