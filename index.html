@@ -69,14 +69,64 @@
         .status-icon { width: 24px; height: 24px; border-radius: 50%; background-color: #eee; display: flex; align-items: center; justify-content: center; color: white; }
         .status-icon.completed { background-color: #4caf50; }
 
-        /* --- TIMER MODAL --- */
-        .timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        /* --- TIMER MODAL & ANIMASI --- */
+        .timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .timer-big { font-size: 6rem; font-weight: bold; color: #333; margin: 20px 0; font-family: monospace; }
         .timer-info { font-size: 1.2rem; margin-bottom: 30px; color: #666; }
         .btn-action { padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; border: none; background: #b71c1c; color: white; cursor: pointer; text-transform: uppercase; font-weight: bold; box-shadow: 0 4px 10px rgba(183, 28, 28, 0.3); }
         .alarm-bg { animation: flashRed 1s infinite; background-color: #b71c1c; }
         .alarm-bg .timer-big, .alarm-bg .timer-info { color: white; }
         @keyframes flashRed { 0% { background-color: #b71c1c; } 50% { background-color: #ff5252; } 100% { background-color: #b71c1c; } }
+
+        /* --- GAYA BARU: ANIMASI MENDISPLAY --- */
+        .display-anim-container {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            margin: 20px 0;
+            display: none; /* Sembunyikan default */
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .shelf {
+            position: absolute;
+            bottom: 20px;
+            left: 10%;
+            width: 80%;
+            height: 5px;
+            background-color: #9e9e9e;
+            border-radius: 5px;
+        }
+
+        .item-box {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #b71c1c;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            bottom: 25px; /* Sedikit di atas rak */
+        }
+
+        .box1 { left: -40px; }
+        .box2 { left: -40px; }
+
+        /* Animasi Kotak yang Bergerak dan Menata */
+        @keyframes moveAndPlace {
+            0% { left: 0%; bottom: 25px; }
+            25% { left: 30%; bottom: 25px; } /* Gerak horizontal */
+            30% { left: 30%; bottom: 5px; }  /* Gerak "menata" ke bawah (di atas rak) */
+            40% { left: 30%; bottom: 25px; } /* Kembali ke atas rak */
+            65% { left: 60%; bottom: 25px; } /* Gerak horizontal ke titik kedua */
+            70% { left: 60%; bottom: 5px; }  /* Gerak "menata" kedua */
+            80% { left: 60%; bottom: 25px; } /* Kembali ke atas rak */
+            100% { left: 100%; bottom: 25px; } /* Bergerak ke luar kanan */
+        }
+
+        .box1 { animation: moveAndPlace 5s infinite linear; }
+        .box2 { animation: moveAndPlace 5s infinite linear; animation-delay: 2.5s; } /* Kotak kedua mengikuti */
+
     </style>
 </head>
 <body>
@@ -96,7 +146,7 @@
     <div id="splash-screen">
         <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/220/b71c1c/ffffff?text=LOGO'">
         <div class="splash-text">MEMUAT APLIKASI...</div>
-    </div>
+        </div>
 
     <div class="header">
         <div class="header-left">
@@ -125,13 +175,13 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc"><font color="red">NOTE: JANGAN ME REFRESH APLIKASI PADA SAAT TIMER BERJALAN, KARENA MENYEBABKAN PENGERJAAN DAN WAKTU HITUNGAN TER RESET!</font></span>
+        <span class="info-desc"><font color="red">Layar akan menyala otomatis. Timer anti-jeda walau HP diminimize.</font></span>
     </div>
 
     <div class="list-container">
         <div class="list-header">
             <div class="col-detail">Detail Lorong</div>
-            <div class="col-target">QTY</div>
+            <div class="col-target">Target</div>
             <div class="col-status">Status</div>
         </div>
         <div id="lorongList"></div>
@@ -139,6 +189,13 @@
 
     <div class="timer-overlay" id="timerOverlay">
         <h2 id="timerTitle">LORONG X</h2>
+        
+        <div class="display-anim-container" id="displayAnim">
+            <div class="shelf"></div>
+            <div class="item-box box1"></div>
+            <div class="item-box box2"></div>
+        </div>
+
         <div class="timer-big" id="timerDisplay">00:00</div>
         <div class="timer-info">Sedang Mengerjakan...</div>
         <button class="btn-action" id="btnNext" style="display: none;" onclick="finishLorong()">LANJUT LORONG BERIKUTNYA</button>
@@ -251,11 +308,14 @@
             setStepper(2);
             isTimerRunning = true;
             requestWakeLock();
+            
+            // BARU: TAMPILKAN ANIMASI MENDISPLAY
+            document.getElementById('displayAnim').style.display = 'flex';
 
             const minutes = qty / 12;
             const totalMilliseconds = Math.ceil(minutes * 60) * 1000;
             
-            // FITUR ABSOLUTE TIMING (Tahan banting walau di minimize)
+            // FITUR ABSOLUTE TIMING
             const targetEndTime = Date.now() + totalMilliseconds;
             
             const overlay = document.getElementById('timerOverlay');
@@ -288,6 +348,9 @@
             setStepper(3);
             isTimerRunning = false;
             releaseWakeLock(); 
+
+            // BARU: SEMBUNYIKAN ANIMASI MENDISPLAY
+            document.getElementById('displayAnim').style.display = 'none';
 
             const overlay = document.getElementById('timerOverlay');
             overlay.classList.add('alarm-bg');
