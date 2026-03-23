@@ -156,17 +156,16 @@
             z-index: 2;
         }
 
-        /* Logo Alfamart di tengah keranjang */
+        /* Logo Alfamart berupa gambar di tengah keranjang */
         .alfa-logo-keranjang {
-            background-color: #fff;
-            color: #e51b23;
-            font-size: 8px;
-            font-weight: 900;
-            padding: 2px 5px;
-            border-radius: 10px;
+            width: 45px; /* Lebar gambar disesuaikan */
+            height: 14px; /* Tinggi maksimal gambar */
+            background-color: #fff; /* Background putih agar logo tidak nyaru dengan jaring */
+            padding: 2px 3px;
+            border-radius: 4px;
             z-index: 11;
             box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            letter-spacing: 0.2px;
+            object-fit: contain; /* Memastikan gambar tidak gepeng */
         }
 
         /* Barang Dagangan */
@@ -293,7 +292,7 @@
             <div class="alfa-keranjang">
                 <div class="keranjang-handle"></div>
                 <div class="keranjang-body">
-                    <div class="alfa-logo-keranjang">ALFAMART</div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Alfamart_logo.svg" alt="Alfamart" class="alfa-logo-keranjang">
                 </div>
             </div>
             <div class="alfa-barang item1"></div>
