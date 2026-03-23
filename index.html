@@ -231,15 +231,15 @@
             <div class="update-title">Pembaruan Tersedia!</div>
             <div class="update-desc">
                 Ada versi terbaru dari TIMER MAXDIS. Klik UPDATE untuk memperbarui sistem. <br><br>
-                <b>Catatan:</b> Jika logo aplikasi di layar HP belum berubah, silakan hapus aplikasi ini dan instal ulang dari link web.
+                <b>Catatan:</b> Proses download berjalan di latar belakang, tidak mempengaruhi penggunaan.
             </div>
-            <button class="btn-update" id="btn-do-update">UPDATE SISTEM SEKARANG</button>
+            <button class="btn-update" id="btn-do-update">UPDATE</button>
         </div>
     </div>
 
     <div id="splash-screen">
         <img src="logo-makdis.png" alt="Logo Makdis" class="splash-logo" onerror="this.src='https://via.placeholder.com/220/b71c1c/ffffff?text=LOGO'">
-        <div class="splash-text">MEMUAT APLIKASI...</div>
+        <div class="splash-text">LOAD APLIKASI...</div>
     </div>
 
     <div class="header">
@@ -269,13 +269,13 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc"><font color="red">Layar akan menyala otomatis. Timer anti-jeda walau HP diminimize.</font></span>
+        <span class="info-desc"><font color="red">NOTE: JANGAN MEREFRESH APLIKASI PADA SAAT TIMER SEDANG BERJALAN KARENA MENYEBABKAN PENGHITUNGAN TERISET</font></span>
     </div>
 
     <div class="list-container">
         <div class="list-header">
             <div class="col-detail">Detail Lorong</div>
-            <div class="col-target">Target</div>
+            <div class="col-target">Qty</div>
             <div class="col-status">Status</div>
         </div>
         <div id="lorongList"></div>
@@ -293,7 +293,7 @@
             <div class="alfa-keranjang">
                 <div class="keranjang-handle"></div>
                 <div class="keranjang-body">
-                    <div class="alfa-logo-keranjang">Alfamart</div>
+                    <div class="alfa-logo-keranjang">ALFAMART</div>
                 </div>
             </div>
             <div class="alfa-barang item1"></div>
@@ -302,7 +302,7 @@
         </div>
 
         <div class="timer-big" id="timerDisplay">00:00</div>
-        <div class="timer-info">Mendisplay Barang...</div>
+        <div class="timer-info">Mengerjakan...</div>
         <button class="btn-action" id="btnNext" style="display: none;" onclick="finishLorong()">LANJUT LORONG BERIKUTNYA</button>
     </div>
 
