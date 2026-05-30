@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Utama - MAXDISPLAY</title>
+    <meta name="theme-color" content="#e51b23">
+
+    <style>
+        /* --- RESET & BASIC STYLE --- */
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
+
+        /* --- HEADER --- */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 20px; 
+            background-color: #e51b23; /* Header merah agar beda dari halaman utama */
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .header-title { font-size: 18px; font-weight: bold; letter-spacing: 1px; }
+        
+        /* Tombol tutup / kembali ke index */
+        .btn-close { 
+            background: none; 
+            border: none; 
+            color: white; 
+            font-size: 24px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            padding: 0;
+            line-height: 1;
+        }
+
+        /* --- MENU CONTAINER --- */
+        .menu-container {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- MENU ITEM (CARD) --- */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+            background-color: #f9f9f9;
+        }
+
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: #fdf2f2;
+            color: #e51b23;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        /* Warna khusus untuk icon SO Cup */
+        .menu-item:nth-child(2) .menu-icon {
+            background-color: #fff8e1;
+            color: #ff9800;
+        }
+
+        /* Warna khusus untuk icon PPS */
+        .menu-item:nth-child(3) .menu-icon {
+            background-color: #e3f2fd;
+            color: #005eaa;
+        }
+
+        .menu-text {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .menu-desc {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .menu-arrow {
+            color: #ccc;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* --- FOOTER INFO --- */
+        .app-version {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-title">MENU APLIKASI</div>
+        <!-- Tombol X untuk kembali ke halaman sebelumnya (index) -->
+        <button class="btn-close" onclick="window.location.href='index.html'">&times;</button>
+    </div>
+
+    <div class="menu-container">
+        
+        <!-- 1. Menu Timer Makdis -->
+        <a href="index.html" class="menu-item">
+            <div class="menu-icon">⏱️</div>
+            <div class="menu-text">
+                <div class="menu-title">Timer Makdis</div>
+                <div class="menu-desc">Aplikasi timer display lorong</div>
+            </div>
+            <div class="menu-arrow">❯</div>
+        </a>
+
+        <!-- 2. Menu SO Cup -->
+        <a href="so.html" class="menu-item">
+            <div class="menu-icon">🥤</div>
+            <div class="menu-text">
+                <div class="menu-title">SO Cup</div>
+                <div class="menu-desc">Hitung stock opname cup
+                </div>
+            </div>
+            <div class="menu-arrow">❯</div>
+        </a>
+
+        <!-- 3. Menu Monitoring PPS -->
+        <a href="pps.html" class="menu-item">
+            <div class="menu-icon">📊</div>
+            <div class="menu-text">
+                <div class="menu-title">Laporan PPS</div>
+                <div class="menu-desc">buat & Pantau target penjualan shift</div>
+            </div>
+            <div class="menu-arrow">❯</div>
+        </a>
+
+    </div>
+
+    <div class="app-version">
+        App Toko V2.1<br>
+        Arinex © 2026
+    </div>
+
+</body>
+</html>
