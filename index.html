@@ -29,7 +29,10 @@
         /* --- HEADER --- */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .hamburger { font-size: 24px; cursor: pointer; color: #555; }
+        
+        /* CSS HAMBURGER DIUPDATE AGAR TOMBOL TERLIHAT RAPI */
+        .hamburger { font-size: 24px; cursor: pointer; color: #555; background: none; border: none; padding: 0; }
+        
         .logo { font-size: 20px; font-weight: bold; color: #333; }
         .btn-timer-header { background-color: #e51b23; color: white; padding: 6px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; border: none; }
 
@@ -243,7 +246,8 @@
 
     <div class="header">
         <div class="header-left">
-            <div class="hamburger" href="menu.html">MENU</div>
+            <!-- INI BAGIAN HTML YANG DIUPDATE MENJADI BUTTON -->
+            <button class="hamburger" onclick="window.location.href='menu.html'">MENU</button>
             <div class="logo">TIMER MAXDIS</div>
         </div>
         <button class="btn-timer-header">TIMER</button>
