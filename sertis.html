@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master SERTIS - Generator Shelf Talker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. GAYA VISUAL ANTARMUKA KLASIK (REPLIKA 100% UI MASTER PLU)
+           ========================================================================== */
+        body { 
+            background-color: #c0c0c0;
+            font-family: 'Tahoma', 'Arial', sans-serif; 
+            font-size: 12px; 
+            color: #000; 
+            margin: 10px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        .win-form {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 10px;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .win-header-text {
+            color: #000080;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .win-title-container { display: flex; justify-content: center; margin-bottom: 15px; }
+
+        .win-title-box {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 4px 50px;
+            color: #000080;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .win-tabs { display: flex; gap: 2px; margin-bottom: -2px; padding-left: 10px; }
+        .win-tab-active {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #c0c0c0 #ffffff;
+            padding: 4px 20px;
+            color: #008000;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+        }
+
+        .win-content {
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 15px 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .win-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+
+        .win-groupbox {
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 15px 10px 10px 10px;
+            position: relative;
+        }
+
+        .win-legend {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background-color: #c0c0c0;
+            padding: 0 5px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+        .win-legend.blue { color: #000080; }
+
+        .form-row { display: flex; align-items: center; margin-bottom: 6px; }
+        .form-label { width: 130px; font-weight: bold; }
+
+        .win-input {
+            font-family: 'Tahoma', sans-serif;
+            font-size: 12px;
+            padding: 3px 4px;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background-color: #ffffff;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        .win-input:focus { background-color: #ffffe0; outline: none; }
+        .win-input.readonly { background-color: #c4e4e4; color: #000; }
+        
+        .note-text { font-size: 10px; color: #555; font-style: italic; margin-left: 130px; margin-bottom: 5px; }
+
+        .win-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px 0;
+            border-top: 2px solid #808080;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .win-btn {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 4px 20px;
+            font-family: 'Tahoma';
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .win-btn:active { border-color: #404040 #ffffff #ffffff #404040; padding: 5px 19px 3px 21px; }
+
+        .win-statusbar { display: flex; gap: 10px; margin-top: 10px; }
+        .status-pane {
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background-color: #c4e4e4;
+            padding: 3px 10px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tabel Draft Mini */
+        .table-container {
+            height: 200px;
+            overflow-y: auto;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background: #fff;
+            margin-top: 5px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #c0c0c0; border: 1px solid #808080; padding: 4px; position: sticky; top: 0; }
+        td { border: 1px solid #c0c0c0; padding: 4px; }
+
+        /* ==========================================================================
+           2. TATA LETAK CETAK PDF PRESISI TINGGI (REPLIKA DESAIN SERTIS BARU)
+           ========================================================================== */
+        #pdf-container { position: absolute; left: -9999px; top: 0; background-color: transparent; }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 6mm;
+            background: white;
+            box-sizing: border-box;
+            display: grid;
+            page-break-after: always;
+        }
+
+        .layout-6 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4mm; }
+        .layout-9 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3mm; }
+
+        /* Kartu Label Utama */
+        .shelf-talker {
+            font-family: 'Fredoka', sans-serif;
+            color: #000;
+            border: 4px solid #000; /* Border luar super tebal */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .st-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 2mm 3mm; 
+            height: 12%; 
+            border-bottom: 4px solid #000; /* Garis pemisah header */
+        }
+        .st-logo { width: 35%; display: flex; align-items: center; }
+        .st-logo img { width: 100%; max-height: 16mm; object-fit: contain; object-position: left; }
+        .st-title { width: 65%; text-align: right; font-weight: 900; line-height: 1; padding-right: 2mm; text-transform: uppercase;}
+
+        /* BODY KONTEN (FLEXBOX DINAMIS) */
+        .st-body { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            padding: 4mm; 
+        }
+        
+        /* KOMPONEN TIPOGRAFI */
+        .st-item-name { font-weight: 900; text-transform: uppercase; line-height: 1; }
+        .st-item-desc { font-weight: 700; line-height: 1.1; }
+        .st-beli-teks { font-weight: 900; line-height: 1; }
+        .st-gratis-teks { font-weight: 900; line-height: 1; }
+
+        /* FOOTER */
+        .st-footer { 
+            border-top: 4px solid #000; /* Garis pemisah footer */
+            font-weight: 700; 
+            text-align: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 10%; 
+        }
+
+        /* ==========================================================================
+           SKALA HURUF - LAYOUT 6 (Sesuai Referensi Gambar)
+           ========================================================================== */
+        .layout-6 .st-title { font-size: 24pt; }
+        .layout-6 .st-footer { font-size: 15pt; }
+        
+        /* TIPE 1: Geratis Sama (Beli 2 GERATIS 1 -> TARO) */
+        .layout-6 .tipe-1 .st-beli-teks { font-size: 52pt; margin-bottom: -2mm; }
+        .layout-6 .tipe-1 .st-gratis-teks { font-size: 50pt; text-transform: uppercase; margin-bottom: 8mm; }
+        .layout-6 .tipe-1 .st-item-name { font-size: 42pt; margin-bottom: 4mm; }
+        .layout-6 .tipe-1 .st-item-desc { font-size: 16pt; padding: 0 5mm; }
+
+        /* TIPE 2: Geratis Beda (Beli 2 TARO -> Geratis 1pcs AQUA) */
+        .layout-6 .tipe-2 .st-beli-teks { font-size: 44pt; margin-bottom: 1mm; }
+        .layout-6 .tipe-2 .item-a .st-item-name { font-size: 38pt; margin-bottom: 1mm; }
+        .layout-6 .tipe-2 .item-a .st-item-desc { font-size: 13pt; margin-bottom: 4mm; }
+        .layout-6 .tipe-2 .st-gratis-teks { font-size: 42pt; margin-bottom: 1mm; }
+        .layout-6 .tipe-2 .item-b .st-item-name { font-size: 38pt; margin-bottom: 1mm; }
+        .layout-6 .tipe-2 .item-b .st-item-desc { font-size: 13pt; }
+
+        /* ==========================================================================
+           SKALA HURUF - LAYOUT 9 (Versi Lebih Kecil)
+           ========================================================================== */
+        .layout-9 .st-title { font-size: 16pt; }
+        .layout-9 .st-footer { font-size: 11pt; }
+        
+        .layout-9 .tipe-1 .st-beli-teks { font-size: 36pt; }
+        .layout-9 .tipe-1 .st-gratis-teks { font-size: 34pt; margin-bottom: 5mm; }
+        .layout-9 .tipe-1 .st-item-name { font-size: 28pt; margin-bottom: 2mm; }
+        .layout-9 .tipe-1 .st-item-desc { font-size: 11pt; }
+
+        .layout-9 .tipe-2 .st-beli-teks { font-size: 30pt; }
+        .layout-9 .tipe-2 .item-a .st-item-name { font-size: 26pt; }
+        .layout-9 .tipe-2 .item-a .st-item-desc { font-size: 10pt; margin-bottom: 2mm; }
+        .layout-9 .tipe-2 .st-gratis-teks { font-size: 28pt; }
+        .layout-9 .tipe-2 .item-b .st-item-name { font-size: 26pt; }
+        .layout-9 .tipe-2 .item-b .st-item-desc { font-size: 10pt; }
+    </style>
+</head>
+<body>
+
+<div class="win-form">
+    <div class="win-header-text">GENERATOR SHELFTALKER - SERTIS (NON-PRICE)</div>
+    <div class="win-title-container">
+        <div class="win-title-box">SERBA GERATIS (SERTIS)</div>
+    </div>
+
+    <div class="win-tabs">
+        <div class="win-tab-active">FORM CETAK LABEL SERTIS</div>
+    </div>
+
+    <div class="win-content">
+        <div class="win-col" style="flex: 1.2;">
+            <form id="sertisForm" onsubmit="event.preventDefault();">
+                
+                <div class="win-groupbox" style="margin-bottom: 10px;">
+                    <div class="win-legend">MEKANISME PROMO</div>
+                    <div class="form-row">
+                        <div class="form-label">Syarat Beli (Qty)</div>
+                        <input type="number" id="qtyBeli" class="win-input" placeholder="Cth: 2" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Jml Geratis (Qty)</div>
+                        <input type="number" id="qtyGratis" class="win-input" placeholder="Cth: 1" required>
+                    </div>
+                </div>
+
+                <div class="win-groupbox" style="margin-bottom: 10px;">
+                    <div class="win-legend">ITEM UTAMA (YANG DIBELI)</div>
+                    <div class="form-row">
+                        <div class="form-label">Nama Item</div>
+                        <input type="text" id="namaItemA" class="win-input" placeholder="Cth: TARO" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Deskripsi</div>
+                        <input type="text" id="descItemA" class="win-input" placeholder="Cth: Net Seaweed 60g">
+                    </div>
+                </div>
+
+                <div class="win-groupbox">
+                    <div class="win-legend" style="color: #000080;">ITEM GERATIS (JIKA BERBEDA)</div>
+                    <div class="note-text">Kosongkan bagian ini jika barang yang digratiskan sama persis.</div>
+                    <div class="form-row">
+                        <div class="form-label">Nama Item Geratis</div>
+                        <input type="text" id="namaItemB" class="win-input" placeholder="Cth: AQUA">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Deskripsi Geratis</div>
+                        <input type="text" id="descItemB" class="win-input" placeholder="Cth: Air Mineral 600ml">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="win-col">
+            <div class="win-groupbox">
+                <div class="win-legend blue">PARAMETER LAYOUT</div>
+                <div class="form-row">
+                    <div class="form-label" style="width: 90px;">Periode Berlaku</div>
+                    <input type="text" id="auto-periode" class="win-input readonly" readonly>
+                </div>
+                <div class="form-row" style="margin-top: 10px; font-weight: bold;">
+                    Layout Kertas : 
+                    <label style="margin-left: 10px;"><input type="radio" name="layoutGrid" value="6" checked> 6 Grid</label>
+                    <label style="margin-left: 10px;"><input type="radio" name="layoutGrid" value="9"> 9 Grid</label>
+                </div>
+            </div>
+
+            <div class="win-groupbox" style="flex: 1; padding: 10px;">
+                <div class="win-legend blue">DRAFT REKAP PRA CETAK</div>
+                <div class="table-container">
+                    <table id="draftTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Item Beli</th>
+                                <th style="width: 30%;">Mekanisme</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="win-buttons">
+      <form action="home.html">
+        <input type="submit" value="《《BACK">
+      </form>
+        <button type="button" id="btnSimpan" class="win-btn"><b>SAVE DATA</b></button>
+        <button type="button" id="btnResetForm" class="win-btn"><b>REFRESH</b></button>
+        <button type="button" id="btnPrint" class="win-btn" style="color: #008000;"><b>DOWNLOAD PDF</b></button>
+        <button type="button" id="btnClearAll" class="win-btn" style="color: #ff0000;"><b>CLEAR ALL</b></button>
+    </div>
+
+    <div class="win-statusbar">
+        <div class="status-pane" id="status-tanggal" style="flex: 0.6;">Tanggal : --/---/----</div>
+        <div class="status-pane" id="status-db" style="flex: 1;">Status DB : LOAD...</div>
+        <div class="status-pane" id="status-repo" style="flex: 1.8; text-align: right;">LOAD REPOSITORY...</div>
+    </div>
+</div>
+
+<div id="pdf-container"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    // Konfigurasi Database
+    const firebaseConfig = {
+        apiKey: "AIzaSyAIDxE3pKecG_uic9nlrORWlRxqIgOgZaY",
+        authDomain: "so-st-38d29.firebaseapp.com",
+        projectId: "so-st-38d29",
+        storageBucket: "so-st-38d29.firebasestorage.app",
+        messagingSenderId: "1732030778",
+        appId: "1:1732030778:web:5671d8a246d6e2137ee003"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    // DB Node Baru tanpa harga
+    const dbRef = db.ref("promosi_sertis_v2");
+    let currentEditingKey = null;
+    let currentPromoData = [];
+
+    // Loading Simulation
+    function jalankanEfekLoadingStatus() {
+        const paneDb = document.getElementById("status-db");
+        db.ref(".info/connected").on("value", (snap) => {
+            setTimeout(() => {
+                if (snap.val() === true) {
+                    paneDb.innerText = "Status DB : CONNECT";
+                    paneDb.style.color = "#006400";
+                } else {
+                    paneDb.innerText = "Status DB : DISCONNECT";
+                    paneDb.style.color = "#ff0000";
+                }
+            }, 500); 
+        });
+        setTimeout(() => { document.getElementById("status-repo").innerText = "Repo: Sertis_Visual_V2_Sync"; }, 1500);
+    }
+
+    // Hitung Periode Otomatis
+    function hitungPeriodeOtomatisSertis() {
+        const sekarang = new Date();
+        const tgl = sekarang.getDate();
+        const blnIndex = sekarang.getMonth();
+        const thn = sekarang.getFullYear();
+        const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        document.getElementById("status-tanggal").innerText = `Tanggal : ${tgl.toString().padStart(2, '0')}-${namaBulan[blnIndex].substring(0,3)}-${thn}`;
+
+        const tglAkhir = new Date(thn, blnIndex + 1, 0).getDate();
+        let weekText = tgl >= 1 && tgl <= 15 ? `01 - 15 ${namaBulan[blnIndex]} ${thn}` : `16 - ${tglAkhir} ${namaBulan[blnIndex]} ${thn}`;
+        
+        document.getElementById("auto-periode").value = `Berlaku SD ${weekText}`;
+    }
+
+    // CRUD Logic
+    document.getElementById("btnSimpan").addEventListener("click", () => {
+        const namaA = document.getElementById("namaItemA").value.trim();
+        if (!namaA) return alert("Nama Item Utama Wajib Diisi!");
+
+        const data = {
+            qtyBeli: document.getElementById("qtyBeli").value || "1",
+            qtyGratis: document.getElementById("qtyGratis").value || "1",
+            namaA: namaA,
+            descA: document.getElementById("descItemA").value.trim(),
+            namaB: document.getElementById("namaItemB").value.trim(),
+            descB: document.getElementById("descItemB").value.trim()
+        };
+
+        if (currentEditingKey) {
+            db.ref(`promosi_sertis_v2/${currentEditingKey}`).set(data).then(() => {
+                currentEditingKey = null; document.getElementById("btnSimpan").innerText = "SAVE DATA"; resetForm();
+            });
+        } else {
+            dbRef.push(data).then(() => resetForm());
+        }
+    });
+
+    function resetForm() { document.getElementById("sertisForm").reset(); document.getElementById("qtyBeli").focus(); }
+    document.getElementById("btnResetForm").addEventListener("click", resetForm);
+
+    // Sync Table
+    dbRef.on("value", (snapshot) => {
+        const tbody = document.querySelector("#draftTable tbody");
+        tbody.innerHTML = "";
+        currentPromoData = [];
+
+        if (!snapshot.exists()) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Kosong</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach((childSnapshot) => {
+            const key = childSnapshot.key;
+            const val = childSnapshot.val();
+            currentPromoData.push(val); 
+
+            let mekanismeTeks = val.namaB ? `Beli ${val.qtyBeli} Grts ${val.namaB}` : `Beli ${val.qtyBeli} Grts ${val.qtyGratis}`;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><b>${val.namaA}</b></td>
+                <td>${mekanismeTeks}</td>
+                <td style="text-align:center;">
+                    <button class="action-btn" onclick="editData('${key}')">E</button>
+                    <button class="action-btn" style="color:red;" onclick="if(confirm('Hapus?')) db.ref('promosi_sertis_v2/${key}').remove()">X</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+
+    window.editData = function(key) {
+        db.ref(`promosi_sertis_v2/${key}`).once("value").then((snapshot) => {
+            const val = snapshot.val(); if (!val) return;
+            currentEditingKey = key;
+            document.getElementById("qtyBeli").value = val.qtyBeli;
+            document.getElementById("qtyGratis").value = val.qtyGratis;
+            document.getElementById("namaItemA").value = val.namaA;
+            document.getElementById("descItemA").value = val.descA;
+            document.getElementById("namaItemB").value = val.namaB;
+            document.getElementById("descItemB").value = val.descB;
+            document.getElementById("btnSimpan").innerText = "UPDATE DATA";
+        });
+    }
+
+    document.getElementById("btnClearAll").addEventListener("click", () => {
+        if (confirm("Kosongkan semua data rekap di draf SERTIS?")) dbRef.remove();
+    });
+
+    // ==========================================================================
+    // PDF GENERATOR (DUA LOGIKA VISUAL)
+    // ==========================================================================
+    function createCardHTML(val) {
+        const periode = document.getElementById("auto-periode").value;
+        const isCrossPromo = val.namaB && val.namaB.trim() !== ""; // Cek apakah ada barang B (tipe 2)
+
+        let bodyContent = "";
+
+        if (!isCrossPromo) {
+            // LOGIKA GAMBAR KIRI (TIPE 1 - BARANG SAMA)
+            bodyContent = `
+                <div class="st-body tipe-1">
+                    <div class="st-beli-teks">Beli ${val.qtyBeli}</div>
+                    <div class="st-gratis-teks">GERATIS ${val.qtyGratis}</div>
+                    <div class="st-item-name">${val.namaA}</div>
+                    <div class="st-item-desc">${val.descA}</div>
+                </div>
+            `;
+        } else {
+            // LOGIKA GAMBAR KANAN (TIPE 2 - BARANG BERBEDA)
+            bodyContent = `
+                <div class="st-body tipe-2">
+                    <div class="st-beli-teks">Beli ${val.qtyBeli}</div>
+                    <div class="item-a">
+                        <div class="st-item-name">${val.namaA}</div>
+                        <div class="st-item-desc">${val.descA}</div>
+                    </div>
+                    
+                    <div class="st-gratis-teks">Geratis ${val.qtyGratis}pcs</div>
+                    <div class="item-b">
+                        <div class="st-item-name">${val.namaB}</div>
+                        <div class="st-item-desc">${val.descB}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="shelf-talker">
+                <div class="st-header">
+                    <div class="st-logo"><img src="alfamarthitamputih.png" alt="Logo"></div>
+                    <div class="st-title">SERBA GERATIS</div>
+                </div>
+                ${bodyContent}
+                <div class="st-footer">${periode}</div>
+            </div>
+        `;
+    }
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+        if (currentPromoData.length === 0) return alert("Belum ada data untuk diproses!");
+
+        const layoutVal = document.querySelector('input[name="layoutGrid"]:checked').value;
+        const mxPage = parseInt(layoutVal);
+        const pdfContainer = document.getElementById("pdf-container");
+        
+        let allPages = "";
+        
+        for (let i = 0; i < currentPromoData.length; i += mxPage) {
+            const chunk = currentPromoData.slice(i, i + mxPage);
+            let itemsHTML = chunk.map(val => createCardHTML(val)).join('');
+            allPages += `<div class="a4-page layout-${mxPage}">${itemsHTML}</div>`;
+        }
+
+        pdfContainer.innerHTML = allPages;
+
+        const sekarang = new Date();
+        const fileName = `SERTIS_${sekarang.getDate()}-${sekarang.getMonth()+1}_${sekarang.getHours()}.${sekarang.getMinutes()}.pdf`;
+        
+        pdfContainer.style.display = 'block';
+        pdfContainer.style.position = 'relative'; 
+        pdfContainer.style.left = '0';
+
+        const opt = {
+            margin:       0,
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.display = 'none';
+            pdfContainer.innerHTML = "";
+
+            setTimeout(() => {
+                if (confirm("Unduhan Selesai! Reset draf?")) dbRef.remove();
+            }, 800);
+        }).catch(err => alert("Error: " + err.message));
+    });
+
+    // Boot
+    hitungPeriodeOtomatisSertis();
+    jalankanEfekLoadingStatus();
+</script>
+</body>
+</html>

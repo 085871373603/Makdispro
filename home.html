@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Master PLU - Navigasi</title>
+    <style>
+        body { 
+            background-color: #008080; /* Latar belakang hijau teal Windows jadul */
+            font-family: 'Tahoma', 'Arial', sans-serif; 
+            font-size: 11px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            cursor: default;
+        }
+
+        /* Jendela Utama Aplikasi */
+        .win-app {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 1px;
+            width: 450px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title Bar Windows (Biru Gradient) */
+        .win-title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 2px 3px 2px 5px;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tombol Window (_ dan X) */
+        .win-title-btn {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            color: black;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 0 4px;
+            margin-left: 2px;
+            cursor: pointer;
+            height: 18px;
+            line-height: 12px;
+        }
+
+        .win-title-btn:active {
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding-top: 1px;
+        }
+
+        /* Konten Dalam Jendela */
+        .win-main-content {
+            border: 2px solid;
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding: 10px;
+            margin: 2px;
+            background-color: #c0c0c0;
+        }
+
+        /* Header Teks Perusahaan (Sesuai Gambar) */
+        .company-header {
+            font-weight: bold;
+            font-size: 14px;
+            color: #000080;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 0px #ffffff;
+        }
+
+        /* Kotak Judul Form (Sesuai Gambar) */
+        .form-title-box {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #404040 #ffffff #ffffff #404040;
+            width: 200px;
+            margin: 0 auto 15px auto;
+            text-align: center;
+            padding: 3px;
+            font-weight: bold;
+            color: #000080;
+            font-size: 12px;
+        }
+
+        /* List Menu bergaya ListBox Windows */
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 2px solid;
+            border-color: #404040 #ffffff #ffffff #404040;
+            background: #ffffff;
+            height: 150px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .menu-item:hover { 
+            background-color: #000080; 
+            color: white; 
+        }
+
+        /* Status Bar Bawah */
+        .win-status-bar {
+            background-color: #d0d0d0;
+            border-top: 1px solid #404040;
+            padding: 2px 5px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .status-bar-item {
+            border: 1px solid;
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding: 1px 5px;
+            font-weight: bold;
+        }
+
+        /* Popup Box */
+        .popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .msg-box {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            width: 300px;
+            padding: 2px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .msg-content {
+            border: 2px solid;
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding: 15px;
+            text-align: center;
+            background-color: #c0c0c0;
+        }
+
+        .win-btn {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 3px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        
+        .win-btn:active {
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="win-app">
+    <div class="win-title-bar">
+        <span>SHORTCUT V1.2024.08.0</span>
+        <div>
+            <button class="win-title-btn" onclick="minimizeApp()">_</button>
+            <button class="win-title-btn" onclick="tutupTab()">X</button>
+        </div>
+    </div>
+    
+    <div class="win-main-content">
+        <div class="company-header">SHORTCUT SPREADSHEET SHELFTALKER</div>
+        
+        <div class="form-title-box">MENU UTAMA</div>
+
+        <div style="font-weight:bold; margin-bottom:5px; color: black;">Pilih Modul Aplikasi:</div>
+        
+        <ul class="menu-list">
+            <li class="menu-item" onclick="location.href='psm.html'">> PSM</li>
+            <li class="menu-item" onclick="location.href='pwp.html'">> PWP</li>
+            <li class="menu-item" onclick="location.href='sertis.html'">> SERTIS</li>
+            <li class="menu-item" onclick="showPopup()">> Lainnya...</li>
+        </ul>
+    </div>
+
+    <div class="win-status-bar">
+        <span class="status-bar-item" id="currentDate">Tanggal : </span>
+        <span class="status-bar-item">User : PUBLIC</span>
+    </div>
+</div>
+
+<div class="popup-overlay" id="popupBox">
+    <div class="msg-box">
+        <div class="win-title-bar">
+            <span>Information</span>
+            <button class="win-title-btn" onclick="hidePopup()">X</button>
+        </div>
+        <div class="msg-content">
+            <p>Menu ini sedang dalam tahap <b>Development</b>.</p>
+            <button class="win-btn" onclick="hidePopup()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set tanggal otomatis di status bar
+    const dateElement = document.getElementById('currentDate');
+    const today = new Date();
+    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+    dateElement.innerText = "Tanggal : " + today.toLocaleDateString('id-ID', options).replace(/ /g, '-');
+
+    // Fungsi Popup
+    function showPopup() {
+        document.getElementById('popupBox').style.display = 'flex';
+    }
+    function hidePopup() {
+        document.getElementById('popupBox').style.display = 'none';
+    }
+
+    // Fungsi Minimize
+    function minimizeApp() {
+        alert("Aplikasi di-minimize!");
+    }
+
+    // Fungsi Tutup (X)
+    function tutupTab() {
+        if(confirm("Apakah Anda yakin ingin menutup aplikasi?")) {
+            window.close();
+            setTimeout(function() {
+                alert("Tekan Ctrl+W untuk menutup tab ini jika browser memblokir aksi penutupan otomatis.");
+            }, 300);
+        }
+    }
+</script>
+
+</body>
+</html>

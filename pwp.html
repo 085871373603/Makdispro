@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master PWP - Generator Shelf Talker</title>
+    <!-- Memuat Font Fredoka Untuk Cetakan -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. GAYA VISUAL ANTARMUKA KLASIK (REPLIKA 100% UI MASTER PLU ALFAMART)
+           ========================================================================== */
+        body { 
+            background-color: #c0c0c0;
+            font-family: 'Tahoma', 'Arial', sans-serif; 
+            font-size: 12px; 
+            color: #000; 
+            margin: 10px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        .win-form {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 10px;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .win-header-text {
+            color: #000080;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .win-title-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .win-title-box {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 4px 50px;
+            color: #000080;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .win-tabs { display: flex; gap: 2px; margin-bottom: -2px; padding-left: 10px; }
+        .win-tab-active {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #c0c0c0 #ffffff;
+            padding: 4px 20px;
+            color: #008000;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+        }
+
+        .win-content {
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 15px 10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .win-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+
+        .win-groupbox {
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 15px 10px 10px 10px;
+            position: relative;
+        }
+
+        .win-legend {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background-color: #c0c0c0;
+            padding: 0 5px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+        .win-legend.blue { color: #000080; }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .form-label { width: 120px; font-weight: bold; }
+
+        .win-input {
+            font-family: 'Tahoma', sans-serif;
+            font-size: 12px;
+            padding: 3px 4px;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background-color: #ffffff;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        .win-input:focus { background-color: #ffffe0; outline: none; }
+        
+        .win-input.readonly { 
+            background-color: #c4e4e4;
+            color: #000;
+        }
+
+        .win-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px 0;
+            border-top: 2px solid #808080;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .win-btn {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #404040 #404040 #ffffff;
+            padding: 4px 20px;
+            font-family: 'Tahoma';
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .win-btn:active {
+            border-color: #404040 #ffffff #ffffff #404040;
+            padding: 5px 19px 3px 21px;
+        }
+
+        .win-statusbar {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .status-pane {
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background-color: #c4e4e4;
+            padding: 3px 10px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tabel Draft Mini */
+        .table-container {
+            height: 140px;
+            overflow-y: auto;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            background: #fff;
+            margin-top: 5px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #c0c0c0; border: 1px solid #808080; padding: 4px; position: sticky; top: 0; }
+        td { border: 1px solid #c0c0c0; padding: 4px; }
+
+        /* ==========================================================================
+           2. TATA LETAK CETAK PDF PRESISI TINGGI (FREDOKA & GRID A4) KHUSUS PWP
+           ========================================================================== */
+        #pdf-container {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            background-color: transparent;
+        }
+
+        /* Ukuran Mutlak Kertas A4 */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 6mm;
+            background: white;
+            box-sizing: border-box;
+            display: grid;
+            page-break-after: always;
+        }
+
+        /* Grid Otomatis */
+        .layout-6 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4mm; }
+        .layout-9 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 3mm; }
+
+        /* Kartu Label Induk */
+        .shelf-talker {
+            font-family: 'Fredoka', sans-serif;
+            color: #000;
+            border: 4px solid #000;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .st-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 2mm 3mm; 
+            height: 14%; 
+        }
+        .st-logo { width: 30%; display: flex; align-items: center; }
+        .st-logo img { width: 100%; max-height: 18mm; object-fit: contain; object-position: left; }
+        .st-title { width: 40%; text-align: center; font-weight: 900; line-height: 1; }
+        .st-sub { width: 30%; text-align: right; font-weight: 700; display: flex; flex-direction: column; justify-content: center; }
+
+        /* TEKS SYARAT KHUSUS PWP */
+        .st-syarat-tebus {
+            text-align: center;
+            font-weight: 900;
+            border-top: 2px dashed #000;
+            border-bottom: 4px solid #000;
+            background-color: #f2f2f2;
+            padding: 1.5mm 0;
+        }
+
+        /* BODY KONTEN */
+        .st-body { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-evenly; 
+            align-items: center; 
+            text-align: center; 
+            padding: 2mm; 
+        }
+        
+        .st-item-name { font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-top: 1mm; }
+        .st-item-desc { font-weight: 700; line-height: 1.1; }
+
+        /* Blok Harga Dinamis */
+        .st-price-box { display: flex; align-items: center; justify-content: center; gap: 2mm; width: 100%; margin-top: auto; margin-bottom: 2mm;}
+        .st-rp { font-weight: 900; margin-top: 4mm; }
+        .st-price-numbers { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+        .st-strike { font-weight: 700; text-decoration: line-through; text-decoration-thickness: 3px; }
+        .st-promo-price { font-weight: 900; letter-spacing: -1px; }
+
+        /* FOOTER */
+        .st-footer { 
+            border-top: 4px solid #000; 
+            font-weight: 700; 
+            text-align: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 10%; 
+            text-transform: uppercase; 
+        }
+
+        /* ==========================================================================
+           PENYESUAIAN SKALA HURUF RAKSASA BERDASARKAN LAYOUT GRID
+           ========================================================================== */
+        
+        /* SKALA LAYOUT 6 */
+        .layout-6 .st-title { font-size: 32pt; }
+        .layout-6 .st-sub { font-size: 10pt; line-height: 1.2; }
+        .layout-6 .st-syarat-tebus { font-size: 13pt; }
+        .layout-6 .st-item-name { font-size: 28pt; margin-bottom: 2mm; }
+        .layout-6 .st-item-desc { font-size: 14pt; }
+        .layout-6 .st-rp { font-size: 22pt; }
+        .layout-6 .st-strike { font-size: 18pt; margin-bottom: -1mm; }
+        .layout-6 .st-promo-price { font-size: 65pt; line-height: 0.85; }
+        .layout-6 .st-footer { font-size: 12pt; }
+
+        /* SKALA LAYOUT 9 */
+        .layout-9 .st-title { font-size: 24pt; }
+        .layout-9 .st-sub { font-size: 8pt; line-height: 1.2; }
+        .layout-9 .st-syarat-tebus { font-size: 10pt; }
+        .layout-9 .st-item-name { font-size: 22pt; margin-bottom: 1mm; }
+        .layout-9 .st-item-desc { font-size: 11pt; }
+        .layout-9 .st-rp { font-size: 16pt; margin-top: 2mm; }
+        .layout-9 .st-strike { font-size: 14pt; margin-bottom: -1mm; }
+        .layout-9 .st-promo-price { font-size: 48pt; line-height: 0.85; }
+        .layout-9 .st-footer { font-size: 10pt; }
+    </style>
+</head>
+<body>
+
+<div class="win-form">
+    <!-- Header Aplikasi -->
+    <div class="win-header-text">GENERATOR SHELFTALKER - PWP</div>
+    <div class="win-title-container">
+        <div class="win-title-box">PROMO SERBA (PWP)</div>
+    </div>
+
+    <!-- Sistem Tab -->
+    <div class="win-tabs">
+        <div class="win-tab-active">SPREADSHEET SHELFT GENERATE - PWP</div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="win-content">
+        <!-- Kolom Kiri: Input Data Khusus Reguler PWP -->
+        <div class="win-col" style="flex: 1.2;">
+            <div class="win-groupbox">
+                <div class="win-legend">INPUT DATA ITEM PWP</div>
+                
+                <form id="pwpForm" onsubmit="event.preventDefault();">
+                    <div class="form-row">
+                        <div class="form-label">Jenis Promo</div>
+                        <input type="text" class="win-input readonly" value="Reguler (Tebus Murah)" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Nama Item</div>
+                        <input type="text" id="namaItem" class="win-input" placeholder="0" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Deskripsi</div>
+                        <input type="text" id="deskripsiItem" class="win-input" placeholder="0">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Harga Coret Normal</div>
+                        <input type="number" id="hargaCoret" class="win-input" placeholder="0" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Harga Promo (Tebus)</div>
+                        <input type="number" id="hargaPromo" class="win-input" placeholder="0" required>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Parameter & Tabel -->
+        <div class="win-col">
+            <div class="win-groupbox">
+                <div class="win-legend blue">PARAMETER LAYOUT</div>
+                <div class="form-row">
+                    <div class="form-label" style="width: 90px;">Periode PWP</div>
+                    <input type="text" id="auto-periode" class="win-input readonly" readonly>
+                </div>
+                <div class="form-row" style="margin-top: 10px; font-weight: bold;">
+                    Layout : 
+                    <label style="margin-left: 10px;"><input type="radio" name="layoutGrid" value="6" checked> 6 Grid</label>
+                    <label style="margin-left: 10px;"><input type="radio" name="layoutGrid" value="9"> 9 Grid</label>
+                </div>
+            </div>
+
+            <div class="win-groupbox" style="flex: 1; padding: 10px;">
+                <div class="win-legend blue">DRAFT REKAP PRA CETAK</div>
+                <div class="table-container">
+                    <table id="draftTable">
+                        <thead>
+                            <tr>
+                                <th>Item PWP</th>
+                                <th>Harga Tebus</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area Tombol Aksi -->
+    <div class="win-buttons">
+      <form action="home.html">
+    <input type="submit" value="《《BACK">
+</form>
+      
+        <button type="button" id="btnSimpan" class="win-btn"><b>SAVE</b></button>
+        <button type="button" id="btnResetForm" class="win-btn"><b>REFRESH</b></button>
+        <button type="button" id="btnPrint" class="win-btn" style="color: #008000;"><b>DOWNLOAD</b></button>
+        <button type="button" id="btnClearAll" class="win-btn" style="color: #ff0000;"><b>CLEAR DATA</b></button>
+    </div>
+
+    <!-- Status Bar Khas Master PLU dengan Efek 3 Detik -->
+    <div class="win-statusbar">
+        <div class="status-pane" id="status-tanggal" style="flex: 0.6;">Tanggal : --/---/----</div>
+        <div class="status-pane" id="status-db" style="flex: 1;">Status DB : LOAD...</div>
+        <div class="status-pane" id="status-repo" style="flex: 1.8; text-align: right;">LOAD REPOSITORY...</div>
+    </div>
+</div>
+
+<!-- Container A4 Rahasia untuk Merender PDF -->
+<div id="pdf-container"></div>
+
+<!-- SDK Firebase & html2pdf -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    // Konfigurasi Database Firebase Proyek (so-st-38d29)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAIDxE3pKecG_uic9nlrORWlRxqIgOgZaY",
+        authDomain: "so-st-38d29.firebaseapp.com",
+        projectId: "so-st-38d29",
+        storageBucket: "so-st-38d29.firebasestorage.app",
+        messagingSenderId: "1732030778",
+        appId: "1:1732030778:web:5671d8a246d6e2137ee003",
+        measurementId: "G-DW8J8K99F0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    // PERHATIAN: Node db diubah menjadi promosi_pwp agar terpisah dari psm
+    const dbRef = db.ref("promosi_pwp");
+    let currentEditingKey = null;
+    let currentPromoData = [];
+
+    // ==========================================================================
+    // LOGIKA LOADING STATUS BAR (SIMULASI REPO 3 DETIK & REALTIME DB STATUS)
+    // ==========================================================================
+    function jalankanEfekLoadingStatus() {
+        const paneDb = document.getElementById("status-db");
+        const paneRepo = document.getElementById("status-repo");
+
+        paneDb.innerText = "Status DB : LOADING...";
+        paneDb.style.color = "#000";
+        paneRepo.innerText = "LOAD REPOSITORy...";
+
+        const connectedRef = db.ref(".info/connected");
+        connectedRef.on("value", (snap) => {
+            setTimeout(() => {
+                if (snap.val() === true) {
+                    paneDb.innerText = "Status DB : CONNECT";
+                    paneDb.style.color = "#006400";
+                } else {
+                    paneDb.innerText = "Status DB : DISCONNECT";
+                    paneDb.style.color = "#ff0000";
+                }
+            }, 500); 
+        });
+
+        // Waktu jeda pas 3 detik mencari repositori Spreadsheet (PWP)
+        setTimeout(() => {
+            paneRepo.innerText = "https://docs.google.com/spreadsheets/d/..../#gid=pwpdb";
+        }, 2000); // 3000 ms
+    }
+
+    // ==========================================================================
+    // PENGATURAN PERIODE PWP KHUSUS (TGL 1-15 & 16-AKHIR BULAN)
+    // ==========================================================================
+    function hitungPeriodeOtomatisPWP() {
+        const sekarang = new Date();
+        const tgl = sekarang.getDate();
+        const blnIndex = sekarang.getMonth();
+        const thn = sekarang.getFullYear();
+        const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const bulanAktif = namaBulan[blnIndex];
+        const tglAkhir = new Date(thn, blnIndex + 1, 0).getDate();
+
+        // Update tanggal UI
+        const tglStrPadded = tgl.toString().padStart(2, '0');
+        document.getElementById("status-tanggal").innerText = `Tanggal : ${tglStrPadded}-${bulanAktif.substring(0,3)}-${thn}`;
+
+        // Kalkulasi Periode (Periode 1 & Periode 2)
+        let weekText = "";
+        if (tgl >= 1 && tgl <= 15) {
+            weekText = `01 - 15 ${bulanAktif} ${thn}`;
+        } else {
+            weekText = `16 - ${tglAkhir} ${bulanAktif} ${thn}`;
+        }
+        
+        document.getElementById("auto-periode").value = `Berlaku SD ${weekText}`;
+    }
+
+    // Navigasi Enter Otomatis (Hanya 4 Input Aktif)
+    const inputs = document.querySelectorAll('.win-input:not(.readonly)');
+    inputs.forEach((input, i) => {
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (i < inputs.length - 1) inputs[i + 1].focus();
+                else document.getElementById("btnSimpan").click();
+            }
+        });
+    });
+
+    // Operasi CRUD - Simpan Data
+    document.getElementById("btnSimpan").addEventListener("click", () => {
+        const namaItem = document.getElementById("namaItem").value.trim();
+        if (!namaItem) return alert("Nama Item Wajib Diisi!");
+
+        const data = {
+            namaItem: namaItem,
+            deskripsiItem: document.getElementById("deskripsiItem").value.trim(),
+            hargaCoret: Number(document.getElementById("hargaCoret").value) || 0,
+            hargaPromo: Number(document.getElementById("hargaPromo").value) || 0
+        };
+
+        if (currentEditingKey) {
+            db.ref(`promosi_pwp/${currentEditingKey}`).set(data).then(() => {
+                currentEditingKey = null; document.getElementById("btnSimpan").innerText = "SAVE (Enter)"; resetForm();
+            });
+        } else {
+            dbRef.push(data).then(() => resetForm());
+        }
+    });
+
+    function resetForm() { document.getElementById("pwpForm").reset(); document.getElementById("namaItem").focus(); }
+    document.getElementById("btnResetForm").addEventListener("click", resetForm);
+
+    // Sinkronisasi Tabel Draft Realtime
+    dbRef.on("value", (snapshot) => {
+        const tbody = document.querySelector("#draftTable tbody");
+        tbody.innerHTML = "";
+        currentPromoData = [];
+
+        if (!snapshot.exists()) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Kosong</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach((childSnapshot) => {
+            const key = childSnapshot.key;
+            const val = childSnapshot.val();
+            currentPromoData.push(val); 
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><b>${val.namaItem}</b></td>
+                <td>Rp ${val.hargaPromo.toLocaleString('id-ID')}</td>
+                <td style="text-align:center;">
+                    <button class="action-btn" onclick="editData('${key}')">E</button>
+                    <button class="action-btn" style="color:red;" onclick="if(confirm('Hapus item PWP ini?')) db.ref('promosi_pwp/${key}').remove()">X</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+
+    window.editData = function(key) {
+        db.ref(`promosi_pwp/${key}`).once("value").then((snapshot) => {
+            const val = snapshot.val(); if (!val) return;
+            currentEditingKey = key;
+            document.getElementById("namaItem").value = val.namaItem;
+            document.getElementById("deskripsiItem").value = val.deskripsiItem;
+            document.getElementById("hargaCoret").value = val.hargaCoret;
+            document.getElementById("hargaPromo").value = val.hargaPromo;
+            document.getElementById("btnSimpan").innerText = "UPDATE DATA";
+        });
+    }
+
+    document.getElementById("btnClearAll").addEventListener("click", () => {
+        if (confirm("Kosongkan semua data rekap di draf PWP?")) dbRef.remove();
+    });
+
+    // ==========================================================================
+    // PDF GENERATOR (LAYOUT PRESISI KERTAS) KHUSUS PWP
+    // ==========================================================================
+    function formatHarga(num) {
+        return num.toLocaleString('id-ID').replace(/,/g, '.');
+    }
+
+    function createCardHTML(val) {
+        const dataPeriode = document.getElementById("auto-periode").value;
+
+        // Desain HTML Card PWP (Reguler Default)
+        return `
+            <div class="shelf-talker">
+                <div class="st-header">
+                    <div class="st-logo"><img src="alfamarthitamputih.png" alt="Logo"></div>
+                    <div class="st-title">PWP</div>
+                    <div class="st-sub"><div>Promo</div><div>Serba</div></div>
+                </div>
+                
+                <!-- Syarat Tebus Khusus PWP -->
+                <div class="st-syarat-tebus">*Belanja Senilai Rp.50.000 bisa tebus murah</div>
+                
+                <div class="st-body">
+                    <div class="st-item-name">${val.namaItem}</div>
+                    <div class="st-item-desc">${val.deskripsiItem}</div>
+                    <div class="st-price-box">
+                        <div class="st-rp">Rp.</div>
+                        <div class="st-price-numbers">
+                            <div class="st-strike">${formatHarga(val.hargaCoret)}</div>
+                            <div class="st-promo-price">${formatHarga(val.hargaPromo)}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="st-footer">${dataPeriode}</div>
+            </div>
+        `;
+    }
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+        if (currentPromoData.length === 0) return alert("Belum ada data PWP untuk diproses!");
+
+        const layoutVal = document.querySelector('input[name="layoutGrid"]:checked').value;
+        const mxPage = parseInt(layoutVal);
+        const pdfContainer = document.getElementById("pdf-container");
+        
+        let allPages = "";
+        
+        // Pagination lembar kerja A4
+        for (let i = 0; i < currentPromoData.length; i += mxPage) {
+            const chunk = currentPromoData.slice(i, i + mxPage);
+            let itemsHTML = chunk.map(val => createCardHTML(val)).join('');
+            allPages += `<div class="a4-page layout-${mxPage}">${itemsHTML}</div>`;
+        }
+
+        pdfContainer.innerHTML = allPages;
+
+        const sekarang = new Date();
+        const fileName = `PWP_SHELFTALKER_${sekarang.getDate()}-${sekarang.getMonth()+1}_Waktu_${sekarang.getHours()}.${sekarang.getMinutes()}.pdf`;
+        
+        pdfContainer.style.display = 'block';
+        pdfContainer.style.position = 'relative'; 
+        pdfContainer.style.left = '0';
+
+        const opt = {
+            margin:       0,
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(pdfContainer).save().then(() => {
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.display = 'none';
+            pdfContainer.innerHTML = "";
+
+            setTimeout(() => {
+                if (confirm("Unduh PDF PWP Selesai!\nApakah Anda ingin mereset/mengosongkan lembar draft?")) dbRef.remove();
+            }, 800);
+        }).catch(err => alert("Error Unduh: " + err.message));
+    });
+
+    // Menjalankan fungsi boot awal PWP
+    hitungPeriodeOtomatisPWP();
+    jalankanEfekLoadingStatus();
+</script>
+</body>
+</html>
