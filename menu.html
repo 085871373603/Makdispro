@@ -2,14 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" id="viewport-meta" content="width=device-width, initial-scale=1.0">
     <title>Menu Utama - MAXDISPLAY</title>
     <meta name="theme-color" content="#e51b23">
 
     <style>
         /* --- RESET & BASIC STYLE --- */
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; }
+        body { margin: 0; padding: 0; background-color: #f5f5f5; color: #333; transition: all 0.3s ease; }
 
         /* --- HEADER --- */
         .header { 
@@ -17,7 +17,7 @@
             justify-content: space-between; 
             align-items: center; 
             padding: 15px 20px; 
-            background-color: #e51b23; /* Header merah agar beda dari halaman utama */
+            background-color: #e51b23; 
             color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
             position: sticky; 
@@ -26,7 +26,6 @@
         }
         .header-title { font-size: 18px; font-weight: bold; letter-spacing: 1px; }
         
-        /* Tombol tutup / kembali ke index */
         .btn-close { 
             background: none; 
             border: none; 
@@ -58,6 +57,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             border: 1px solid #eaeaea;
             transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
         }
 
         .menu-item:active {
@@ -78,38 +78,15 @@
             margin-right: 15px;
         }
 
-        /* Warna khusus untuk icon SO Cup */
-        .menu-item:nth-child(2) .menu-icon {
-            background-color: #fff8e1;
-            color: #ff9800;
-        }
+        .menu-item:nth-child(2) .menu-icon { background-color: #fff8e1; color: #ff9800; }
+        .menu-item:nth-child(3) .menu-icon { background-color: #e3f2fd; color: #005eaa; }
+        /* Warna khusus icon Generator Shelftalker */
+        .menu-item:nth-child(4) .menu-icon { background-color: #f4e8ff; color: #8e24aa; }
 
-        /* Warna khusus untuk icon PPS */
-        .menu-item:nth-child(3) .menu-icon {
-            background-color: #e3f2fd;
-            color: #005eaa;
-        }
-
-        .menu-text {
-            flex: 1;
-        }
-
-        .menu-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .menu-desc {
-            font-size: 12px;
-            color: #777;
-        }
-
-        .menu-arrow {
-            color: #ccc;
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .menu-text { flex: 1; }
+        .menu-title { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+        .menu-desc { font-size: 12px; color: #777; }
+        .menu-arrow { color: #ccc; font-size: 18px; font-weight: bold; }
 
         /* --- FOOTER INFO --- */
         .app-version {
@@ -117,22 +94,107 @@
             margin-top: 30px;
             font-size: 12px;
             color: #aaa;
+            padding-bottom: 20px;
         }
+
+        /* --- POPUP / MODAL STYLE --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            width: 85%;
+            max-width: 350px;
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-icon-large {
+            font-size: 50px;
+            margin-bottom: 15px;
+            line-height: 1;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-cancel:active { background-color: #e4e4e4; }
+
+        .btn-continue {
+            background-color: #e51b23;
+            color: #fff;
+        }
+
+        .btn-continue:active { background-color: #cc171f; }
+
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="header-title">MENU APLIKASI</div>
-        <!-- Tombol X untuk kembali ke halaman sebelumnya (index) -->
         <button class="btn-close" onclick="window.location.href='index.html'">&times;</button>
     </div>
 
     <div class="menu-container">
         
-        <!-- 1. Menu Timer Makdis -->
         <a href="index.html" class="menu-item">
-            <div class="menu-icon">⏱️</div>
+            <div class="menu-icon"></div>
             <div class="menu-text">
                 <div class="menu-title">Timer Makdis</div>
                 <div class="menu-desc">Aplikasi timer display lorong</div>
@@ -140,23 +202,29 @@
             <div class="menu-arrow">❯</div>
         </a>
 
-        <!-- 2. Menu SO Cup -->
         <a href="so.html" class="menu-item">
-            <div class="menu-icon">🥤</div>
+            <div class="menu-icon"></div>
             <div class="menu-text">
                 <div class="menu-title">SO Cup</div>
-                <div class="menu-desc">Hitung stock opname cup
-                </div>
+                <div class="menu-desc">Hitung stock opname cup</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
 
-        <!-- 3. Menu Monitoring PPS -->
         <a href="pps.html" class="menu-item">
-            <div class="menu-icon">📊</div>
+            <div class="menu-icon"></div>
             <div class="menu-text">
                 <div class="menu-title">Laporan PPS</div>
-                <div class="menu-desc">buat & Pantau target penjualan shift</div>
+                <div class="menu-desc">Buat & Pantau target penjualan shift</div>
+            </div>
+            <div class="menu-arrow">❯</div>
+        </a>
+
+        <a href="#" class="menu-item" onclick="openModal(event)">
+            <div class="menu-icon"></div>
+            <div class="menu-text">
+                <div class="menu-title">Generator Shelftalker</div>
+                <div class="menu-desc">Buat dan cetak label harga</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
@@ -167,6 +235,52 @@
         App Toko V2.1<br>
         Arinex © 2026
     </div>
+
+    <div class="modal-overlay" id="desktopModal">
+        <div class="modal-content">
+            <div class="modal-icon-large">🖥️</div>
+            <div class="modal-title">Beralih ke Tampilan Desktop</div>
+            <div class="modal-text">
+                Fitur <b>Generator Shelftalker</b> membutuhkan area layar yang lebih luas. Tampilan akan disesuaikan ke mode desktop (Landscape/Lebar). Lanjutkan?
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
+                <button class="btn-modal btn-continue" onclick="switchToDesktop()">Lanjut</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(event) {
+            event.preventDefault(); // Mencegah reload halaman
+            document.getElementById('desktopModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('desktopModal').classList.remove('active');
+        }
+
+        function switchToDesktop() {
+            // Tutup pop-up
+            closeModal();
+
+            // Ubah viewport untuk memanipulasi browser hp menjadi tampilan desktop
+            const viewport = document.getElementById('viewport-meta');
+            viewport.setAttribute('content', 'width=1024, initial-scale=1.0');
+            
+            // Ubah sedikit style body sebagai indikator visual (opsional)
+            document.body.style.maxWidth = "1024px";
+            document.body.style.margin = "0 auto";
+
+            // Mengarahkan ke halaman shelftalker (Beri jeda agar animasi tutup popup selesai)
+            setTimeout(() => {
+                // Hapus comment kode di bawah ini jika sudah ada file halamannya:
+                // window.location.href = "shelftalker.html"; 
+                
+                alert("Berhasil beralih ke mode Desktop! (Sistem dapat diarahkan ke shelftalker.html)");
+            }, 300);
+        }
+    </script>
 
 </body>
 </html>
