@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tugas Rak</title>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    :root { --primary-red: #ED1C24; --primary-green: #00A651; --bg-light: #f4f6f9; }
+    body { font-family: sans-serif; background: var(--bg-light); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    
+    .popup-box { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--primary-red); }
+    h2 { color: var(--primary-red); margin-top: 0; text-align: center; }
+    .info-box { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #ccc; font-size: 14px; }
+    
+    .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+    button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-yes { background: var(--primary-green); color: white; }
+    .btn-no { background: var(--primary-red); color: white; }
+    
+    input, select { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
+
+    /* Hide section by default */
+    #step2, #step3, #successMsg { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="popup-box" id="step1">
+    <h2>Konfirmasi Tugas</h2>
+    <div class="info-box">
+      <b>Kode Rak:</b> <span id="r_kode"></span><br>
+      <b>Kategori:</b> <span id="r_kat"></span><br>
+      <b>PIC:</b> <span id="r_pic"></span>
+    </div>
+    <p>Apakah rak ini <b>sudah dibersihkan</b>?</p>
+    <div class="btn-group">
+      <button class="btn-no" onclick="alert('Silahkan bersihkan terlebih dahulu!');">Belum / Batal</button>
+      <button class="btn-yes" onclick="lanjutStep2()">Ya, Sudah</button>
+    </div>
+  </div>
+
+  <div class="popup-box" id="step2">
+    <h2>Temuan Barang</h2>
+    <p>Apakah ada temuan barang tidak layak jual (Expired / Rusak)?</p>
+    <div class="btn-group">
+      <button class="btn-yes" style="background:#888;" onclick="simpanAkhir(false)">Tidak Ada</button>
+      <button class="btn-no" onclick="lanjutStep3()">Ya, Ada</button>
+    </div>
+  </div>
+
+  <div class="popup-box" id="step3">
+    <h2>Laporan Barang</h2>
+    <label>Nama Barang:</label>
+    <input type="text" id="namaBarang" placeholder="Cth: ROTI SOBEK">
+    
+    <label>Keterangan:</label>
+    <select id="deskripsi">
+      <option value="EXPIRED">EXPIRED</option>
+      <option value="RUSAK">RUSAK FISIK</option>
+      <option value="RH">RETUR HARI (RH)</option>
+    </select>
+
+    <button class="btn-yes" style="width:100%; margin-top:20px;" onclick="simpanAkhir(true)">Simpan Laporan</button>
+  </div>
+
+  <div class="popup-box" id="successMsg" style="text-align: center;">
+    <h1 style="font-size: 50px; margin: 0;">✅</h1>
+    <h2 style="color:var(--primary-green)">Tersimpan!</h2>
+    <p>Tugas Anda telah dicatat oleh sistem.</p>
+    <button class="btn-yes" onclick="window.close()">Tutup Halaman</button>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAinbPZIgVu1M4Xt_Nd3nvIHbdEOs2ASB8",
+      authDomain: "so323-43fd5.firebaseapp.com",
+      databaseURL: "https://so323-43fd5-default-rtdb.firebaseio.com",
+      projectId: "so323-43fd5"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Ambil Parameter URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const kodeRak = urlParams.get('rak');
+    
+    if(!kodeRak) {
+      document.body.innerHTML = "<h2 style='color:red'>Data QR Tidak Valid!</h2>";
+    } else {
+      document.getElementById('r_kode').innerText = kodeRak;
+      document.getElementById('r_kat').innerText = urlParams.get('kategori') || "-";
+      document.getElementById('r_pic').innerText = urlParams.get('pic') || "-";
+    }
+
+    function lanjutStep2() {
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+    }
+
+    function lanjutStep3() {
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+    }
+
+    function simpanAkhir(adaMasalah) {
+      // Data yang akan dikirim ke Rak
+      let dataUpdate = {
+        last_cleaned: Date.now(), // Ini yang akan memicu widget di halaman master menjadi hijau selama 7 hari
+        has_bad_items: adaMasalah
+      };
+
+      // Jika ada barang rusak, push log ke node khusus "temuan"
+      if (adaMasalah) {
+        let namaBrg = document.getElementById('namaBarang').value.toUpperCase();
+        let desc = document.getElementById('deskripsi').value;
+        if(!namaBrg) return alert("Nama barang wajib diisi!");
+        
+        db.ref("temuan").push({
+          waktu: Date.now(),
+          rak: kodeRak,
+          pic: urlParams.get('pic'),
+          barang: namaBrg,
+          keterangan: desc
+        });
+      }
+
+      // Update status kebersihan master rak
+      db.ref("rak/" + kodeRak).update(dataUpdate).then(() => {
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>
+
