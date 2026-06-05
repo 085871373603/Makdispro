@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Master Data & Layout Rak</title>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    :root {
+      --primary-red: #ED1C24;
+      --primary-green: #00A651;
+      --bg-light: #f4f6f9;
+      --white: #ffffff;
+      --text-dark: #333333;
+      --map-bg: #40796B; /* Warna hijau lantai minimarket */
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--bg-light);
+      margin: 0; padding: 0; color: var(--text-dark);
+    }
+
+    .header {
+      background-color: var(--primary-red); color: var(--white);
+      padding: 16px; text-align: center; font-size: 18px; font-weight: bold;
+      position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between;
+    }
+
+    .container { padding: 10px 16px 20px 16px; }
+
+    /* WIDGET DENAH RAK */
+    .map-container {
+      background-color: var(--map-bg);
+      border-radius: 8px; padding: 10px; margin-bottom: 20px;
+      overflow-x: auto; /* Bisa digeser jika layar kecil */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    
+    .map-area {
+      min-width: 600px; /* Ukuran minimum agar layout tidak hancur */
+      position: relative; display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .wall-top { display: flex; gap: 4px; justify-content: flex-start; }
+    .main-floor { display: flex; justify-content: space-between; margin-top: 10px; }
+    .wall-left { display: flex; flex-direction: column; gap: 4px; }
+    .wall-right { display: flex; flex-direction: column; gap: 4px; align-items: flex-end;}
+    
+    .islands { display: flex; gap: 30px; justify-content: center; flex: 1; }
+    
+    .island {
+      display: flex; flex-direction: column; background: rgba(255,255,255,0.1);
+      padding: 5px; border-radius: 4px;
+    }
+    .island-row { display: flex; }
+
+    .rack-box {
+      background-color: #ccc; /* Default Abu-abu (belum didata) */
+      border: 1px solid #333; width: 35px; height: 35px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: bold; color: #000;
+      writing-mode: horizontal-tb; text-align: center;
+    }
+    /* Indikator Warna */
+    .rack-box.clean { background-color: var(--primary-green); color: white; border-color: #fff; }
+    .rack-box.dirty { background-color: var(--primary-red); color: white; border-color: #fff; }
+
+    /* Teks Depan */
+    .depan-label {
+      text-align: center; color: white; font-size: 24px; font-weight: bold;
+      letter-spacing: 2px; margin-top: 20px;
+    }
+
+    /* CARD UI */
+    .card {
+      background: var(--white); border-radius: 12px; padding: 16px; margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--primary-red);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    .card-title { font-size: 16px; font-weight: bold; color: var(--primary-red); margin: 0; }
+    
+    .btn-add { background-color: var(--primary-green); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; display: none; } /* Disembunyikan sebelum login */
+    
+    .admin-controls { display: none; } /* Class untuk elemen yg butuh password */
+
+    /* Scroll Area List */
+    .scroll-area { max-height: 200px; overflow-y: auto; padding-right: 5px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .item-title { font-weight: bold; font-size: 14px; }
+    .item-subtitle { font-size: 12px; color: #777; }
+    .btn-delete { background: var(--primary-red); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+
+    /* Tombol Bawah Besar */
+    .btn-alokasi-besar {
+      width: 100%; background: linear-gradient(135deg, #FF6B6B, var(--primary-red));
+      color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(237, 28, 36, 0.3);
+    }
+
+    /* Input Uppercase */
+    .input-uppercase { text-transform: uppercase; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; padding: 16px; box-sizing: border-box; }
+    .modal-box { background: var(--white); width: 100%; max-width: 400px; border-radius: 12px; padding: 20px; }
+    input.modal-input, select.modal-input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fafafa; }
+    .btn-group { display: flex; gap: 10px; }
+    .btn-save { flex: 1; background: var(--primary-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+    .btn-cancel { flex: 1; background: #ccc; border: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <span>⚙️ Master Data</span>
+    <span onclick="loginMaster()" style="cursor:pointer;" id="iconLock">🔒 Login Edit</span>
+  </div>
+
+  <div class="container">
+    
+    <h3 style="margin-top:0; color:var(--text-dark); font-size: 14px;">Live Layout Rak (Status Kebersihan)</h3>
+    <div style="font-size: 10px; margin-bottom: 10px;">
+        <span style="background:var(--primary-green); color:white; padding:2px 5px; border-radius:3px;">Hijau: Bersih</span>
+        <span style="background:var(--primary-red); color:white; padding:2px 5px; border-radius:3px;">Merah: Kotor / > 7 Hari</span>
+    </div>
+
+    <div class="map-container">
+      <div class="map-area">
+        <div class="wall-top">
+          <div class="rack-box" id="rk-AU1">AU1</div><div class="rack-box" id="rk-AU2">AU2</div>
+          <div class="rack-box" id="rk-AU3">AU3</div><div class="rack-box" id="rk-AU4">AU4</div>
+          <div class="rack-box" id="rk-AU5">AU5</div><div class="rack-box" id="rk-AU6">AU6</div>
+          <div class="rack-box" id="rk-AU7">AU7</div><div class="rack-box" id="rk-AU8">AU8</div>
+          <div class="rack-box" id="rk-AU9">AU9</div><div class="rack-box" id="rk-AU10">AU10</div>
+          <div class="rack-box" id="rk-AU11">AU11</div><div class="rack-box" id="rk-AU12">AU12</div>
+          <div style="width: 20px;"></div> <div class="rack-box" id="rk-FE1">FE1</div><div class="rack-box" id="rk-FE2">FE2</div>
+        </div>
+
+        <div class="main-floor">
+          <div class="wall-left">
+            <div class="rack-box" id="rk-AT1">AT1</div><div class="rack-box" id="rk-BC2">BC2</div>
+            <div class="rack-box" id="rk-BC1">BC1</div><div class="rack-box" id="rk-CT4">CT4</div>
+            <div class="rack-box" id="rk-CT3">CT3</div><div class="rack-box" id="rk-NV1">NV1</div>
+            <div class="rack-box" id="rk-NV2">NV2</div>
+          </div>
+
+          <div class="islands">
+            <div class="island">
+              <div class="rack-box" style="width:100%" id="rk-CT1">CT1</div>
+              <div class="island-row"><div class="rack-box" id="rk-CW1">CW1</div><div class="rack-box" id="rk-EI3">EI3</div></div>
+              <div class="island-row"><div class="rack-box" id="rk-CT2">CT2</div><div class="rack-box" id="rk-EI2">EI2</div></div>
+              <div class="island-row"><div class="rack-box" id="rk-EI4">EI4</div><div class="rack-box" id="rk-EI1">EI1</div></div>
+              <div class="island-row"><div class="rack-box" id="rk-EI5">EI5</div><div class="rack-box" id="rk-DE2">DE2</div></div>
+              <div class="island-row"><div class="rack-box" id="rk-EI6">EI6</div><div class="rack-box" id="rk-DE1">DE1</div></div>
+              <div class="rack-box" style="width:100%" id="rk-GDF1">GDF1</div>
+            </div>
+            
+            <div class="island">
+                <div class="rack-box" style="width:100%" id="rk-GBF2">GBF2</div>
+                <div class="island-row"><div class="rack-box" id="rk-DE3">DE3</div><div class="rack-box" id="rk-Q32">Q32</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-DE4">DE4</div><div class="rack-box" id="rk-Q31">Q31</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-DE5">DE5</div><div class="rack-box" id="rk-Q41">Q41</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-DE6">DE6</div><div class="rack-box" id="rk-QA1">QA1</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-DE7">DE7</div><div class="rack-box" id="rk-JA1">JA1</div></div>
+                <div class="rack-box" style="width:100%" id="rk-GDF2">GDF2</div>
+            </div>
+
+            <div class="island">
+                <div class="rack-box" style="width:100%" id="rk-GBF1">GBF1</div>
+                <div class="island-row"><div class="rack-box" id="rk-Q42">Q42</div><div class="rack-box" id="rk-KU5">KU5</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-Q51">Q51</div><div class="rack-box" id="rk-KU1">KU1</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-Q52">Q52</div><div class="rack-box" id="rk-KU2">KU2</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-Q53">Q53</div><div class="rack-box" id="rk-KU3">KU3</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-Q54">Q54</div><div class="rack-box" id="rk-KU6">KU6</div></div>
+                <div class="rack-box" style="width:100%" id="rk-ZJ1">ZJ1</div>
+            </div>
+
+            <div class="island">
+                <div class="rack-box" style="width:100%" id="rk-FB1">FB1</div>
+                <div class="island-row"><div class="rack-box" id="rk-LC1">LC1</div><div class="rack-box" id="rk-MI4">MI4</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-LC2">LC2</div><div class="rack-box" id="rk-MI3">MI3</div></div>
+                <div class="island-row"><div class="rack-box" id="rk-KU4">KU4</div><div class="rack-box" id="rk-MI2">MI2</div></div>
+                <div class="rack-box" style="width:100%" id="rk-GDNF1">GDNF1</div>
+            </div>
+          </div>
+
+          <div class="wall-right">
+            <div class="rack-box" id="rk-FE3">FE3</div><div class="rack-box" id="rk-FE4">FE4</div>
+            <div class="rack-box" id="rk-FE5">FE5</div><div class="rack-box" id="rk-FE6">FE6</div>
+            <div class="rack-box" id="rk-MI1">MI1</div><div class="rack-box" id="rk-GA1">GA1</div>
+            <div class="rack-box" id="rk-GB1">GB1</div><div class="rack-box" id="rk-GB2">GB2</div>
+          </div>
+        </div>
+        
+        <div class="depan-label">DEPAN ⬇️</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Daftar PIC</h3>
+        <button class="btn-add admin-controls" onclick="bukaModal('modalPic')">[+] PIC Baru</button>
+      </div>
+      <div class="scroll-area" id="listPic">Memuat...</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Data Rak</h3>
+        <button class="btn-add admin-controls" onclick="bukaModal('modalRak')">[+] Rak Baru</button>
+      </div>
+      <div class="scroll-area" id="listRak">Memuat...</div>
+    </div>
+
+    <button class="btn-alokasi-besar" onclick="window.location.href='alokasi.html'">
+      BUAT ALOKASI PEMBAGIAN RAK SEKARANG
+    </button>
+
+  </div>
+
+  <div id="modalPic" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color:var(--primary-red)">Tambah PIC</h3>
+      <label>Nama PIC</label>
+      <input type="text" id="namaPic" class="modal-input input-uppercase" placeholder="NAMA PIC">
+      <label>Jenis Kelamin</label>
+      <select id="genderPic" class="modal-input">
+        <option value="L">LAKI-LAKI</option>
+        <option value="P">PEREMPUAN</option>
+      </select>
+      <div class="btn-group">
+        <button class="btn-cancel" onclick="tutupModal('modalPic')">Batal</button>
+        <button class="btn-save" onclick="simpanPIC()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalRak" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="color:var(--primary-red)">Tambah Master Rak</h3>
+      <label>KODE RAK (Sesuai Denah)</label>
+      <input type="text" id="kodeRak" class="modal-input input-uppercase" placeholder="CONTOH: AU1">
+      <label>KATEGORI RAK</label>
+      <input type="text" id="kategoriRak" class="modal-input input-uppercase" placeholder="CONTOH: BEVERAGE">
+      <div class="btn-group">
+        <button class="btn-cancel" onclick="tutupModal('modalRak')">Batal</button>
+        <button class="btn-save" onclick="simpanRak()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Inisialisasi Firebase (Gunakan config yang sama dengan milik Anda)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAinbPZIgVu1M4Xt_Nd3nvIHbdEOs2ASB8",
+      authDomain: "so323-43fd5.firebaseapp.com",
+      databaseURL: "https://so323-43fd5-default-rtdb.firebaseio.com",
+      projectId: "so323-43fd5"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 2. Sistem Password Master
+    let isAdminUnlocked = false;
+    function loginMaster() {
+      if(isAdminUnlocked) {
+        alert("Mode edit sudah terbuka."); return;
+      }
+      let pass = prompt("Masukkan Password untuk input Master Data:");
+      if (pass === "1JD7") {
+        isAdminUnlocked = true;
+        document.getElementById("iconLock").innerText = "🔓 Mode Edit Aktif";
+        let controls = document.querySelectorAll(".admin-controls");
+        controls.forEach(el => el.style.display = "inline-block");
+        alert("Akses Master Dibuka!");
+      } else {
+        if(pass !== null) alert("Password Salah!");
+      }
+    }
+
+    // 3. Load Data PIC
+    db.ref("pic").on("value", (snapshot) => {
+      const list = document.getElementById("listPic"); list.innerHTML = "";
+      if (!snapshot.exists()) { list.innerHTML = "Belum ada PIC."; return; }
+      snapshot.forEach(child => {
+        let pic = child.val();
+        list.innerHTML += `
+          <div class="list-item">
+            <div><span class="item-title">${pic.nama}</span> <span class="item-subtitle">(${pic.gender})</span></div>
+            <button class="btn-delete admin-controls" ${isAdminUnlocked ? '' : 'style="display:none"'} onclick="hapusData('pic/${child.key}')">Hapus</button>
+          </div>`;
+      });
+    });
+
+    // 4. Load Data Rak & Update UI Denah (Logika 7 Hari)
+    db.ref("rak").on("value", (snapshot) => {
+      const list = document.getElementById("listRak"); list.innerHTML = "";
+      
+      // Reset semua kotak di map menjadi abu-abu
+      document.querySelectorAll('.rack-box').forEach(box => {
+          box.className = "rack-box"; 
+      });
+
+      if (!snapshot.exists()) { list.innerHTML = "Belum ada Rak."; return; }
+      
+      let now = Date.now();
+      const TUJUH_HARI_MS = 7 * 24 * 60 * 60 * 1000;
+
+      snapshot.forEach(child => {
+        let rak = child.val();
+        let kode = child.key;
+        
+        // Logika 7 hari expired kebersihan
+        let isClean = false;
+        if (rak.last_cleaned) {
+            let selisihWaktu = now - rak.last_cleaned;
+            if (selisihWaktu < TUJUH_HARI_MS) {
+                isClean = true;
+            }
+        }
+
+        // Update List Text
+        let statusTeks = isClean ? "<span style='color:green'>Bersih</span>" : "<span style='color:red'>Kotor</span>";
+        list.innerHTML += `
+          <div class="list-item">
+            <div><span class="item-title">${rak.kode_rak}</span> <span class="item-subtitle">- ${rak.kategori} | Status: ${statusTeks}</span></div>
+            <button class="btn-delete admin-controls" ${isAdminUnlocked ? '' : 'style="display:none"'} onclick="hapusData('rak/${kode}')">Hapus</button>
+          </div>`;
+
+        // Update Warna Kotak di Denah
+        let divRakMap = document.getElementById("rk-" + kode);
+        if(divRakMap) {
+            if(isClean) {
+                divRakMap.classList.add("clean");
+            } else {
+                divRakMap.classList.add("dirty");
+            }
+        }
+      });
+    });
+
+    // 5. Fungsi Simpan Form
+    function simpanPIC() {
+      let nama = document.getElementById("namaPic").value.toUpperCase();
+      let gender = document.getElementById("genderPic").value;
+      if(!nama) return alert("Nama harus diisi");
+      // Push akan membuat ID otomatis secara rahasia di background
+      db.ref("pic").push({ nama: nama, gender: gender }).then(() => tutupModal('modalPic'));
+    }
+
+    function simpanRak() {
+      let kode = document.getElementById("kodeRak").value.toUpperCase().replace(/\s/g, ''); // Hapus spasi
+      let kategori = document.getElementById("kategoriRak").value.toUpperCase();
+      if(!kode || !kategori) return alert("Semua kolom harus diisi");
+      
+      // Data default saat diinput: belum dibersihkan (last_cleaned null/0)
+      db.ref("rak/" + kode).set({ 
+          kode_rak: kode, 
+          kategori: kategori,
+          last_cleaned: 0, 
+          has_bad_items: false 
+      }).then(() => tutupModal('modalRak'));
+    }
+
+    // Fungsi Hapus Universal
+    function hapusData(path) {
+      if(confirm("Yakin ingin menghapus data ini?")) {
+        db.ref(path).remove();
+      }
+    }
+
+    // Modal Control
+    function bukaModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function tutupModal(id) { 
+        document.getElementById(id).style.display = 'none'; 
+        // Reset inputs
+        document.querySelectorAll(`#${id} input`).forEach(inp => inp.value = "");
+    }
+  </script>
+</body>
+</html>
