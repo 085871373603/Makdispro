@@ -82,6 +82,7 @@
         .menu-item:nth-child(3) .menu-icon { background-color: #e3f2fd; color: #005eaa; }
         /* Warna khusus icon Generator Shelftalker */
         .menu-item:nth-child(4) .menu-icon { background-color: #f4e8ff; color: #8e24aa; }
+        .menu-item:nth-child(5) .menu-icon { background-color: #e8f5e9; color: #2e7d32; }
 
         .menu-text { flex: 1; }
         .menu-title { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
@@ -194,7 +195,7 @@
     <div class="menu-container">
         
         <a href="index.html" class="menu-item">
-            <div class="menu-icon"></div>
+            <div class="menu-icon">⏱️</div>
             <div class="menu-text">
                 <div class="menu-title">Timer Makdis</div>
                 <div class="menu-desc">Aplikasi timer display lorong</div>
@@ -203,7 +204,7 @@
         </a>
 
         <a href="so.html" class="menu-item">
-            <div class="menu-icon"></div>
+            <div class="menu-icon">📦</div>
             <div class="menu-text">
                 <div class="menu-title">SO Cup</div>
                 <div class="menu-desc">Hitung stock opname cup</div>
@@ -212,15 +213,16 @@
         </a>
 
         <a href="pps.html" class="menu-item">
-            <div class="menu-icon"></div>
+            <div class="menu-icon">📊</div>
             <div class="menu-text">
                 <div class="menu-title">Laporan PPS</div>
                 <div class="menu-desc">Buat & Pantau target penjualan shift</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
+
         <a href="https://rak-nu.vercel.app" class="menu-item">
-            <div class="menu-icon"></div>
+            <div class="menu-icon">🧹</div>
             <div class="menu-text">
                 <div class="menu-title">Kebersihan Rak</div>
                 <div class="menu-desc">Monitoring Kebersihan Rak</div>
@@ -229,7 +231,7 @@
         </a>
 
         <a href="home.html" class="menu-item" onclick="openModal(event)">
-            <div class="menu-icon"></div>
+            <div class="menu-icon">🏷️</div>
             <div class="menu-text">
                 <div class="menu-title">Generator Shelftalker</div>
                 <div class="menu-desc">Buat dan cetak label harga</div>
@@ -260,7 +262,8 @@
 
     <script>
         function openModal(event) {
-            event.preventDefault(); // Mencegah reload halaman
+            // Mencegah browser langsung pindah halaman saat menu diklik
+            event.preventDefault(); 
             document.getElementById('desktopModal').classList.add('active');
         }
 
@@ -269,23 +272,20 @@
         }
 
         function switchToDesktop() {
-            // Tutup pop-up
+            // 1. Tutup pop-up
             closeModal();
 
-            // Ubah viewport untuk memanipulasi browser hp menjadi tampilan desktop
+            // 2. Ubah viewport untuk memanipulasi browser HP menjadi tampilan desktop
             const viewport = document.getElementById('viewport-meta');
             viewport.setAttribute('content', 'width=1024, initial-scale=1.0');
             
-            // Ubah sedikit style body sebagai indikator visual (opsional)
+            // Ubah sedikit style body sebagai indikator visual
             document.body.style.maxWidth = "1024px";
             document.body.style.margin = "0 auto";
 
-            // Mengarahkan ke halaman shelftalker (Beri jeda agar animasi tutup popup selesai)
+            // 3. Mengarahkan ke halaman shelftalker (home.html)
             setTimeout(() => {
-                // Hapus comment kode di bawah ini jika sudah ada file halamannya:
-                window.location.href = "menu.html"; 
-                
-                alert("Berhasil beralih ke mode Desktop! (Sistem dapat diarahkan ke menu shelftalker)");
+                window.location.href = "home.html"; 
             }, 300);
         }
     </script>
