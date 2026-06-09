@@ -1,6 +1,6 @@
 {
-  "name": "MAXDISPLAY Lorong",
-  "short_name": "MAXDISPLAY",
+  "name": "TIMER MAKDIS",
+  "short_name": "APK TIMER",
   "description": "Aplikasi Timer Display Lorong",
   "start_url": "./index.html",
   "display": "standalone",
