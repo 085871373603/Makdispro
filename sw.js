@@ -6,6 +6,14 @@ const urlsToCache = [
   './index.html',
   './manifest.json',
   './logo-makdis.png'
+  './menu.html'
+  './home.png'
+'./psm.html''./pwp.html''./sertis.html'
+'./pps.png'
+'./rak.png'
+'./so.png'
+'./label.png'
+'./icon-192.png'
   // Jangan lupa tambahkan file lain seperti pps.html, so.html, dll jika perlu cache offline
 ];
 
