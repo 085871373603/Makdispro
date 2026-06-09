@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" id="viewport-meta" content="width=device-width, initial-scale=1.0">
-    <title>Menu Utama - MAXDISPLAY</title>
+    <title>Menu Utama</title>
     <meta name="theme-color" content="#e51b23">
 
     <style>
@@ -65,24 +65,29 @@
             background-color: #f9f9f9;
         }
 
+        /* --- MENU ICON --- */
         .menu-icon {
             width: 50px;
             height: 50px;
             border-radius: 10px;
-            background-color: #fdf2f2;
-            color: #e51b23;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
             margin-right: 15px;
         }
 
-        .menu-item:nth-child(2) .menu-icon { background-color: #fff8e1; color: #ff9800; }
-        .menu-item:nth-child(3) .menu-icon { background-color: #e3f2fd; color: #005eaa; }
-        /* Warna khusus icon Generator Shelftalker */
-        .menu-item:nth-child(4) .menu-icon { background-color: #f4e8ff; color: #8e24aa; }
-        .menu-item:nth-child(5) .menu-icon { background-color: #e8f5e9; color: #2e7d32; }
+        .menu-icon img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        /* Background warna-warni di belakang icon gambar */
+        .menu-item:nth-child(1) .menu-icon { background-color: #fdf2f2; }
+        .menu-item:nth-child(2) .menu-icon { background-color: #fff8e1; }
+        .menu-item:nth-child(3) .menu-icon { background-color: #e3f2fd; }
+        .menu-item:nth-child(4) .menu-icon { background-color: #e8f5e9; }
+        .menu-item:nth-child(5) .menu-icon { background-color: #f4e8ff; }
 
         .menu-text { flex: 1; }
         .menu-title { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
@@ -102,7 +107,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -153,6 +158,25 @@
             margin-bottom: 20px;
         }
 
+        /* --- INPUT PASSWORD STYLE --- */
+        .input-password {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .input-password:focus {
+            border-color: #e51b23;
+        }
+
         .modal-buttons {
             display: flex;
             gap: 10px;
@@ -169,19 +193,11 @@
             transition: background-color 0.2s;
         }
 
-        .btn-cancel {
-            background-color: #f0f0f0;
-            color: #555;
-        }
-
+        .btn-cancel { background-color: #f0f0f0; color: #555; }
         .btn-cancel:active { background-color: #e4e4e4; }
-
-        .btn-continue {
-            background-color: #e51b23;
-            color: #fff;
-        }
-
+        .btn-continue { background-color: #e51b23; color: #fff; }
         .btn-continue:active { background-color: #cc171f; }
+        .btn-full { width: 100%; background-color: #005eaa; color: white; }
 
     </style>
 </head>
@@ -195,16 +211,20 @@
     <div class="menu-container">
         
         <a href="index.html" class="menu-item">
-            <div class="menu-icon">⏱️</div>
+            <div class="menu-icon">
+                <img src="icon-192.png" alt="Timer">
+            </div>
             <div class="menu-text">
                 <div class="menu-title">Timer Makdis</div>
-                <div class="menu-desc">Aplikasi timer display lorong</div>
+                <div class="menu-desc">Aplikasi timer Makdis</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
 
-        <a href="so.html" class="menu-item">
-            <div class="menu-icon">📦</div>
+        <a href="#" class="menu-item" onclick="openDevModal(event)">
+            <div class="menu-icon">
+                <img src="so.png" alt="SO Cup">
+            </div>
             <div class="menu-text">
                 <div class="menu-title">SO Cup</div>
                 <div class="menu-desc">Hitung stock opname cup</div>
@@ -212,8 +232,10 @@
             <div class="menu-arrow">❯</div>
         </a>
 
-        <a href="pps.html" class="menu-item">
-            <div class="menu-icon">📊</div>
+        <a href="#" class="menu-item" onclick="openPasswordModal(event, 'pps.html')">
+            <div class="menu-icon">
+                <img src="pps.png" alt="PPS">
+            </div>
             <div class="menu-text">
                 <div class="menu-title">Laporan PPS</div>
                 <div class="menu-desc">Buat & Pantau target penjualan shift</div>
@@ -221,20 +243,24 @@
             <div class="menu-arrow">❯</div>
         </a>
 
-        <a href="https://rak-nu.vercel.app" class="menu-item">
-            <div class="menu-icon">🧹</div>
+        <a href="#" class="menu-item" onclick="openPasswordModal(event, 'https://rak-nu.vercel.app')">
+            <div class="menu-icon">
+                <img src="rak.png" alt="Rak">
+            </div>
             <div class="menu-text">
                 <div class="menu-title">Kebersihan Rak</div>
-                <div class="menu-desc">Monitoring Kebersihan Rak</div>
+                <div class="menu-desc">Manajemen & monitoring Kebersihan Rak</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
 
-        <a href="home.html" class="menu-item" onclick="openModal(event)">
-            <div class="menu-icon">🏷️</div>
+        <a href="#" class="menu-item" onclick="openDesktopModal(event)">
+            <div class="menu-icon">
+                <img src="label.png" alt="Shelftalker">
+            </div>
             <div class="menu-text">
                 <div class="menu-title">Generator Shelftalker</div>
-                <div class="menu-desc">Buat dan cetak label harga</div>
+                <div class="menu-desc">Buat dan cetak Shelftalker harga</div>
             </div>
             <div class="menu-arrow">❯</div>
         </a>
@@ -242,8 +268,34 @@
     </div>
 
     <div class="app-version">
-        App Toko V2.1<br>
+        App Toko V2.5.6<br>
         Arinex © 2026
+    </div>
+
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-icon-large">🔒</div>
+            <div class="modal-title">Akses Terkunci</div>
+            <div class="modal-text">Masukkan password akses untuk membuka menu ini.</div>
+            
+            <input type="text" id="menuPassword" class="input-password" placeholder="PASSWORD" autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+            
+            <div class="modal-buttons">
+                <button class="btn-modal btn-cancel" onclick="closeModal('passwordModal')">Batal</button>
+                <button class="btn-modal btn-continue" onclick="verifyPassword()">Masuk</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="devModal">
+        <div class="modal-content">
+            <div class="modal-icon-large">❌️</div>
+            <div class="modal-title">hmmm...</div>
+            <div class="modal-text">
+                Menu ini masih dalam tahap <b>development</b> dan belum dapat diakses saat ini.
+            </div>
+            <button class="btn-modal btn-full" onclick="closeModal('devModal')">Mengerti</button>
+        </div>
     </div>
 
     <div class="modal-overlay" id="desktopModal">
@@ -254,36 +306,73 @@
                 Fitur <b>Generator Shelftalker</b> membutuhkan area layar yang lebih luas. Tampilan akan disesuaikan ke mode desktop (Landscape/Lebar). Lanjutkan?
             </div>
             <div class="modal-buttons">
-                <button class="btn-modal btn-cancel" onclick="closeModal()">Batal</button>
+                <button class="btn-modal btn-cancel" onclick="closeModal('desktopModal')">Batal</button>
                 <button class="btn-modal btn-continue" onclick="switchToDesktop()">Lanjut</button>
             </div>
         </div>
     </div>
 
     <script>
-        function openModal(event) {
-            // Mencegah browser langsung pindah halaman saat menu diklik
+        let targetUrlMenu = "";
+
+        // Fungsi Membuka Modal Password
+        function openPasswordModal(event, url) {
+            event.preventDefault();
+            targetUrlMenu = url;
+            document.getElementById('menuPassword').value = ""; // Reset input
+            document.getElementById('passwordModal').classList.add('active');
+            setTimeout(() => document.getElementById('menuPassword').focus(), 100);
+        }
+
+        // Fungsi Verifikasi Password
+        function verifyPassword() {
+            const passwordInput = document.getElementById('menuPassword').value;
+            
+            // Cek password 
+            if (passwordInput === "1JD7") {
+                closeModal('passwordModal');
+                window.location.href = targetUrlMenu;
+            } else {
+                alert("Password salah! Silakan coba lagi.");
+                document.getElementById('menuPassword').value = "";
+                document.getElementById('menuPassword').focus();
+            }
+        }
+
+        // Fitur tekan 'Enter' untuk verifikasi password
+        document.getElementById('menuPassword').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+
+        // Fungsi Membuka Modal Development (SO Cup)
+        function openDevModal(event) {
+            event.preventDefault();
+            document.getElementById('devModal').classList.add('active');
+        }
+
+        // Fungsi Membuka Modal Desktop (Shelftalker)
+        function openDesktopModal(event) {
             event.preventDefault(); 
             document.getElementById('desktopModal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('desktopModal').classList.remove('active');
+        // Fungsi Umum untuk Menutup Modal Spesifik
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
 
+        // Fungsi Lanjut Desktop
         function switchToDesktop() {
-            // 1. Tutup pop-up
-            closeModal();
+            closeModal('desktopModal');
 
-            // 2. Ubah viewport untuk memanipulasi browser HP menjadi tampilan desktop
             const viewport = document.getElementById('viewport-meta');
             viewport.setAttribute('content', 'width=1024, initial-scale=1.0');
             
-            // Ubah sedikit style body sebagai indikator visual
             document.body.style.maxWidth = "1024px";
             document.body.style.margin = "0 auto";
 
-            // 3. Mengarahkan ke halaman shelftalker (home.html)
             setTimeout(() => {
                 window.location.href = "home.html"; 
             }, 300);
@@ -291,4 +380,4 @@
     </script>
 
 </body>
-</html>
+                    </html>
