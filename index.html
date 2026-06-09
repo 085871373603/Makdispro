@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAXDISPLAY</title>
+    <title>TIMER MAKDIS</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#e51b23"> 
@@ -30,9 +30,7 @@
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         
-        /* CSS HAMBURGER DIUPDATE AGAR TOMBOL TERLIHAT RAPI */
-        .hamburger { font-size: 24px; cursor: pointer; color: #555; background: none; border: none; padding: 0; }
-        
+        .hamburger { font-size: 24px; cursor: pointer; color: #555; background: none; border: none; padding: 0; transition: 0.3s; }
         .logo { font-size: 20px; font-weight: bold; color: #333; }
         .btn-timer-header { background-color: #e51b23; color: white; padding: 6px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; border: none; }
 
@@ -65,7 +63,7 @@
         .item-code { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
         .item-name { font-size: 14px; font-weight: 600; color: #333; }
         .item-input-container { width: 80px; display: flex; justify-content: center; }
-        .item-input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; }
+        .item-input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; transition: 0.3s; }
         .item-input:focus { border-color: #005eaa; }
         .item-input:disabled { background-color: #f9f9f9; color: #aaa; border: 1px solid #eee; }
         .item-status { width: 50px; display: flex; justify-content: flex-end; }
@@ -81,148 +79,38 @@
         .alarm-bg .timer-big, .alarm-bg .timer-info { color: white; }
         @keyframes flashRed { 0% { background-color: #e51b23; } 50% { background-color: #ff5252; } 100% { background-color: #e51b23; } }
 
-        /* ========================================================= */
-        /* --- GAYA BARU: ANIMASI KERANJANG ALFAMART & RAK TOKO --- */
-        /* ========================================================= */
-        .alfa-anim-container {
-            position: relative;
-            width: 320px;
-            height: 180px;
-            margin: 10px 0;
-            display: none; /* Sembunyikan default */
-            border-bottom: 4px solid #ddd; /* Lantai toko */
-            background-color: #fafafa;
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-        }
+        /* --- ANIMASI KERANJANG ALFAMART --- */
+        .alfa-anim-container { position: relative; width: 320px; height: 180px; margin: 10px 0; display: none; border-bottom: 4px solid #ddd; background-color: #fafafa; border-radius: 8px 8px 0 0; overflow: hidden; }
+        .alfa-rak { position: absolute; right: 20px; bottom: 0; width: 100px; height: 150px; background-color: #f0f0f0; border: 3px solid #ccc; border-bottom: none; display: flex; flex-direction: column; justify-content: space-evenly; border-radius: 4px 4px 0 0; padding: 0 5px; }
+        .rak-ambalan { width: 100%; height: 6px; background-color: #bdbdbd; box-shadow: 0 2px 2px rgba(0,0,0,0.1); }
+        .alfa-keranjang { position: absolute; left: 30px; bottom: 0; width: 70px; height: 50px; }
+        .keranjang-body { position: absolute; bottom: 0; width: 100%; height: 35px; background-color: #fad114; border-radius: 3px 3px 8px 8px; background-image: repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,0.08) 5px, rgba(0,0,0,0.08) 7px), repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0,0,0,0.08) 5px, rgba(0,0,0,0.08) 7px); box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2); z-index: 10; display: flex; justify-content: center; align-items: center; }
+        .keranjang-handle { position: absolute; top: -12px; left: 10px; width: 50px; height: 25px; border: 4px solid #555; border-bottom: none; border-radius: 12px 12px 0 0; z-index: 2; }
+        .alfa-logo-keranjang { width: 45px; height: 14px; background-color: #fff; padding: 2px 3px; border-radius: 4px; z-index: 11; box-shadow: 0 1px 2px rgba(0,0,0,0.2); object-fit: contain; }
+        .alfa-barang { position: absolute; left: 45px; bottom: 10px; border-radius: 3px; opacity: 0; z-index: 5; box-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+        .item1 { width: 20px; height: 25px; background-color: #005eaa; animation: moveBarang 4s infinite; }
+        .item2 { width: 25px; height: 18px; background-color: #ff9800; animation: moveBarang 4s infinite 1.3s; }
+        .item3 { width: 15px; height: 30px; background-color: #e51b23; animation: moveBarang 4s infinite 2.6s; }
 
-        /* Rak Toko (Sebelah Kanan) */
-        .alfa-rak {
-            position: absolute;
-            right: 20px;
-            bottom: 0;
-            width: 100px;
-            height: 150px;
-            background-color: #f0f0f0;
-            border: 3px solid #ccc;
-            border-bottom: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            border-radius: 4px 4px 0 0;
-            padding: 0 5px;
-        }
-
-        /* Ambalan / Shelving Rak */
-        .rak-ambalan {
-            width: 100%;
-            height: 6px;
-            background-color: #bdbdbd;
-            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
-        }
-
-        /* Keranjang Kuning (Sebelah Kiri) */
-        .alfa-keranjang {
-            position: absolute;
-            left: 30px;
-            bottom: 0;
-            width: 70px;
-            height: 50px;
-        }
-
-        .keranjang-body {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 35px;
-            background-color: #fad114; /* Kuning Alfa */
-            border-radius: 3px 3px 8px 8px;
-            /* Pola jaring keranjang buatan disesuaikan dengan warna kuning */
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,0.08) 5px, rgba(0,0,0,0.08) 7px), 
-                              repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0,0,0,0.08) 5px, rgba(0,0,0,0.08) 7px);
-            box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2);
-            z-index: 10; /* Di atas barang */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .keranjang-handle {
-            position: absolute;
-            top: -12px;
-            left: 10px;
-            width: 50px;
-            height: 25px;
-            border: 4px solid #555; /* Handle warna abu-abu gelap agar realistis */
-            border-bottom: none;
-            border-radius: 12px 12px 0 0;
-            z-index: 2;
-        }
-
-        /* Logo Alfamart berupa gambar di tengah keranjang */
-        .alfa-logo-keranjang {
-            width: 45px; /* Lebar gambar disesuaikan */
-            height: 14px; /* Tinggi maksimal gambar */
-            background-color: #fff; /* Background putih agar logo tidak nyaru dengan jaring */
-            padding: 2px 3px;
-            border-radius: 4px;
-            z-index: 11;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            object-fit: contain; /* Memastikan gambar tidak gepeng */
-        }
-
-        /* Barang Dagangan */
-        .alfa-barang {
-            position: absolute;
-            left: 45px;
-            bottom: 10px;
-            border-radius: 3px;
-            opacity: 0; /* Awalnya sembunyi */
-            z-index: 5; /* Di belakang keranjang depan, di depan handle */
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-        }
-
-        /* Barang 1: Biru */
-        .item1 {
-            width: 20px; height: 25px;
-            background-color: #005eaa;
-            animation: moveBarang 4s infinite;
-        }
-        /* Barang 2: Kuning (Snack) */
-        .item2 {
-            width: 25px; height: 18px;
-            background-color: #ff9800; /* Disesuaikan sedikit agar tidak sama dengan keranjang */
-            animation: moveBarang 4s infinite 1.3s;
-        }
-        /* Barang 3: Merah (Minuman) */
-        .item3 {
-            width: 15px; height: 30px;
-            background-color: #e51b23;
-            animation: moveBarang 4s infinite 2.6s;
-        }
-
-        /* Keyframes: Animasi Mengambil dari Keranjang ke Rak */
         @keyframes moveBarang {
-            0% { 
-                left: 45px; bottom: 5px; 
-                opacity: 1; transform: scale(1) rotate(0deg); 
-            }
-            20% { 
-                left: 45px; bottom: 80px; /* Diangkat dari keranjang */
-                transform: scale(1.1) rotate(10deg); 
-            }
-            50% { 
-                left: 210px; bottom: 100px; /* Melayang ke arah rak atas */
-                opacity: 1; transform: scale(1) rotate(0deg); 
-            }
-            60% { 
-                left: 210px; bottom: 100px; /* Nyampe di rak, diam sejenak */
-                opacity: 0; /* Seolah-olah sudah ditaruh dan ditinggal */
-            }
-            100% { 
-                opacity: 0; 
-            }
+            0% { left: 45px; bottom: 5px; opacity: 1; transform: scale(1) rotate(0deg); }
+            20% { left: 45px; bottom: 80px; transform: scale(1.1) rotate(10deg); }
+            50% { left: 210px; bottom: 100px; opacity: 1; transform: scale(1) rotate(0deg); }
+            60% { left: 210px; bottom: 100px; opacity: 0; }
+            100% { opacity: 0; }
         }
+
+        /* ========================================= */
+        /* --- GAYA BARU: COACH MARK (PANDUAN) --- */
+        /* ========================================= */
+        #coach-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: none; pointer-events: none; }
+        .coach-highlight { position: relative; z-index: 10001 !important; background-color: #fff; border-radius: 4px; box-shadow: 0 0 0 4px #fad114, 0 0 15px rgba(250, 209, 20, 0.5); pointer-events: none; }
+        .coach-tooltip { position: absolute; background: white; padding: 15px; border-radius: 8px; width: 260px; z-index: 10002; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: none; flex-direction: column; gap: 12px; pointer-events: auto; }
+        .coach-text { font-size: 14px; color: #333; line-height: 1.5; }
+        .btn-coach-next { background: #005eaa; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; align-self: flex-end; }
+        .coach-tooltip-arrow { position: absolute; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; }
+        .arrow-up { top: -10px; border-bottom: 10px solid white; }
+        .arrow-down { bottom: -10px; border-top: 10px solid white; }
     </style>
 </head>
 <body>
@@ -233,9 +121,9 @@
             <div class="update-title">Pembaruan Tersedia!</div>
             <div class="update-desc">
                 Ada versi terbaru dari TIMER MAXDIS. Klik UPDATE untuk memperbarui sistem. <br><br>
-                <b>Catatan:</b> Proses download berjalan di latar belakang, tidak mempengaruhi penggunaan.
+                <b>PENINGKATAN STABILITAS:</b> Aplikasi kini berjalan lebih lancar dan aman di latar belakang.
             </div>
-            <button class="btn-update" id="btn-do-update">UPDATE</button>
+            <button class="btn-update" id="btn-do-update" onclick="window.open('https://apk-toko.vercel.app/', '_blank')">UPDATE</button>
         </div>
     </div>
 
@@ -244,10 +132,18 @@
         <div class="splash-text">LOAD APLIKASI...</div>
     </div>
 
+    <!-- ELEMEN COACH MARK -->
+    <div id="coach-overlay"></div>
+    <div id="coach-tooltip" class="coach-tooltip">
+        <div id="coach-arrow" class="coach-tooltip-arrow"></div>
+        <div id="coach-text" class="coach-text"></div>
+        <button id="coach-next" class="btn-coach-next">Lanjut</button>
+    </div>
+
     <div class="header">
         <div class="header-left">
-            <!-- INI BAGIAN HTML YANG DIUPDATE MENJADI BUTTON -->
-            <button class="hamburger" onclick="window.location.href='menu.html'">MENU</button>
+            <!-- Diberikan ID btn-menu untuk target Coach Mark -->
+            <button class="hamburger" id="btn-menu" onclick="window.location.href='menu.html'">MENU</button>
             <div class="logo">TIMER MAXDIS</div>
         </div>
         <button class="btn-timer-header">TIMER</button>
@@ -272,7 +168,7 @@
 
     <div class="info-box">
         <span class="info-title">Isi Qty lalu tekan ENTER untuk mulai timer.</span>
-        <span class="info-desc"><font color="red">NOTE: JANGAN MEREFRESH APLIKASI PADA SAAT TIMER SEDANG BERJALAN KARENA MENYEBABKAN PENGHITUNGAN TERISET</font></span>
+        <span class="info-desc"><font color="red">⚠️JANGAN MEREFRESH APLIKASI PADA SAAT TIMER SEDANG BERJALAN KARENA MENYEBABKAN PENGHITUNGAN TERISET</font></span>
     </div>
 
     <div class="list-container">
@@ -337,26 +233,10 @@
             }
         });
 
-        // --- SISTEM WAKE LOCK SAAT BALIK KE APLIKASI ---
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible' && isTimerRunning) {
                 requestWakeLock();
             }
-        });
-
-        // LOGIC LOADING SCREEN
-        window.addEventListener('load', () => {
-            const splashScreen = document.getElementById('splash-screen');
-            setTimeout(() => {
-                splashScreen.style.opacity = '0';
-                setTimeout(() => {
-                    splashScreen.style.display = 'none';
-                    if (currentIndex < lorongData.length) {
-                        const firstInput = document.getElementById(`input-${currentIndex}`);
-                        if(firstInput) firstInput.focus();
-                    }
-                }, 500);
-            }, 3000); 
         });
 
         // Data Lorong
@@ -397,6 +277,109 @@
             setStepper(1);
         }
 
+        // ==========================================
+        // --- LOGIC FITUR COACH MARK (PANDUAN) ---
+        // ==========================================
+        const coachSteps = [
+            { id: 'btn-menu', text: 'Tombol Menu Untuk Navigasi Ke aplikasi Lainnya.', align: 'bottom' },
+            { id: 'input-0', text: 'Input QTY barang di sini, lalu tekan tombol ENTER pada keyboard HP Anda untuk memulai timer Lorong.', align: 'top' }
+        ];
+        let currentCoachStep = 0;
+
+        function startCoachMark() {
+            // Cek apakah user sudah pernah melihat coach mark
+            if (localStorage.getItem('coachMarkDone') === 'true') {
+                focusCurrentInput();
+                return;
+            }
+            document.getElementById('coach-overlay').style.display = 'block';
+            showCoachStep(currentCoachStep);
+        }
+
+        function showCoachStep(index) {
+            // Hapus sorotan sebelumnya
+            document.querySelectorAll('.coach-highlight').forEach(el => el.classList.remove('coach-highlight'));
+
+            // Jika panduan sudah selesai
+            if (index >= coachSteps.length) {
+                document.getElementById('coach-overlay').style.display = 'none';
+                document.getElementById('coach-tooltip').style.display = 'none';
+                localStorage.setItem('coachMarkDone', 'true');
+                focusCurrentInput();
+                return;
+            }
+
+            const step = coachSteps[index];
+            const targetEl = document.getElementById(step.id);
+
+            // Jika elemen tidak ditemukan (misal error HTML), lewati ke langkah selanjutnya
+            if (!targetEl) {
+                currentCoachStep++;
+                showCoachStep(currentCoachStep);
+                return;
+            }
+
+            targetEl.classList.add('coach-highlight');
+            
+            const rect = targetEl.getBoundingClientRect();
+            const tooltip = document.getElementById('coach-tooltip');
+            const arrow = document.getElementById('coach-arrow');
+            const textEl = document.getElementById('coach-text');
+            const btnNext = document.getElementById('coach-next');
+
+            textEl.innerText = step.text;
+            btnNext.innerText = index === coachSteps.length - 1 ? 'Mulai Kerja!' : 'Lanjut';
+            tooltip.style.display = 'flex'; // Tampilkan dulu untuk mendapat offsetHeight
+
+            // Pengaturan Posisi Tooltip agar responsif
+            if (step.align === 'bottom') {
+                tooltip.style.top = (rect.bottom + 15) + 'px';
+                tooltip.style.left = Math.max(10, rect.left) + 'px';
+                arrow.className = 'coach-tooltip-arrow arrow-up';
+                arrow.style.left = '20px';
+            } else if (step.align === 'top') {
+                tooltip.style.top = (rect.top - tooltip.offsetHeight - 15) + 'px';
+                
+                // Pastikan tooltip tidak keluar dari batas kanan/kiri layar hp
+                let leftPos = rect.left - (tooltip.offsetWidth / 2) + (rect.width / 2);
+                if (leftPos < 10) leftPos = 10;
+                if (leftPos + tooltip.offsetWidth > window.innerWidth - 10) {
+                    leftPos = window.innerWidth - tooltip.offsetWidth - 10;
+                }
+                tooltip.style.left = leftPos + 'px';
+                
+                arrow.className = 'coach-tooltip-arrow arrow-down';
+                // Posisikan panah tetap menunjuk ke target
+                arrow.style.left = Math.max(10, rect.left - leftPos + (rect.width / 2) - 10) + 'px';
+            }
+        }
+
+        // Tombol Lanjut pada Coach Mark diklik
+        document.getElementById('coach-next').addEventListener('click', () => {
+            currentCoachStep++;
+            setTimeout(() => showCoachStep(currentCoachStep), 50); // Jeda singkat agar UI transisi mulus
+        });
+
+        function focusCurrentInput() {
+            if (currentIndex < lorongData.length) {
+                const input = document.getElementById(`input-${currentIndex}`);
+                if(input) input.focus();
+            }
+        }
+
+        // LOGIC LOADING SCREEN & INISIASI COACH MARK
+        window.addEventListener('load', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    // Mulai proses panduan Coach Mark setelah Loading Screen hilang
+                    startCoachMark(); 
+                }, 500);
+            }, 3000); 
+        });
+
         function setStepper(step) {
             document.getElementById('step1').className = 'step'; document.getElementById('step2').className = 'step'; document.getElementById('step3').className = 'step';
             if(step === 1) document.getElementById('step1').classList.add('active');
@@ -417,13 +400,11 @@
             isTimerRunning = true;
             requestWakeLock();
             
-            // TAMPILKAN ANIMASI KERANJANG ALFAMART
             document.getElementById('alfaAnim').style.display = 'block';
 
             const minutes = qty / 12;
             const totalMilliseconds = Math.ceil(minutes * 60) * 1000;
             
-            // FITUR ABSOLUTE TIMING
             const targetEndTime = Date.now() + totalMilliseconds;
             
             const overlay = document.getElementById('timerOverlay');
@@ -457,7 +438,6 @@
             isTimerRunning = false;
             releaseWakeLock(); 
 
-            // SEMBUNYIKAN ANIMASI KERANJANG SAAT SELESAI
             document.getElementById('alfaAnim').style.display = 'none';
 
             const overlay = document.getElementById('timerOverlay');
