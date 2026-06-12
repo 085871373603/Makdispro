@@ -164,7 +164,7 @@
         </div>
         <div class="form-group">
           <label>Provinsi:</label>
-          <select id="provinsi"><option value="">-- Sedang memuat... --</option></select>
+          <select id="provinsi"><option value="">-- Pilih Provinsi --</option></select>
         </div>
         <div class="form-group">
           <label>Kabupaten / Kota:</label>
@@ -214,7 +214,25 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+    // Konfigurasi Firebase dbranaofc
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFDAdfdU05TG0rPJgNgNWU9NLGXGxIQPo",
+      authDomain: "dbranaofc.firebaseapp.com",
+      projectId: "dbranaofc",
+      storageBucket: "dbranaofc.firebasestorage.app",
+      messagingSenderId: "774283564857",
+      appId: "1:774283564857:web:793ae02d0bb06bf77c7ae8",
+      measurementId: "G-10BKPE9NEZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- LOGIKA WILAYAH OTOMATIS ---
     const urlApi = "https://emsifa.github.io/api-wilayah-indonesia/api/";
 
     const elProv = document.getElementById('provinsi');
@@ -222,21 +240,16 @@
     const elKec = document.getElementById('kecamatan');
     const elKel = document.getElementById('kelurahan');
 
-    // Ambil Data Provinsi saat halaman dibuka
+    // 1. Ambil Data Provinsi
     fetch(`${urlApi}provinces.json`)
       .then(res => res.json())
       .then(data => {
-        elProv.innerHTML = `<option value="">-- Pilih Provinsi --</option>`;
         data.forEach(prov => {
           elProv.innerHTML += `<option value="${prov.id}">${prov.name}</option>`;
         });
-      })
-      .catch(err => {
-        console.error("Gagal memuat API Wilayah:", err);
-        elProv.innerHTML = `<option value="">Gagal memuat data (Cek Internet)</option>`;
       });
 
-    // Saat Provinsi Dipilih
+    // 2. Saat Provinsi Dipilih -> Ambil Kabupaten
     elProv.addEventListener('change', () => {
       elKab.innerHTML = `<option value="">-- Pilih Kabupaten/Kota --</option>`;
       elKec.innerHTML = `<option value="">-- Pilih Kecamatan --</option>`;
@@ -253,7 +266,7 @@
       }
     });
 
-    // Saat Kabupaten Dipilih
+    // 3. Saat Kabupaten Dipilih -> Ambil Kecamatan
     elKab.addEventListener('change', () => {
       elKec.innerHTML = `<option value="">-- Pilih Kecamatan --</option>`;
       elKel.innerHTML = `<option value="">-- Pilih Kelurahan/Desa --</option>`;
@@ -269,7 +282,7 @@
       }
     });
 
-    // Saat Kecamatan Dipilih
+    // 4. Saat Kecamatan Dipilih -> Ambil Kelurahan
     elKec.addEventListener('change', () => {
       elKel.innerHTML = `<option value="">-- Pilih Kelurahan/Desa --</option>`;
       elKel.disabled = true;
@@ -284,32 +297,13 @@
       }
     });
 
-    // Fungsi bantu untuk mengambil teks nama wilayah yang bisa diakses oleh Firebase
-    window.getSelectedText = function(element) {
+    // --- FUNGSI SIMPAN KE FIREBASE ---
+    // Mengambil nama teks (bukan ID angka) dari dropdown wilayah
+    function getSelectedText(element) {
       if(element.selectedIndex === -1 || element.value === "") return "";
       return element.options[element.selectedIndex].text;
     }
-  </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-
-    // Konfigurasi asli dbranaofc
-    const firebaseConfig = {
-      apiKey: "AIzaSyCFDAdfdU05TG0rPJgNgNWU9NLGXGxIQPo",
-      authDomain: "dbranaofc.firebaseapp.com",
-      projectId: "dbranaofc",
-      storageBucket: "dbranaofc.firebasestorage.app",
-      messagingSenderId: "774283564857",
-      appId: "1:774283564857:web:793ae02d0bb06bf77c7ae8",
-      measurementId: "G-10BKPE9NEZ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Fungsi utama penyimpan data
     window.simpanDataPusat = async function() {
       // 1. Identitas
       const nama = document.getElementById('nama').value;
@@ -326,17 +320,19 @@
 
       // 3. Alamat & Kontak
       const alamatLengkap = document.getElementById('alamat_lengkap').value;
-      const nmProvinsi = window.getSelectedText(document.getElementById('provinsi'));
-      const nmKabupaten = window.getSelectedText(document.getElementById('kabupaten'));
-      const nmKecamatan = window.getSelectedText(document.getElementById('kecamatan'));
-      const nmKelurahan = window.getSelectedText(document.getElementById('kelurahan'));
+      const nmProvinsi = getSelectedText(elProv);
+      const nmKabupaten = getSelectedText(elKab);
+      const nmKecamatan = getSelectedText(elKec);
+      const nmKelurahan = getSelectedText(elKel);
       const kodepos = document.getElementById('kodepos').value;
       const telepon = document.getElementById('telepon').value;
       const email = document.getElementById('email').value;
 
       // 4. Pengaturan Sistem
       const matauang = document.getElementById('matauang').value;
-      const isAktif = document.getElementById('status_aktif').value === "true";
+      const isAktif = document.getElementById('status_aktif').value === "true"; // Ubah jadi tipe boolean
+      
+      // Auto Date format lokal
       const waktuRegistrasi = new Date().toLocaleString('id-ID'); 
 
       // Validasi ringan
@@ -345,22 +341,22 @@
         return;
       }
 
-      // Ubah teks tombol saat loading
-      const btnSubmit = document.querySelector('button');
-      btnSubmit.innerText = "Menyimpan...";
-      btnSubmit.disabled = true;
-
       try {
         await addDoc(collection(db, "data_pusat_induk"), {
+          // Identitas
           nama_badan_usaha: nama,
           id_sistem: idSistem,
           kode_badan_usaha: kode,
           jenis_badan_usaha: jenisBadan,
           bidang_usaha: bidang,
+          
+          // Legalitas
           npwp: npwp,
           nib: nib,
           nama_penanggung_jawab: namaPj,
           jabatan_penanggung_jawab: jabatanPj,
+
+          // Alamat
           alamat_lengkap: alamatLengkap,
           provinsi: nmProvinsi,
           kabupaten_kota: nmKabupaten,
@@ -369,19 +365,19 @@
           kodepos: kodepos,
           telepon_center: telepon,
           email_center: email,
+
+          // Pengaturan
           matauang_default: matauang,
           status_aktif: isAktif,
           waktu_registrasi: waktuRegistrasi
         });
         
         alert("Berhasil! Data Pusat Induk telah tersimpan di Firebase.");
-        location.reload(); 
+        location.reload(); // Refresh halaman untuk mereset form & form wilayah
 
       } catch (e) {
         console.error("Gagal menyimpan:", e);
-        alert("Error: Gagal menyimpan data ke database. Pastikan koneksi internet aktif.");
-        btnSubmit.innerText = "Simpan Data Pusat";
-        btnSubmit.disabled = false;
+        alert("Error: Gagal menyimpan data ke database.");
       }
     }
   </script>
