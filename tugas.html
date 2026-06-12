@@ -24,10 +24,17 @@
     input, select { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
 
     /* Hide section by default */
-    #step2, #step3, #successMsg { display: none; }
+    #step1, #step2, #step3, #successMsg, #errorMsg { display: none; }
   </style>
 </head>
 <body>
+
+  <div class="popup-box" id="errorMsg" style="text-align: center;">
+    <h1 style="font-size: 50px; margin: 0;">❌</h1>
+    <h2 style="color:var(--primary-red)">Akses Ditolak!</h2>
+    <p>Prosedur masuk tidak valid<br><b>Silakan masuk dengan pindai QR code yang tertera di rak masing-masing.</b></p>
+    <button class="btn-no" style="width:100%; margin-top:20px;" onclick="window.close()">Tutup Halaman</button>
+  </div>
 
   <div class="popup-box" id="step1">
     <h2>Konfirmasi Tugas</h2>
@@ -69,9 +76,9 @@
 
   <div class="popup-box" id="successMsg" style="text-align: center;">
     <h1 style="font-size: 50px; margin: 0;">✅</h1>
-    <h2 style="color:var(--primary-green)">Tersimpan!</h2>
-    <p>Tugas Anda telah dicatat oleh sistem.</p>
-    <button class="btn-yes" onclick="window.close()">Tutup Halaman</button>
+    <h2 style="color:var(--primary-green)">Berhasil</h2>
+    <p>Tugas Anda telah disimpan.</p>
+    <button class="btn-yes" onclick="window.close()">Tutup</button>
   </div>
 
   <script>
@@ -88,9 +95,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const kodeRak = urlParams.get('rak');
     
+    // LOGIKA PENGECEKAN PROSEDUR MASUK
     if(!kodeRak) {
-      document.body.innerHTML = "<h2 style='color:red'>Data QR Tidak Valid!</h2>";
+      // Tampilkan popup error jika tidak ada parameter rak
+      document.getElementById('errorMsg').style.display = 'block';
     } else {
+      // Tampilkan popup step 1 jika valid
+      document.getElementById('step1').style.display = 'block';
       document.getElementById('r_kode').innerText = kodeRak;
       document.getElementById('r_kat').innerText = urlParams.get('kategori') || "-";
       document.getElementById('r_pic').innerText = urlParams.get('pic') || "-";
@@ -109,7 +120,7 @@
     function simpanAkhir(adaMasalah) {
       // Data yang akan dikirim ke Rak
       let dataUpdate = {
-        last_cleaned: Date.now(), // Ini yang akan memicu widget di halaman master menjadi hijau selama 7 hari
+        last_cleaned: Date.now(), 
         has_bad_items: adaMasalah
       };
 
@@ -138,4 +149,3 @@
   </script>
 </body>
 </html>
-
