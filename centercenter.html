@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem ERP - Data Pusat</title>
+  <style>
+    /* Tema Retro Classic Windows 95 */
+    body {
+      background-color: #c0c0c0;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      padding: 10px;
+      margin: 0;
+      font-size: 13px;
+    }
+    .window {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-top-color: #ffffff;
+      border-left-color: #ffffff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      padding: 2px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .title-bar {
+      background: #000080;
+      color: white;
+      padding: 5px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+    .window-body {
+      padding: 10px;
+    }
+    fieldset {
+      border: 2px solid;
+      border-top-color: #808080;
+      border-left-color: #808080;
+      border-right-color: #ffffff;
+      border-bottom-color: #ffffff;
+      margin-bottom: 15px;
+      padding: 10px;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 5px;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 3px;
+    }
+    input[type="text"], input[type="number"], input[type="email"], select, textarea {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      border: 2px solid;
+      border-top-color: #808080;
+      border-left-color: #808080;
+      border-right-color: #ffffff;
+      border-bottom-color: #ffffff;
+      background: white;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 13px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 50px;
+    }
+    select:disabled {
+      background-color: #e0e0e0;
+    }
+    button {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-top-color: #ffffff;
+      border-left-color: #ffffff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      padding: 10px;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 5px;
+    }
+    button:active {
+      border-top-color: #808080;
+      border-left-color: #808080;
+      border-right-color: #ffffff;
+      border-bottom-color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="title-bar">
+      <span>Registrasi Data Pusat (Induk)</span>
+      <span>X</span>
+    </div>
+    <div class="window-body">
+      
+      <fieldset>
+        <legend>1. Identitas Dasar</legend>
+        <div class="form-group">
+          <label>Nama Badan Usaha:</label>
+          <input type="text" id="nama" placeholder="Contoh: PT Makmur Jaya">
+        </div>
+        <div class="form-group">
+          <label>ID Sistem:</label>
+          <input type="text" id="id_sistem" placeholder="Contoh: SYS-001">
+        </div>
+        <div class="form-group">
+          <label>Kode Badan Usaha:</label>
+          <input type="text" id="kode" placeholder="Contoh: MJA">
+        </div>
+        <div class="form-group">
+          <label>Jenis Badan Usaha:</label>
+          <select id="jenis_badan">
+            <option value="PT">PT (Perseroan Terbatas)</option>
+            <option value="CV">CV (Commanditaire Vennootschap)</option>
+            <option value="Firma">Firma</option>
+            <option value="Perorangan">Perorangan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bidang Usaha:</label>
+          <input type="text" id="bidang" placeholder="Contoh: Retail & Distribusi">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Legalitas</legend>
+        <div class="form-group">
+          <label>NPWP:</label>
+          <input type="text" id="npwp" placeholder="Nomor Pokok Wajib Pajak">
+        </div>
+        <div class="form-group">
+          <label>NIB:</label>
+          <input type="text" id="nib" placeholder="Nomor Induk Berusaha">
+        </div>
+        <div class="form-group">
+          <label>Nama Penanggung Jawab:</label>
+          <input type="text" id="nama_pj" placeholder="Nama Lengkap PJ">
+        </div>
+        <div class="form-group">
+          <label>Jabatan Penanggung Jawab:</label>
+          <input type="text" id="jabatan_pj" placeholder="Contoh: Direktur Utama">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Alamat & Kontak</legend>
+        <div class="form-group">
+          <label>Alamat Lengkap (Jalan, RT/RW, Gedung):</label>
+          <textarea id="alamat_lengkap" placeholder="Detail alamat..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Provinsi:</label>
+          <select id="provinsi"><option value="">-- Sedang memuat... --</option></select>
+        </div>
+        <div class="form-group">
+          <label>Kabupaten / Kota:</label>
+          <select id="kabupaten" disabled><option value="">-- Pilih Kabupaten/Kota --</option></select>
+        </div>
+        <div class="form-group">
+          <label>Kecamatan:</label>
+          <select id="kecamatan" disabled><option value="">-- Pilih Kecamatan --</option></select>
+        </div>
+        <div class="form-group">
+          <label>Kelurahan / Desa:</label>
+          <select id="kelurahan" disabled><option value="">-- Pilih Kelurahan/Desa --</option></select>
+        </div>
+        <div class="form-group">
+          <label>Kode Pos (Manual):</label>
+          <input type="number" id="kodepos" placeholder="Contoh: 41311">
+        </div>
+        <div class="form-group">
+          <label>No Telepon Center:</label>
+          <input type="number" id="telepon" placeholder="Contoh: 021987654">
+        </div>
+        <div class="form-group">
+          <label>Email Center:</label>
+          <input type="email" id="email" placeholder="Contoh: admin@pusat.com">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Pengaturan Sistem</legend>
+        <div class="form-group">
+          <label>Mata Uang Default:</label>
+          <select id="matauang">
+            <option value="IDR">Rupiah (IDR)</option>
+            <option value="USD">Dolar AS (USD)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status Aktif:</label>
+          <select id="status_aktif">
+            <option value="true">Aktif</option>
+            <option value="false">Tidak Aktif (Suspended)</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <button onclick="simpanDataPusat()">Simpan Data Pusat</button>
+    </div>
+  </div>
+
+  <script>
+    const urlApi = "https://emsifa.github.io/api-wilayah-indonesia/api/";
+
+    const elProv = document.getElementById('provinsi');
+    const elKab = document.getElementById('kabupaten');
+    const elKec = document.getElementById('kecamatan');
+    const elKel = document.getElementById('kelurahan');
+
+    // Ambil Data Provinsi saat halaman dibuka
+    fetch(`${urlApi}provinces.json`)
+      .then(res => res.json())
+      .then(data => {
+        elProv.innerHTML = `<option value="">-- Pilih Provinsi --</option>`;
+        data.forEach(prov => {
+          elProv.innerHTML += `<option value="${prov.id}">${prov.name}</option>`;
+        });
+      })
+      .catch(err => {
+        console.error("Gagal memuat API Wilayah:", err);
+        elProv.innerHTML = `<option value="">Gagal memuat data (Cek Internet)</option>`;
+      });
+
+    // Saat Provinsi Dipilih
+    elProv.addEventListener('change', () => {
+      elKab.innerHTML = `<option value="">-- Pilih Kabupaten/Kota --</option>`;
+      elKec.innerHTML = `<option value="">-- Pilih Kecamatan --</option>`;
+      elKel.innerHTML = `<option value="">-- Pilih Kelurahan/Desa --</option>`;
+      elKab.disabled = true; elKec.disabled = true; elKel.disabled = true;
+
+      if(elProv.value) {
+        fetch(`${urlApi}regencies/${elProv.value}.json`)
+          .then(res => res.json())
+          .then(data => {
+            data.forEach(kab => { elKab.innerHTML += `<option value="${kab.id}">${kab.name}</option>`; });
+            elKab.disabled = false;
+          });
+      }
+    });
+
+    // Saat Kabupaten Dipilih
+    elKab.addEventListener('change', () => {
+      elKec.innerHTML = `<option value="">-- Pilih Kecamatan --</option>`;
+      elKel.innerHTML = `<option value="">-- Pilih Kelurahan/Desa --</option>`;
+      elKec.disabled = true; elKel.disabled = true;
+
+      if(elKab.value) {
+        fetch(`${urlApi}districts/${elKab.value}.json`)
+          .then(res => res.json())
+          .then(data => {
+            data.forEach(kec => { elKec.innerHTML += `<option value="${kec.id}">${kec.name}</option>`; });
+            elKec.disabled = false;
+          });
+      }
+    });
+
+    // Saat Kecamatan Dipilih
+    elKec.addEventListener('change', () => {
+      elKel.innerHTML = `<option value="">-- Pilih Kelurahan/Desa --</option>`;
+      elKel.disabled = true;
+
+      if(elKec.value) {
+        fetch(`${urlApi}villages/${elKec.value}.json`)
+          .then(res => res.json())
+          .then(data => {
+            data.forEach(kel => { elKel.innerHTML += `<option value="${kel.id}">${kel.name}</option>`; });
+            elKel.disabled = false;
+          });
+      }
+    });
+
+    // Fungsi bantu untuk mengambil teks nama wilayah yang bisa diakses oleh Firebase
+    window.getSelectedText = function(element) {
+      if(element.selectedIndex === -1 || element.value === "") return "";
+      return element.options[element.selectedIndex].text;
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+    // Konfigurasi asli dbranaofc
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFDAdfdU05TG0rPJgNgNWU9NLGXGxIQPo",
+      authDomain: "dbranaofc.firebaseapp.com",
+      projectId: "dbranaofc",
+      storageBucket: "dbranaofc.firebasestorage.app",
+      messagingSenderId: "774283564857",
+      appId: "1:774283564857:web:793ae02d0bb06bf77c7ae8",
+      measurementId: "G-10BKPE9NEZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Fungsi utama penyimpan data
+    window.simpanDataPusat = async function() {
+      // 1. Identitas
+      const nama = document.getElementById('nama').value;
+      const idSistem = document.getElementById('id_sistem').value;
+      const kode = document.getElementById('kode').value;
+      const jenisBadan = document.getElementById('jenis_badan').value;
+      const bidang = document.getElementById('bidang').value;
+
+      // 2. Legalitas
+      const npwp = document.getElementById('npwp').value;
+      const nib = document.getElementById('nib').value;
+      const namaPj = document.getElementById('nama_pj').value;
+      const jabatanPj = document.getElementById('jabatan_pj').value;
+
+      // 3. Alamat & Kontak
+      const alamatLengkap = document.getElementById('alamat_lengkap').value;
+      const nmProvinsi = window.getSelectedText(document.getElementById('provinsi'));
+      const nmKabupaten = window.getSelectedText(document.getElementById('kabupaten'));
+      const nmKecamatan = window.getSelectedText(document.getElementById('kecamatan'));
+      const nmKelurahan = window.getSelectedText(document.getElementById('kelurahan'));
+      const kodepos = document.getElementById('kodepos').value;
+      const telepon = document.getElementById('telepon').value;
+      const email = document.getElementById('email').value;
+
+      // 4. Pengaturan Sistem
+      const matauang = document.getElementById('matauang').value;
+      const isAktif = document.getElementById('status_aktif').value === "true";
+      const waktuRegistrasi = new Date().toLocaleString('id-ID'); 
+
+      // Validasi ringan
+      if(!nama || !kode || !nmProvinsi) {
+        alert("Peringatan: Nama, Kode, dan Provinsi wajib diisi!");
+        return;
+      }
+
+      // Ubah teks tombol saat loading
+      const btnSubmit = document.querySelector('button');
+      btnSubmit.innerText = "Menyimpan...";
+      btnSubmit.disabled = true;
+
+      try {
+        await addDoc(collection(db, "data_pusat_induk"), {
+          nama_badan_usaha: nama,
+          id_sistem: idSistem,
+          kode_badan_usaha: kode,
+          jenis_badan_usaha: jenisBadan,
+          bidang_usaha: bidang,
+          npwp: npwp,
+          nib: nib,
+          nama_penanggung_jawab: namaPj,
+          jabatan_penanggung_jawab: jabatanPj,
+          alamat_lengkap: alamatLengkap,
+          provinsi: nmProvinsi,
+          kabupaten_kota: nmKabupaten,
+          kecamatan: nmKecamatan,
+          kelurahan: nmKelurahan,
+          kodepos: kodepos,
+          telepon_center: telepon,
+          email_center: email,
+          matauang_default: matauang,
+          status_aktif: isAktif,
+          waktu_registrasi: waktuRegistrasi
+        });
+        
+        alert("Berhasil! Data Pusat Induk telah tersimpan di Firebase.");
+        location.reload(); 
+
+      } catch (e) {
+        console.error("Gagal menyimpan:", e);
+        alert("Error: Gagal menyimpan data ke database. Pastikan koneksi internet aktif.");
+        btnSubmit.innerText = "Simpan Data Pusat";
+        btnSubmit.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
