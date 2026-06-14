@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master PWP - Generator Shelf Talker</title>
-    <!-- Memuat Font Fredoka Untuk Cetakan -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -302,20 +301,16 @@
 <body>
 
 <div class="win-form">
-    <!-- Header Aplikasi -->
     <div class="win-header-text">GENERATOR SHELFTALKER - PWP</div>
     <div class="win-title-container">
         <div class="win-title-box">PROMO SERBA (PWP)</div>
     </div>
 
-    <!-- Sistem Tab -->
     <div class="win-tabs">
         <div class="win-tab-active">SPREADSHEET SHELFT GENERATE - PWP</div>
     </div>
 
-    <!-- Konten Utama -->
     <div class="win-content">
-        <!-- Kolom Kiri: Input Data Khusus Reguler PWP -->
         <div class="win-col" style="flex: 1.2;">
             <div class="win-groupbox">
                 <div class="win-legend">INPUT DATA ITEM PWP</div>
@@ -345,13 +340,12 @@
             </div>
         </div>
 
-        <!-- Kolom Kanan: Parameter & Tabel -->
         <div class="win-col">
             <div class="win-groupbox">
                 <div class="win-legend blue">PARAMETER LAYOUT</div>
                 <div class="form-row">
                     <div class="form-label" style="width: 90px;">Periode PWP</div>
-                    <input type="text" id="auto-periode" class="win-input readonly" readonly>
+                    <select id="auto-periode" class="win-input"></select>
                 </div>
                 <div class="form-row" style="margin-top: 10px; font-weight: bold;">
                     Layout : 
@@ -378,7 +372,6 @@
         </div>
     </div>
 
-    <!-- Area Tombol Aksi -->
     <div class="win-buttons">
       <form action="home.html">
     <input type="submit" value="《《BACK">
@@ -390,7 +383,6 @@
         <button type="button" id="btnClearAll" class="win-btn" style="color: #ff0000;"><b>CLEAR DATA</b></button>
     </div>
 
-    <!-- Status Bar Khas Master PLU dengan Efek 3 Detik -->
     <div class="win-statusbar">
         <div class="status-pane" id="status-tanggal" style="flex: 0.6;">Tanggal : --/---/----</div>
         <div class="status-pane" id="status-db" style="flex: 1;">Status DB : LOAD...</div>
@@ -398,10 +390,8 @@
     </div>
 </div>
 
-<!-- Container A4 Rahasia untuk Merender PDF -->
 <div id="pdf-container"></div>
 
-<!-- SDK Firebase & html2pdf -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -472,15 +462,32 @@
         const tglStrPadded = tgl.toString().padStart(2, '0');
         document.getElementById("status-tanggal").innerText = `Tanggal : ${tglStrPadded}-${bulanAktif.substring(0,3)}-${thn}`;
 
-        // Kalkulasi Periode (Periode 1 & Periode 2)
-        let weekText = "";
-        if (tgl >= 1 && tgl <= 15) {
-            weekText = `01 - 15 ${bulanAktif} ${thn}`;
-        } else {
-            weekText = `16 - ${tglAkhir} ${bulanAktif} ${thn}`;
-        }
-        
-        document.getElementById("auto-periode").value = `Berlaku SD ${weekText}`;
+        // Konfigurasi Dropdown Periode
+        const periodeEl = document.getElementById("auto-periode");
+        periodeEl.innerHTML = ""; // Bersihkan opsi sebelumnya
+
+        // Definisi 2 Periode Promo PWP
+        const daftarPeriode = [
+            { nama: "Periode 1", rentang: `01 - 15 ${bulanAktif} ${thn}`, min: 1, max: 15 },
+            { nama: "Periode 2", rentang: `16 - ${tglAkhir} ${bulanAktif} ${thn}`, min: 16, max: 31 }
+        ];
+
+        daftarPeriode.forEach(p => {
+            const option = document.createElement("option");
+            
+            // Teks yang akan dilihat kasir/user di layar form
+            option.text = `${p.nama} (${p.rentang})`;
+            
+            // Teks murni yang akan diprint ke PDF di bagian Footer
+            option.value = `BERLAKU: ${p.rentang}`; 
+
+            // Deteksi otomatis periode yang sedang berjalan hari ini
+            if (tgl >= p.min && tgl <= p.max) {
+                option.selected = true;
+            }
+            
+            periodeEl.appendChild(option);
+        });
     }
 
     // Navigasi Enter Otomatis (Hanya 4 Input Aktif)
@@ -572,6 +579,7 @@
     }
 
     function createCardHTML(val) {
+        // Ambil data periode langsung dari Dropdown yang dipilih
         const dataPeriode = document.getElementById("auto-periode").value;
 
         // Desain HTML Card PWP (Reguler Default)
@@ -583,7 +591,6 @@
                     <div class="st-sub"><div>Promo</div><div>Serba</div></div>
                 </div>
                 
-                <!-- Syarat Tebus Khusus PWP -->
                 <div class="st-syarat-tebus">*Belanja Senilai Rp.50.000 bisa tebus murah</div>
                 
                 <div class="st-body">
