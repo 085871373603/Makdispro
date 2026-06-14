@@ -357,8 +357,8 @@
             <div class="win-groupbox">
                 <div class="win-legend blue">PARAMETER LAYOUT</div>
                 <div class="form-row">
-                    <div class="form-label" style="width: 90px;">Periode Auto</div>
-                    <input type="text" id="auto-periode" class="win-input readonly" readonly>
+                    <div class="form-label" style="width: 90px;">Periode</div>
+                    <select id="auto-periode" class="win-input"></select>
                 </div>
                 <div class="form-row" style="margin-top: 10px; font-weight: bold;">
                     Layout: 
@@ -426,7 +426,7 @@
     let currentEditingKey = null;
     let currentPromoData = [];
 
-    // Pengaturan Tanggal Otomatis (UI Status & Periode Promosi)
+    // Pengaturan Tanggal Otomatis (Dinamsisasi Periode 1 s/d 4)
     function hitungPeriodeOtomatis() {
         const sekarang = new Date();
         const tgl = sekarang.getDate();
@@ -440,14 +440,33 @@
         const tglStrPadded = tgl.toString().padStart(2, '0');
         document.getElementById("status-tanggal").innerText = `Tanggal : ${tglStrPadded}-${bulanAktif.substring(0,3)} -${thn}`;
 
-        // Kalkulasi Periode (Minggu 1 s/d 4)
-        let weekText = "";
-        if (tgl >= 1 && tgl <= 7) weekText = `01 - 07 ${bulanAktif} ${thn}`;
-        else if (tgl >= 8 && tgl <= 15) weekText = `08 - 15 ${bulanAktif} ${thn}`;
-        else if (tgl >= 16 && tgl <= 23) weekText = `16 - 23 ${bulanAktif} ${thn}`;
-        else weekText = `24 - ${tglAkhir} ${bulanAktif} ${thn}`;
-        
-        document.getElementById("auto-periode").value = `Berlaku SD ${weekText}`;
+        const periodeEl = document.getElementById("auto-periode");
+        periodeEl.innerHTML = ""; // Bersihkan opsi sebelumnya
+
+        // Definisi 4 Periode Promo
+        const daftarPeriode = [
+            { nama: "Periode 1", rentang: `01 - 07 ${bulanAktif} ${thn}`, min: 1, max: 7 },
+            { nama: "Periode 2", rentang: `08 - 15 ${bulanAktif} ${thn}`, min: 8, max: 15 },
+            { nama: "Periode 3", rentang: `16 - 23 ${bulanAktif} ${thn}`, min: 16, max: 23 },
+            { nama: "Periode 4", rentang: `24 - ${tglAkhir} ${bulanAktif} ${thn}`, min: 24, max: 31 }
+        ];
+
+        daftarPeriode.forEach(p => {
+            const option = document.createElement("option");
+            
+            // Teks yang akan dilihat kasir/user di layar form
+            option.text = `${p.nama} (${p.rentang})`;
+            
+            // Teks murni yang akan diprint ke PDF di bagian Footer
+            option.value = `BERLAKU: ${p.rentang}`; 
+
+            // Deteksi otomatis periode yang sedang berjalan hari ini
+            if (tgl >= p.min && tgl <= p.max) {
+                option.selected = true;
+            }
+            
+            periodeEl.appendChild(option);
+        });
     }
 
     // Navigasi Tampilan Form Sesuai Jenis Promo
@@ -602,6 +621,7 @@
     }
 
     function createCardHTML(val) {
+        // Mengambil teks "Berlaku: ..." dari Dropdown Periode
         const dataPeriode = document.getElementById("auto-periode").value;
         let bodyHTML = "";
 
