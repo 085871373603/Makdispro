@@ -649,9 +649,24 @@
             pdfContainer.innerHTML = "";
 
             setTimeout(() => {
-                if (confirm("Unduh PDF PWP Selesai!\nApakah Anda ingin mereset/mengosongkan lembar draft?")) dbRef.remove();
+                // 1. Munculkan pertanyaan konfirmasi
+                if (confirm("Cetak PDF Sukses!\nKosongkan lembar draft?")) {
+                    
+                    // 2. Jika di-klik "Yes/OK", munculkan input PIN
+                    let pinInput = prompt("Masukkan PIN untuk mengosongkan draf:");
+                    
+                    // 3. Validasi PIN
+                    if (pinInput === "020901") {
+                        // Jika PIN benar, hapus database
+                        dbRef.remove();
+                        alert("Berhasil! Lembar draf telah dikosongkan.");
+                    } else if (pinInput !== null) {
+                        // Jika PIN salah (dan pengguna tidak mengklik tombol Cancel)
+                        alert("PIN Salah! Lembar draf batal dikosongkan.");
+                    }
+                }
             }, 800);
-        }).catch(err => alert("Error Unduh: " + err.message));
+        }).catch(err => alert("Error Download: " + err.message));
     });
 
     // Menjalankan fungsi boot awal PWP
