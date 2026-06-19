@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring PPS Kasir & AI Mentor</title>
+    <meta name="theme-color" content="#e51b23">
+
+    <style>
+        /* --- RESET & VARIABLES --- */
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+        :root { --alfa-red: #e51b23; --alfa-blue: #005eaa; --alfa-yellow: #fad114; --bg-color: #f0f2f5; }
+        body { background-color: var(--bg-color); color: #333; padding-bottom: 40px; }
+
+        /* --- HEADER --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--alfa-red); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+        .header-title { font-size: 16px; font-weight: bold; }
+        .hamburger { background: none; border: none; color: white; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+        /* --- TABS --- */
+        .tabs { display: flex; background: white; border-bottom: 2px solid #ddd; position: sticky; top: 51px; z-index: 90; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab { flex: 1; text-align: center; padding: 12px 2px; font-size: 11px; font-weight: bold; color: #777; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
+        .tab.active { color: var(--alfa-blue); border-bottom-color: var(--alfa-blue); background: #f4f8fb; }
+
+        /* --- UNIFIED WIDGET --- */
+        .widget-wrapper { padding: 15px; }
+        .unified-widget { background: linear-gradient(135deg, #ffffff, #f9f9f9); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eaeaea; }
+        .uw-header { background: var(--alfa-blue); color: white; padding: 12px 15px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .uw-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .uw-row { display: flex; flex-direction: column; padding-bottom: 12px; border-bottom: 1px dashed #ddd; }
+        .uw-row:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .uw-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .uw-title-main { font-size: 14px; font-weight: 800; }
+        .uw-title-sub { font-size: 10px; color: #888; background: #eee; padding: 2px 6px; border-radius: 4px;}
+        
+        .stat-header { font-size: 10px; font-weight: bold; color: #666; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px;}
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: #f4f8fb; padding: 8px; border-radius: 8px; border: 1px solid #e1eaf2; }
+        .stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
+        .stat-val { font-size: 14px; font-weight: 900; color: #333; }
+        .stat-lbl { font-size: 9px; color: #777; font-weight: bold; text-transform: uppercase; margin-top: 2px; }
+
+        /* --- CONTENT SECTION --- */
+        .content-section { display: none; padding: 0 15px 15px 15px; }
+        .content-section.active { display: block; }
+
+        /* --- CARDS & FORMS --- */
+        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-header { font-size: 14px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; color: var(--alfa-blue); }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; color: #666; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-control:focus { border-color: var(--alfa-blue); }
+        
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; }
+        .shift-box { background: #fdfdfd; border: 1px solid #e0e0e0; text-align: center; padding: 8px; border-radius: 6px; }
+        .shift-box span { display: block; font-size: 10px; color: #777; margin-bottom: 4px; font-weight: bold; }
+        .shift-input { width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; padding: 5px; outline: none; color: var(--alfa-red); background: #fff;}
+        .shift-input:focus { border-color: var(--alfa-blue); background: #e3f2fd; }
+        
+        .kasir-input-group { background: #fff9e6; border: 1px solid #fbeeb8; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .kasir-input { width: 100%; font-size: 12px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-weight: bold; color: var(--alfa-blue); }
+
+        /* --- BUTTONS --- */
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; margin-top: 10px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--alfa-blue); }
+        .btn-success { background-color: #2e7d32; }
+        .btn-outline { background-color: transparent; border: 1px dashed var(--alfa-blue); color: var(--alfa-blue); box-shadow: none; }
+        .btn-ai { background: linear-gradient(90deg, #673ab7, #9c27b0); border: none; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(156, 39, 176, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0); }
+        }
+        
+        /* --- AI SMART BOX --- */
+        .ai-assistant-container { display: none; margin-top: 15px; }
+        .ai-chat-box { background: white; border: 2px solid #9c27b0; border-radius: 12px; padding: 15px; position: relative; box-shadow: 0 4px 15px rgba(156, 39, 176, 0.15); }
+        .ai-chat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-weight: bold; color: #9c27b0; }
+        .ai-chat-body { font-size: 13px; line-height: 1.6; color: #333; }
+        .ai-chat-body ul { padding-left: 20px; margin: 10px 0; }
+        .ai-chat-body b { color: var(--alfa-red); }
+        .ai-avatar { font-size: 24px; }
+        
+        .date-picker-container { display: flex; align-items: center; gap: 10px; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 4px solid var(--alfa-red); }
+        .date-picker-container label { font-weight: bold; font-size: 14px; color: #333; }
+
+        /* --- LOADING --- */
+        #loading { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 999; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--alfa-red); flex-direction: column; display: none; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--alfa-red); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- TABLE --- */
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: var(--alfa-blue); color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <div id="load-text">Memproses Data...</div>
+    </div>
+
+    <div class="header">
+        <a href="menu.html" class="hamburger">❮ MENU</a>
+        <div class="header-title">PPS MONITORING</div>
+        <div style="width: 50px;"></div>
+    </div>
+
+    <div class="widget-wrapper">
+        <div class="unified-widget">
+            <div class="uw-header">
+                <span>📊 KINERJA HARI INI</span>
+                <span id="uw-date-display" style="font-size:10px; font-weight:normal;">-</span>
+            </div>
+            <div class="uw-body">
+                
+                <div class="uw-row">
+                    <div class="uw-title">
+                        <span class="uw-title-main" style="color:var(--alfa-blue);">PSM</span>
+                        <span class="uw-title-sub" id="lbl-psm-periode">Periode -</span>
+                    </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
+                    </div>
+                </div>
+
+                <div class="uw-row">
+                    <div class="uw-title">
+                        <span class="uw-title-main" style="color:var(--alfa-yellow);">PWP</span>
+                        <span class="uw-title-sub" id="lbl-pwp-periode">Periode -</span>
+                    </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
+                    </div>
+                </div>
+
+                <div class="uw-row">
+                    <div class="uw-title">
+                        <span class="uw-title-main" style="color:var(--alfa-red);">SERTIS (SG)</span>
+                        <span class="uw-title-sub" id="lbl-sg-periode">Periode -</span>
+                    </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('laporan')">LAPORAN</div>
+        <div class="tab" onclick="switchTab('kasir')">KASIR</div>
+        <div class="tab" onclick="switchTab('target')">TARGET</div>
+        <div class="tab" onclick="switchTab('arsip')">ARSIP</div>
+    </div>
+
+    <div id="tab-laporan" class="content-section active">
+        
+        <div class="date-picker-container">
+            <label>Tgl Shift:</label>
+            <input type="date" id="lap-date" class="form-control" style="flex:1; margin:0;" onchange="loadLaporanKasir()">
+        </div>
+
+        <div class="kasir-input-group">
+            <label style="display:block; font-size:12px; font-weight:bold; color:#d9a400; margin-bottom:8px; text-align:center;">NAMA KASIR BERTUGAS (WAJIB DIISI)</label>
+            <div class="grid-3">
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 1</span><input type="text" id="nama-kasir-s1" class="kasir-input" placeholder="Nama S1"></div>
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 2</span><input type="text" id="nama-kasir-s2" class="kasir-input" placeholder="Nama S2"></div>
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 3</span><input type="text" id="nama-kasir-s3" class="kasir-input" placeholder="Nama S3"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">1. INPUT QTY PENJUALAN PSM</div>
+            <div id="lap-psm-container">
+                <p style="font-size: 12px; color: #888; text-align: center;">Tidak ada target PSM di periode ini.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">2. INPUT QTY PENJUALAN PWP</div>
+            <p style="font-size: 11px; color:#888; margin-bottom:5px;" id="lbl-tgt-harian-pwp">Target Harian: 0</p>
+            <div class="grid-3">
+                <div class="shift-box"><span>Shift 1</span><input type="number" id="lap-pwp-s1" class="shift-input" placeholder="0"></div>
+                <div class="shift-box"><span>Shift 2</span><input type="number" id="lap-pwp-s2" class="shift-input" placeholder="0"></div>
+                <div class="shift-box"><span>Shift 3</span><input type="number" id="lap-pwp-s3" class="shift-input" placeholder="0"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">3. INPUT QTY PENJUALAN SERTIS (SG)</div>
+            <p style="font-size: 11px; color:#888; margin-bottom:5px;" id="lbl-tgt-harian-sg">Target Harian: 0</p>
+            <div class="grid-3">
+                <div class="shift-box"><span>Shift 1</span><input type="number" id="lap-sg-s1" class="shift-input" placeholder="0"></div>
+                <div class="shift-box"><span>Shift 2</span><input type="number" id="lap-sg-s2" class="shift-input" placeholder="0"></div>
+                <div class="shift-box"><span>Shift 3</span><input type="number" id="lap-sg-s3" class="shift-input" placeholder="0"></div>
+            </div>
+        </div>
+
+        <button class="btn btn-success" onclick="simpanLaporanKasir()">💾 SIMPAN LAPORAN SHIFT</button>
+        
+        <button class="btn btn-ai" id="btn-trigger-ai" onclick="mintaEvaluasiAI()" style="display: none;">🤖 MINTA EVALUASI AI (PENILAIAN KINERJA)</button>
+
+        <div class="ai-assistant-container" id="ai-assistant">
+            <div class="ai-chat-box">
+                <div class="ai-chat-header">
+                    <div class="ai-avatar">🤖</div>
+                    <div>Mentor AI Kasir</div>
+                </div>
+                <div class="ai-chat-body" id="ai-response-text">
+                    Menganalisa kinerja hari ini...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-kasir" class="content-section">
+        <div class="card">
+            <div class="card-header">PENCAPAIAN PER KASIR (PERIODE BERJALAN)</div>
+            <p style="font-size:11px; color:#666; margin-bottom:10px;">Data otomatis terakumulasi berdasarkan nama kasir yang diinput pada Laporan Shift.</p>
+            <div id="kasir-result-container">
+                <p style="font-size:12px; color:#888; text-align:center;">Memuat data kasir...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-target" class="content-section">
+        <div class="card" style="border: 2px solid var(--alfa-blue);">
+            <div class="form-group">
+                <label>Pilih Bulan Target</label>
+                <input type="month" id="tgt-month" class="form-control">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">TARGET PSM (4 PERIODE)</div>
+            <div class="form-group">
+                <label>Pilih Periode (Per 7 Hari)</label>
+                <select id="tgt-psm-periode" class="form-control">
+                    <option value="1-7">Tgl 1 - 7 (Periode 1)</option>
+                    <option value="8-15">Tgl 8 - 15 (Periode 2)</option>
+                    <option value="16-23">Tgl 16 - 23 (Periode 3)</option>
+                    <option value="24-31">Tgl 24 - Akhir Bulan (Periode 4)</option>
+                </select>
+            </div>
+            <div id="target-psm-items"></div>
+            <button class="btn btn-outline" onclick="addPsmItem()">+ TAMBAH ITEM PSM</button>
+            <button class="btn btn-primary" onclick="simpanTarget('psm')">💾 SIMPAN TARGET PSM</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">TARGET PWP (2 PERIODE)</div>
+            <div class="form-group">
+                <label>Pilih Periode</label>
+                <select id="tgt-pwp-periode" class="form-control">
+                    <option value="1-15">Tgl 1 - 15</option>
+                    <option value="16-31">Tgl 16 - Akhir Bulan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Total Qty Target</label>
+                <input type="number" id="tgt-pwp-qty" class="form-control" placeholder="0">
+            </div>
+            <button class="btn btn-primary" onclick="simpanTarget('pwp')">💾 SIMPAN TARGET PWP</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">TARGET SERTIS / SG (2 PERIODE)</div>
+            <div class="form-group">
+                <label>Pilih Periode</label>
+                <select id="tgt-sg-periode" class="form-control">
+                    <option value="1-15">Tgl 1 - 15</option>
+                    <option value="16-31">Tgl 16 - Akhir Bulan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Total Qty Target</label>
+                <input type="number" id="tgt-sg-qty" class="form-control" placeholder="0">
+            </div>
+            <button class="btn btn-primary" onclick="simpanTarget('sg')">💾 SIMPAN TARGET SG</button>
+        </div>
+    </div>
+
+    <div id="tab-arsip" class="content-section">
+        <div class="card">
+            <div class="card-header">ARSIP DATA PPS</div>
+            <div class="form-group">
+                <label>Jenis PPS</label>
+                <select id="arsip-jenis" class="form-control" onchange="updateArsipPeriode()">
+                    <option value="psm">PSM</option>
+                    <option value="pwp">PWP</option>
+                    <option value="sg">SERBA GRATIS (SERTIS)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Bulan</label>
+                <input type="month" id="arsip-bulan" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Periode</label>
+                <select id="arsip-periode" class="form-control"></select>
+            </div>
+            <button class="btn btn-primary" onclick="loadArsip()">🔍 CARI ARSIP</button>
+        </div>
+        <div id="arsip-result"></div>
+    </div>
+
+    <script>
+        let currentData = { psm: null, pwp: null, sg: null };
+        let psmTargetCount = 0;
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        };
+
+        function showLoading(show, text = "Memproses...") {
+            document.getElementById('load-text').innerText = text;
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+
+        window.addEventListener('load', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('lap-date').value = today;
+            document.getElementById('uw-date-display').innerText = today;
+            
+            const curMonth = today.substring(0,7);
+            document.getElementById('tgt-month').value = curMonth;
+            document.getElementById('arsip-bulan').value = curMonth;
+            
+            addPsmItem(); 
+            updateArsipPeriode(); 
+            loadLaporanKasir(); 
+        });
+
+        function getAutoPeriod(dateStr, type) {
+            const day = parseInt(dateStr.split('-')[2]);
+            if (type === 'psm') {
+                if(day <= 7) return '1-7'; if(day <= 15) return '8-15';
+                if(day <= 23) return '16-23'; return '24-31';
+            } else { return (day <= 15) ? '1-15' : '16-31'; }
+        }
+
+        window.loadLaporanKasir = async function() {
+            const dateStr = document.getElementById('lap-date').value;
+            if(!dateStr) return;
+            document.getElementById('uw-date-display').innerText = dateStr;
+            const monthStr = dateStr.substring(0,7);
+            
+            showLoading(true, "Memuat Data...");
+            try {
+                const id_psm = `pps_psm_${monthStr}_${getAutoPeriod(dateStr, 'psm')}`;
+                const id_pwp = `pps_pwp_${monthStr}_${getAutoPeriod(dateStr, 'pwp')}`;
+                const id_sg  = `pps_sg_${monthStr}_${getAutoPeriod(dateStr, 'sg')}`;
+
+                document.getElementById('lbl-psm-periode').innerText = `Periode ${getAutoPeriod(dateStr, 'psm')}`;
+                document.getElementById('lbl-pwp-periode').innerText = `Periode ${getAutoPeriod(dateStr, 'pwp')}`;
+                document.getElementById('lbl-sg-periode').innerText  = `Periode ${getAutoPeriod(dateStr, 'sg')}`;
+
+                // Fetch data dari file api.php
+                const [resPsm, resPwp, resSg] = await Promise.all([
+                    fetch(`api.php?action=ambilData&doc=${id_psm}`).then(r => r.json()),
+                    fetch(`api.php?action=ambilData&doc=${id_pwp}`).then(r => r.json()),
+                    fetch(`api.php?action=ambilData&doc=${id_sg}`).then(r => r.json())
+                ]);
+
+                currentData.psm = (resPsm && !resPsm.error) ? resPsm : null;
+                currentData.pwp = (resPwp && !resPwp.error) ? resPwp : null;
+                currentData.sg = (resSg && !resSg.error) ? resSg : null;
+
+                renderFormsLaporan(dateStr);
+                recalcWidgets(dateStr);
+                calculateKasirStats(); 
+                
+                document.getElementById('ai-assistant').style.display = 'none';
+                document.getElementById('btn-trigger-ai').style.display = 'none';
+
+            } catch(e) { console.error(e); }
+            showLoading(false);
+        };
+
+        function renderFormsLaporan(dateStr) {
+            let repPsm = currentData.psm?.harian?.[dateStr];
+            let repPwp = currentData.pwp?.harian?.[dateStr];
+            let repSg = currentData.sg?.harian?.[dateStr];
+            let savedKasir = (repPsm && repPsm.kasir) || (repPwp && repPwp.kasir) || (repSg && repSg.kasir) || {s1:'', s2:'', s3:''};
+            
+            document.getElementById('nama-kasir-s1').value = savedKasir.s1 || '';
+            document.getElementById('nama-kasir-s2').value = savedKasir.s2 || '';
+            document.getElementById('nama-kasir-s3').value = savedKasir.s3 || '';
+
+            const psmCont = document.getElementById('lap-psm-container');
+            if(currentData.psm && currentData.psm.items) {
+                psmCont.innerHTML = '';
+                currentData.psm.items.forEach((item, i) => {
+                    const dr = (currentData.psm.harian && currentData.psm.harian[dateStr]) ? currentData.psm.harian[dateStr].items[i] : {s1:'', s2:'', s3:''};
+                    psmCont.innerHTML += `
+                        <div style="border:1px solid #eee; padding:10px; border-radius:6px; margin-bottom:10px; background:#fafafa;">
+                            <div style="font-weight:bold; font-size:14px; margin-bottom:8px;">${item.name} <span style="font-size:10px; color:#888;">(Tgt: ${item.tgtHarian})</span></div>
+                            <div class="grid-3">
+                                <div class="shift-box"><span>Shift 1</span><input type="number" id="lap-psm-s1-${i}" class="shift-input" value="${dr.s1}"></div>
+                                <div class="shift-box"><span>Shift 2</span><input type="number" id="lap-psm-s2-${i}" class="shift-input" value="${dr.s2}"></div>
+                                <div class="shift-box"><span>Shift 3</span><input type="number" id="lap-psm-s3-${i}" class="shift-input" value="${dr.s3}"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else { psmCont.innerHTML = '<p style="text-align:center; font-size:12px;">Kosong</p>'; }
+
+            if(currentData.pwp) {
+                document.getElementById('lbl-tgt-harian-pwp').innerText = `Target Harian Total: ${currentData.pwp.tgtHarian}`;
+                const dr = (currentData.pwp.harian && currentData.pwp.harian[dateStr]) ? currentData.pwp.harian[dateStr] : {s1:'', s2:'', s3:''};
+                document.getElementById('lap-pwp-s1').value = dr.s1; document.getElementById('lap-pwp-s2').value = dr.s2; document.getElementById('lap-pwp-s3').value = dr.s3;
+            }
+
+            if(currentData.sg) {
+                document.getElementById('lbl-tgt-harian-sg').innerText = `Target Harian Total: ${currentData.sg.tgtHarian}`;
+                const dr = (currentData.sg.harian && currentData.sg.harian[dateStr]) ? currentData.sg.harian[dateStr] : {s1:'', s2:'', s3:''};
+                document.getElementById('lap-sg-s1').value = dr.s1; document.getElementById('lap-sg-s2').value = dr.s2; document.getElementById('lap-sg-s3').value = dr.s3;
+            }
+        }
+
+        function recalcWidgets(dateStr) {
+            if(currentData.psm) {
+                let tgtH = 0, aktH = 0, tgtP = 0, aktP = currentData.psm.totalAktual || 0;
+                currentData.psm.items.forEach((item, i) => {
+                    tgtH += item.tgtHarian; tgtP += item.tgtPeriode;
+                    if(currentData.psm.harian && currentData.psm.harian[dateStr]) {
+                        aktH += (currentData.psm.harian[dateStr].items[i].s1 + currentData.psm.harian[dateStr].items[i].s2 + currentData.psm.harian[dateStr].items[i].s3);
+                    }
+                });
+                document.getElementById('w-psm-h-tgt').innerText = tgtH; document.getElementById('w-psm-h-act').innerText = aktH;
+                document.getElementById('w-psm-h-achv').innerText = (tgtH>0 ? Math.round((aktH/tgtH)*100) : 0) + '%';
+                document.getElementById('w-psm-p-tgt').innerText = tgtP; document.getElementById('w-psm-p-act').innerText = aktP;
+                document.getElementById('w-psm-p-achv').innerText = (tgtP>0 ? Math.round((aktP/tgtP)*100) : 0) + '%';
+                document.getElementById('w-psm-p-min').innerText = Math.max(tgtP - aktP, 0);
+            }
+            updateWidgetData('pwp', dateStr);
+            updateWidgetData('sg', dateStr);
+        }
+
+        function updateWidgetData(type, dateStr) {
+            const data = currentData[type];
+            if(data) {
+                let aktH = 0; if(data.harian && data.harian[dateStr]) aktH = data.harian[dateStr].total;
+                document.getElementById(`w-${type}-h-tgt`).innerText = data.tgtHarian || 0;
+                document.getElementById(`w-${type}-h-act`).innerText = aktH;
+                document.getElementById(`w-${type}-h-achv`).innerText = (data.tgtHarian>0 ? Math.round((aktH/data.tgtHarian)*100) : 0) + '%';
+                document.getElementById(`w-${type}-p-tgt`).innerText = data.tgtPeriode || 0;
+                document.getElementById(`w-${type}-p-act`).innerText = data.totalAktual || 0;
+                document.getElementById(`w-${type}-p-achv`).innerText = (data.tgtPeriode>0 ? Math.round((data.totalAktual/data.tgtPeriode)*100) : 0) + '%';
+                document.getElementById(`w-${type}-p-min`).innerText = Math.max((data.tgtPeriode || 0) - (data.totalAktual || 0), 0);
+            }
+        }
+
+        window.calculateKasirStats = function() {
+            let kasirStats = {};
+            const addStat = (nama, type, qty) => {
+                if(!nama || nama.trim() === '') return;
+                let key = nama.toUpperCase().trim();
+                if(!kasirStats[key]) kasirStats[key] = { psm: 0, pwp: 0, sg: 0 };
+                kasirStats[key][type] += (parseInt(qty) || 0);
+            };
+
+            if(currentData.psm && currentData.psm.harian) {
+                Object.values(currentData.psm.harian).forEach(hari => {
+                    if(!hari.kasir) return;
+                    hari.items.forEach(it => { addStat(hari.kasir.s1, 'psm', it.s1); addStat(hari.kasir.s2, 'psm', it.s2); addStat(hari.kasir.s3, 'psm', it.s3); });
+                });
+            }
+            if(currentData.pwp && currentData.pwp.harian) {
+                Object.values(currentData.pwp.harian).forEach(hari => {
+                    if(!hari.kasir) return; addStat(hari.kasir.s1, 'pwp', hari.s1); addStat(hari.kasir.s2, 'pwp', hari.s2); addStat(hari.kasir.s3, 'pwp', hari.s3);
+                });
+            }
+            if(currentData.sg && currentData.sg.harian) {
+                Object.values(currentData.sg.harian).forEach(hari => {
+                    if(!hari.kasir) return; addStat(hari.kasir.s1, 'sg', hari.s1); addStat(hari.kasir.s2, 'sg', hari.s2); addStat(hari.kasir.s3, 'sg', hari.s3);
+                });
+            }
+
+            let html = '';
+            let psmSumTgt = 0; if(currentData.psm) currentData.psm.items.forEach(i => psmSumTgt += i.tgtPeriode);
+            let pwpTgt = currentData.pwp?.tgtPeriode || 0;
+            let sgTgt = currentData.sg?.tgtPeriode || 0;
+
+            for(let k in kasirStats) {
+                let d = kasirStats[k];
+                let achvPsm = psmSumTgt > 0 ? ((d.psm/psmSumTgt)*100).toFixed(1) : 0;
+                let achvPwp = pwpTgt > 0 ? ((d.pwp/pwpTgt)*100).toFixed(1) : 0;
+                let achvSg = sgTgt > 0 ? ((d.sg/sgTgt)*100).toFixed(1) : 0;
+
+                html += `
+                <div style="border:1px solid #ddd; border-radius:8px; padding:10px; margin-bottom:10px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    <div style="font-weight:bold; color:var(--alfa-blue); border-bottom:1px dashed #ddd; padding-bottom:5px; margin-bottom:8px;">🧑‍💼 KASIR: ${k}</div>
+                    <table style="width:100%; text-align:center; font-size:11px;">
+                        <tr style="background:#f4f8fb; font-weight:bold; color:#555;"><td>Program</td><td>Terjual</td><td>Kontribusi (vs Tgt Toko)</td></tr>
+                        <tr><td>PSM</td><td style="font-weight:bold;">${d.psm}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvPsm}%</td></tr>
+                        <tr><td>PWP</td><td style="font-weight:bold;">${d.pwp}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvPwp}%</td></tr>
+                        <tr><td>Sertis</td><td style="font-weight:bold;">${d.sg}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvSg}%</td></tr>
+                    </table>
+                </div>`;
+            }
+            if(html === '') html = '<p style="text-align:center; font-size:12px; color:#888;">Belum ada data kasir di periode ini.</p>';
+            document.getElementById('kasir-result-container').innerHTML = html;
+        };
+
+        window.simpanLaporanKasir = async function() {
+            const dateStr = document.getElementById('lap-date').value;
+            if(!dateStr) return alert("Pilih tanggal!");
+            
+            const kasirData = {
+                s1: document.getElementById('nama-kasir-s1').value.trim() || '',
+                s2: document.getElementById('nama-kasir-s2').value.trim() || '',
+                s3: document.getElementById('nama-kasir-s3').value.trim() || ''
+            };
+
+            const monthStr = dateStr.substring(0,7);
+            showLoading(true, "Menyimpan...");
+
+            try {
+                if(currentData.psm) {
+                    let totalHarian = 0, itemsRecord = [];
+                    currentData.psm.items.forEach((item, i) => {
+                        let s1 = parseInt(document.getElementById(`lap-psm-s1-${i}`)?.value || 0);
+                        let s2 = parseInt(document.getElementById(`lap-psm-s2-${i}`)?.value || 0);
+                        let s3 = parseInt(document.getElementById(`lap-psm-s3-${i}`)?.value || 0);
+                        itemsRecord.push({s1, s2, s3}); totalHarian += (s1+s2+s3);
+                    });
+                    if(!currentData.psm.harian) currentData.psm.harian = {};
+                    currentData.psm.harian[dateStr] = { items: itemsRecord, total: totalHarian, kasir: kasirData };
+                    let grand = 0; Object.values(currentData.psm.harian).forEach(d => grand += d.total);
+                    currentData.psm.totalAktual = grand;
+                    
+                    await fetch(`api.php?action=simpanData&doc=pps_psm_${monthStr}_${getAutoPeriod(dateStr, 'psm')}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentData.psm)
+                    });
+                }
+
+                const saveGen = async (type) => {
+                    if(currentData[type]) {
+                        let s1 = parseInt(document.getElementById(`lap-${type}-s1`).value||0);
+                        let s2 = parseInt(document.getElementById(`lap-${type}-s2`).value||0);
+                        let s3 = parseInt(document.getElementById(`lap-${type}-s3`).value||0);
+                        if(!currentData[type].harian) currentData[type].harian = {};
+                        currentData[type].harian[dateStr] = { s1, s2, s3, total: (s1+s2+s3), kasir: kasirData };
+                        let grand = 0; Object.values(currentData[type].harian).forEach(d => grand += d.total);
+                        currentData[type].totalAktual = grand;
+                        
+                        await fetch(`api.php?action=simpanData&doc=pps_${type}_${monthStr}_${getAutoPeriod(dateStr, type)}`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(currentData[type])
+                        });
+                    }
+                };
+                await saveGen('pwp'); await saveGen('sg');
+
+                alert("Laporan Tersimpan!"); recalcWidgets(dateStr); calculateKasirStats();
+                document.getElementById('btn-trigger-ai').style.display = 'block';
+            } catch(e) { alert("Gagal menyimpan."); }
+            showLoading(false);
+        };
+
+        window.mintaEvaluasiAI = async function() {
+            const dateStr = document.getElementById('lap-date').value;
+            const btnAi = document.getElementById('btn-trigger-ai');
+            const boxAi = document.getElementById('ai-assistant');
+            const txtAi = document.getElementById('ai-response-text');
+            
+            btnAi.style.display = 'none'; boxAi.style.display = 'block';
+            txtAi.innerHTML = '<i>Menganalisa kinerja & gestur psikologis pelanggan hari ini... Mohon tunggu 🤖</i>';
+
+            let psmTxt = "Tidak ada PSM";
+            if(currentData.psm && currentData.psm.items) {
+                psmTxt = currentData.psm.items.map((it, i) => {
+                    let akt = currentData.psm.harian && currentData.psm.harian[dateStr] ? (currentData.psm.harian[dateStr].items[i].s1+currentData.psm.harian[dateStr].items[i].s2+currentData.psm.harian[dateStr].items[i].s3) : 0;
+                    return `${it.name} (Target: ${it.tgtHarian}, Terjual: ${akt})`;
+                }).join(", ");
+            }
+            let pwpTxt = currentData.pwp ? `PWP (Target: ${currentData.pwp.tgtHarian}, Terjual: ${currentData.pwp.harian?.[dateStr]?.total||0})` : "";
+            let sgTxt = currentData.sg ? `Serba Gratis/Sertis (Target: ${currentData.sg.tgtHarian}, Terjual: ${currentData.sg.harian?.[dateStr]?.total||0})` : "";
+
+            const prompt = `Anda adalah Mentor Kepala Toko Minimarket yang cerdas. Pencapaian tim hari ini: - PSM: ${psmTxt} - ${pwpTxt} - ${sgTxt}. Tugas: 1. Analisa apakah capai target. 2. Jika tidak: Berikan teguran halus dan contoh nyata BAGAIMANA CARA KOMUNIKASI (PITCHING) ke pelanggan. Format HTML rapi (gunakan <b>, <ul>, <li>).`;
+
+            try {
+                const res = await fetch(`api.php?action=tanyaAI`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await res.json();
+                if(data.candidates && data.candidates[0]) {
+                    txtAi.innerHTML = data.candidates[0].content.parts[0].text.replace(/```html/g, '').replace(/```/g, '').trim();
+                } else { throw "API Error"; }
+            } catch(e) { txtAi.innerHTML = "<b style='color:red;'>Koneksi ke AI Terputus.</b> Pastikan internet stabil."; }
+        };
+
+        window.addPsmItem = function() {
+            const html = `<div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input type="text" id="tgt-psm-name-${psmTargetCount}" class="form-control" placeholder="Nama Produk" style="flex:2;">
+                <input type="number" id="tgt-psm-qty-${psmTargetCount}" class="form-control" placeholder="Qty 7 Hari" style="flex:1;">
+            </div>`;
+            document.getElementById('target-psm-items').insertAdjacentHTML('beforeend', html);
+            psmTargetCount++;
+        };
+
+        window.simpanTarget = async function(type) {
+            const m = document.getElementById('tgt-month').value;
+            if(!m) return alert("Pilih bulan!");
+            showLoading(true);
+            try {
+                let payload = {}; let docId = "";
+                if(type === 'psm') {
+                    const pr = document.getElementById('tgt-psm-periode').value;
+                    let items = [];
+                    for(let i=0; i<psmTargetCount; i++) {
+                        let name = document.getElementById(`tgt-psm-name-${i}`)?.value;
+                        let qty = parseInt(document.getElementById(`tgt-psm-qty-${i}`)?.value || 0);
+                        if(name && qty>0) items.push({ name, tgtPeriode: qty, tgtHarian: Math.ceil(qty/7) });
+                    }
+                    if(items.length===0) throw "Isi item PSM";
+                    docId = `pps_psm_${m}_${pr}`;
+                    payload = { type: 'psm', periode: pr, items, harian: {}, totalAktual: 0 };
+                } else {
+                    const pr = document.getElementById(`tgt-${type}-periode`).value;
+                    const qty = parseInt(document.getElementById(`tgt-${type}-qty`).value || 0);
+                    if(qty<=0) throw "Isi Qty!";
+                    docId = `pps_${type}_${m}_${pr}`;
+                    payload = { type, periode: pr, tgtPeriode: qty, tgtHarian: Math.ceil(qty/15), harian: {}, totalAktual: 0 };
+                }
+                await fetch(`api.php?action=simpanData&doc=${docId}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                alert("Target Disimpan!"); loadLaporanKasir();
+            } catch(e) { alert(typeof e === 'string'? e : "Gagal"); }
+            showLoading(false);
+        };
+
+        window.updateArsipPeriode = function() {
+            const t = document.getElementById('arsip-jenis').value;
+            document.getElementById('arsip-periode').innerHTML = t === 'psm' ? 
+                `<option value="1-7">1 - 7</option><option value="8-15">8 - 15</option><option value="16-23">16 - 23</option><option value="24-31">24 - 31</option>` : 
+                `<option value="1-15">1 - 15</option><option value="16-31">16 - 31</option>`;
+        };
+
+        window.loadArsip = async function() {
+            const t = document.getElementById('arsip-jenis').value;
+            const m = document.getElementById('arsip-bulan').value;
+            const pr = document.getElementById('arsip-periode').value;
+            showLoading(true);
+            try {
+                const res = await fetch(`api.php?action=ambilData&doc=pps_${t}_${m}_${pr}`);
+                const data = await res.json();
+                const resContainer = document.getElementById('arsip-result');
+
+                if(data && !data.error) {
+                    let d = data;
+                    let h = `<div class="card"><b style="color:var(--alfa-blue)">HASIL ARSIP:</b><hr>`;
+                    if(t==='psm') {
+                        let total=0; if(d.items) d.items.forEach(i=>total+=i.tgtPeriode);
+                        h+=`Target: ${total} | Terjual: ${d.totalAktual} | ACHV: ${total>0?Math.round((d.totalAktual/total)*100):0}%</div>`;
+                    } else {
+                        h+=`Target: ${d.tgtPeriode} | Terjual: ${d.totalAktual} | ACHV: ${d.tgtPeriode>0?Math.round((d.totalAktual/d.tgtPeriode)*100):0}%</div>`;
+                    }
+                    resContainer.innerHTML = h;
+                } else { resContainer.innerHTML = `<div class="card" style="text-align:center;">Data Tidak Ada</div>`; }
+            } catch(e) { document.getElementById('arsip-result').innerHTML = `<div class="card" style="text-align:center;">Gagal memuat arsip</div>`; }
+            showLoading(false);
+        };
+    </script>
+</body>
+</html>
