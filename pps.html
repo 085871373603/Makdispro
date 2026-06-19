@@ -19,26 +19,28 @@
 
         /* --- TABS --- */
         .tabs { display: flex; background: white; border-bottom: 2px solid #ddd; position: sticky; top: 51px; z-index: 90; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tab { flex: 1; text-align: center; padding: 12px 5px; font-size: 12px; font-weight: bold; color: #777; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
+        .tab { flex: 1; text-align: center; padding: 12px 2px; font-size: 11px; font-weight: bold; color: #777; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
         .tab.active { color: var(--alfa-blue); border-bottom-color: var(--alfa-blue); background: #f4f8fb; }
 
-        /* --- UNIFIED WIDGET (1 KOTAK) --- */
+        /* --- UNIFIED WIDGET --- */
         .widget-wrapper { padding: 15px; }
         .unified-widget { background: linear-gradient(135deg, #ffffff, #f9f9f9); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eaeaea; }
         .uw-header { background: var(--alfa-blue); color: white; padding: 12px 15px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .uw-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .uw-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
         
-        .uw-row { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px dashed #ddd; }
+        .uw-row { display: flex; flex-direction: column; padding-bottom: 12px; border-bottom: 1px dashed #ddd; }
         .uw-row:last-child { border-bottom: none; padding-bottom: 0; }
         
-        .uw-title { flex: 1; display: flex; flex-direction: column; }
-        .uw-title-main { font-size: 14px; font-weight: 800; color: #333; }
-        .uw-title-sub { font-size: 10px; color: #888; margin-top: 2px; }
+        .uw-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .uw-title-main { font-size: 14px; font-weight: 800; }
+        .uw-title-sub { font-size: 10px; color: #888; background: #eee; padding: 2px 6px; border-radius: 4px;}
         
-        .uw-stats { display: flex; gap: 15px; text-align: center; }
-        .uw-stat-box { display: flex; flex-direction: column; }
-        .uw-val { font-size: 16px; font-weight: 900; }
-        .uw-lbl { font-size: 9px; color: #777; font-weight: bold; text-transform: uppercase; margin-top: 2px; }
+        .stat-header { font-size: 10px; font-weight: bold; color: #666; margin-top: 5px; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px;}
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; background: #f4f8fb; padding: 8px; border-radius: 8px; border: 1px solid #e1eaf2; }
+        .stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
+        .stat-val { font-size: 14px; font-weight: 900; color: #333; }
+        .stat-lbl { font-size: 9px; color: #777; font-weight: bold; text-transform: uppercase; margin-top: 2px; }
 
         /* --- CONTENT SECTION --- */
         .content-section { display: none; padding: 0 15px 15px 15px; }
@@ -57,6 +59,9 @@
         .shift-box span { display: block; font-size: 10px; color: #777; margin-bottom: 4px; font-weight: bold; }
         .shift-input { width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; padding: 5px; outline: none; color: var(--alfa-red); background: #fff;}
         .shift-input:focus { border-color: var(--alfa-blue); background: #e3f2fd; }
+        
+        .kasir-input-group { background: #fff9e6; border: 1px solid #fbeeb8; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .kasir-input { width: 100%; font-size: 12px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-weight: bold; color: var(--alfa-blue); }
 
         /* --- BUTTONS --- */
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; margin-top: 10px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -89,8 +94,7 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--alfa-red); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- ARSIP TABLE --- */
-        .table-responsive { overflow-x: auto; margin-top: 10px; }
+        /* --- TABLE --- */
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background-color: var(--alfa-blue); color: white; }
@@ -116,74 +120,76 @@
                 <span id="uw-date-display" style="font-size:10px; font-weight:normal;">-</span>
             </div>
             <div class="uw-body">
+                
                 <div class="uw-row">
                     <div class="uw-title">
                         <span class="uw-title-main" style="color:var(--alfa-blue);">PSM</span>
                         <span class="uw-title-sub" id="lbl-psm-periode">Periode -</span>
                     </div>
-                    <div class="uw-stats">
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-psm-harian">0%</span>
-                            <span class="uw-lbl">Harian</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-psm-periode" style="color:var(--alfa-blue);">0%</span>
-                            <span class="uw-lbl">Periode</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-psm-sisa" style="color:var(--alfa-red);">0</span>
-                            <span class="uw-lbl">Kekurangan</span>
-                        </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-psm-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
                     </div>
                 </div>
+
                 <div class="uw-row">
                     <div class="uw-title">
                         <span class="uw-title-main" style="color:var(--alfa-yellow);">PWP</span>
                         <span class="uw-title-sub" id="lbl-pwp-periode">Periode -</span>
                     </div>
-                    <div class="uw-stats">
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-pwp-harian">0%</span>
-                            <span class="uw-lbl">Harian</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-pwp-periode" style="color:var(--alfa-blue);">0%</span>
-                            <span class="uw-lbl">Periode</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-pwp-sisa" style="color:var(--alfa-red);">0</span>
-                            <span class="uw-lbl">Kekurangan</span>
-                        </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-pwp-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
                     </div>
                 </div>
+
                 <div class="uw-row">
                     <div class="uw-title">
-                        <span class="uw-title-main" style="color:var(--alfa-red);">SERBA GRATIS</span>
+                        <span class="uw-title-main" style="color:var(--alfa-red);">SERTIS (SG)</span>
                         <span class="uw-title-sub" id="lbl-sg-periode">Periode -</span>
                     </div>
-                    <div class="uw-stats">
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-sg-harian">0%</span>
-                            <span class="uw-lbl">Harian</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-sg-periode" style="color:var(--alfa-blue);">0%</span>
-                            <span class="uw-lbl">Periode</span>
-                        </div>
-                        <div class="uw-stat-box">
-                            <span class="uw-val" id="w-sg-sisa" style="color:var(--alfa-red);">0</span>
-                            <span class="uw-lbl">Kekurangan</span>
-                        </div>
+                    <div class="stat-header">HARIAN</div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-tgt">0</span><span class="stat-lbl">Target</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-act">0</span><span class="stat-lbl">Pencapaian</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-h-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                    </div>
+                    <div class="stat-header">TOTAL PERIODE</div>
+                    <div class="stat-grid stat-grid-4">
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-tgt">0</span><span class="stat-lbl">Tgt Total</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-act">0</span><span class="stat-lbl">Total Achv</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-achv" style="color:var(--alfa-blue);">0%</span><span class="stat-lbl">Achv %</span></div>
+                        <div class="stat-item"><span class="stat-val" id="w-sg-p-min" style="color:var(--alfa-red);">0</span><span class="stat-lbl">Minus</span></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('laporan')">LAPORAN SHIFT</div>
-        <div class="tab" onclick="switchTab('target')">BUAT TARGET</div>
-        <div class="tab" onclick="switchTab('arsip')">ARSIP PERIODE</div>
+        <div class="tab active" onclick="switchTab('laporan')">LAPORAN</div>
+        <div class="tab" onclick="switchTab('kasir')">KASIR</div>
+        <div class="tab" onclick="switchTab('target')">TARGET</div>
+        <div class="tab" onclick="switchTab('arsip')">ARSIP</div>
     </div>
 
     <div id="tab-laporan" class="content-section active">
@@ -191,6 +197,15 @@
         <div class="date-picker-container">
             <label>Tgl Shift:</label>
             <input type="date" id="lap-date" class="form-control" style="flex:1; margin:0;" onchange="loadLaporanKasir()">
+        </div>
+
+        <div class="kasir-input-group">
+            <label style="display:block; font-size:12px; font-weight:bold; color:#d9a400; margin-bottom:8px; text-align:center;">NAMA KASIR BERTUGAS (WAJIB DIISI)</label>
+            <div class="grid-3">
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 1</span><input type="text" id="nama-kasir-s1" class="kasir-input" placeholder="Nama S1"></div>
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 2</span><input type="text" id="nama-kasir-s2" class="kasir-input" placeholder="Nama S2"></div>
+                <div><span style="font-size:10px; font-weight:bold; color:#666;">Shift 3</span><input type="text" id="nama-kasir-s3" class="kasir-input" placeholder="Nama S3"></div>
+            </div>
         </div>
 
         <div class="card">
@@ -211,7 +226,7 @@
         </div>
 
         <div class="card">
-            <div class="card-header">3. INPUT QTY PENJUALAN SERBA GRATIS</div>
+            <div class="card-header">3. INPUT QTY PENJUALAN SERTIS (SG)</div>
             <p style="font-size: 11px; color:#888; margin-bottom:5px;" id="lbl-tgt-harian-sg">Target Harian: 0</p>
             <div class="grid-3">
                 <div class="shift-box"><span>Shift 1</span><input type="number" id="lap-sg-s1" class="shift-input" placeholder="0"></div>
@@ -233,6 +248,16 @@
                 <div class="ai-chat-body" id="ai-response-text">
                     Menganalisa kinerja hari ini...
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-kasir" class="content-section">
+        <div class="card">
+            <div class="card-header">PENCAPAIAN PER KASIR (PERIODE BERJALAN)</div>
+            <p style="font-size:11px; color:#666; margin-bottom:10px;">Data otomatis terakumulasi berdasarkan nama kasir yang diinput pada Laporan Shift.</p>
+            <div id="kasir-result-container">
+                <p style="font-size:12px; color:#888; text-align:center;">Memuat data kasir...</p>
             </div>
         </div>
     </div>
@@ -278,7 +303,7 @@
         </div>
 
         <div class="card">
-            <div class="card-header">TARGET SERBA GRATIS (2 PERIODE)</div>
+            <div class="card-header">TARGET SERTIS / SG (2 PERIODE)</div>
             <div class="form-group">
                 <label>Pilih Periode</label>
                 <select id="tgt-sg-periode" class="form-control">
@@ -302,7 +327,7 @@
                 <select id="arsip-jenis" class="form-control" onchange="updateArsipPeriode()">
                     <option value="psm">PSM</option>
                     <option value="pwp">PWP</option>
-                    <option value="sg">SERBA GRATIS</option>
+                    <option value="sg">SERBA GRATIS (SERTIS)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -398,6 +423,7 @@
 
                 renderFormsLaporan(dateStr);
                 recalcWidgets(dateStr);
+                calculateKasirStats(); // Load data per kasir
                 
                 // Hide AI chat until triggered
                 document.getElementById('ai-assistant').style.display = 'none';
@@ -408,6 +434,17 @@
         };
 
         function renderFormsLaporan(dateStr) {
+            // Load Kasir Names
+            let repPsm = currentData.psm?.harian?.[dateStr];
+            let repPwp = currentData.pwp?.harian?.[dateStr];
+            let repSg = currentData.sg?.harian?.[dateStr];
+            let savedKasir = (repPsm && repPsm.kasir) || (repPwp && repPwp.kasir) || (repSg && repSg.kasir) || {s1:'', s2:'', s3:''};
+            
+            document.getElementById('nama-kasir-s1').value = savedKasir.s1;
+            document.getElementById('nama-kasir-s2').value = savedKasir.s2;
+            document.getElementById('nama-kasir-s3').value = savedKasir.s3;
+
+            // Load PSM
             const psmCont = document.getElementById('lap-psm-container');
             if(currentData.psm && currentData.psm.items) {
                 psmCont.innerHTML = '';
@@ -447,11 +484,18 @@
                 let tgtH = 0, aktH = 0, tgtP = 0, aktP = currentData.psm.totalAktual || 0;
                 currentData.psm.items.forEach((item, i) => {
                     tgtH += item.tgtHarian; tgtP += item.tgtPeriode;
-                    if(currentData.psm.harian && currentData.psm.harian[dateStr]) aktH += (currentData.psm.harian[dateStr].items[i].s1 + currentData.psm.harian[dateStr].items[i].s2 + currentData.psm.harian[dateStr].items[i].s3);
+                    if(currentData.psm.harian && currentData.psm.harian[dateStr]) {
+                        aktH += (currentData.psm.harian[dateStr].items[i].s1 + currentData.psm.harian[dateStr].items[i].s2 + currentData.psm.harian[dateStr].items[i].s3);
+                    }
                 });
-                document.getElementById('w-psm-harian').innerText = (tgtH>0 ? Math.round((aktH/tgtH)*100) : 0) + '%';
-                document.getElementById('w-psm-periode').innerText = (tgtP>0 ? Math.round((aktP/tgtP)*100) : 0) + '%';
-                document.getElementById('w-psm-sisa').innerText = Math.max(tgtP - aktP, 0);
+                document.getElementById('w-psm-h-tgt').innerText = tgtH;
+                document.getElementById('w-psm-h-act').innerText = aktH;
+                document.getElementById('w-psm-h-achv').innerText = (tgtH>0 ? Math.round((aktH/tgtH)*100) : 0) + '%';
+                
+                document.getElementById('w-psm-p-tgt').innerText = tgtP;
+                document.getElementById('w-psm-p-act').innerText = aktP;
+                document.getElementById('w-psm-p-achv').innerText = (tgtP>0 ? Math.round((aktP/tgtP)*100) : 0) + '%';
+                document.getElementById('w-psm-p-min').innerText = Math.max(tgtP - aktP, 0);
             }
 
             // PWP Widget
@@ -465,16 +509,104 @@
             if(data) {
                 let aktH = 0;
                 if(data.harian && data.harian[dateStr]) aktH = data.harian[dateStr].total;
-                document.getElementById(`w-${type}-harian`).innerText = (data.tgtHarian>0 ? Math.round((aktH/data.tgtHarian)*100) : 0) + '%';
-                document.getElementById(`w-${type}-periode`).innerText = (data.tgtPeriode>0 ? Math.round((data.totalAktual/data.tgtPeriode)*100) : 0) + '%';
-                document.getElementById(`w-${type}-sisa`).innerText = Math.max(data.tgtPeriode - data.totalAktual, 0);
+                
+                document.getElementById(`w-${type}-h-tgt`).innerText = data.tgtHarian || 0;
+                document.getElementById(`w-${type}-h-act`).innerText = aktH;
+                document.getElementById(`w-${type}-h-achv`).innerText = (data.tgtHarian>0 ? Math.round((aktH/data.tgtHarian)*100) : 0) + '%';
+                
+                document.getElementById(`w-${type}-p-tgt`).innerText = data.tgtPeriode || 0;
+                document.getElementById(`w-${type}-p-act`).innerText = data.totalAktual || 0;
+                document.getElementById(`w-${type}-p-achv`).innerText = (data.tgtPeriode>0 ? Math.round((data.totalAktual/data.tgtPeriode)*100) : 0) + '%';
+                document.getElementById(`w-${type}-p-min`).innerText = Math.max((data.tgtPeriode || 0) - (data.totalAktual || 0), 0);
             }
         }
+
+        // --- SISTEM KALKULASI KASIR ---
+        window.calculateKasirStats = function() {
+            let kasirStats = {};
+
+            const addStat = (nama, type, qty) => {
+                if(!nama || nama.trim() === '') return;
+                let key = nama.toUpperCase().trim();
+                if(!kasirStats[key]) kasirStats[key] = { psm: 0, pwp: 0, sg: 0 };
+                kasirStats[key][type] += (parseInt(qty) || 0);
+            };
+
+            // Hitung PSM
+            if(currentData.psm && currentData.psm.harian) {
+                Object.values(currentData.psm.harian).forEach(hari => {
+                    if(!hari.kasir) return;
+                    hari.items.forEach(it => {
+                        addStat(hari.kasir.s1, 'psm', it.s1);
+                        addStat(hari.kasir.s2, 'psm', it.s2);
+                        addStat(hari.kasir.s3, 'psm', it.s3);
+                    });
+                });
+            }
+
+            // Hitung PWP
+            if(currentData.pwp && currentData.pwp.harian) {
+                Object.values(currentData.pwp.harian).forEach(hari => {
+                    if(!hari.kasir) return;
+                    addStat(hari.kasir.s1, 'pwp', hari.s1);
+                    addStat(hari.kasir.s2, 'pwp', hari.s2);
+                    addStat(hari.kasir.s3, 'pwp', hari.s3);
+                });
+            }
+
+            // Hitung SG
+            if(currentData.sg && currentData.sg.harian) {
+                Object.values(currentData.sg.harian).forEach(hari => {
+                    if(!hari.kasir) return;
+                    addStat(hari.kasir.s1, 'sg', hari.s1);
+                    addStat(hari.kasir.s2, 'sg', hari.s2);
+                    addStat(hari.kasir.s3, 'sg', hari.s3);
+                });
+            }
+
+            // Tampilkan ke UI
+            let html = '';
+            let psmSumTgt = 0;
+            if(currentData.psm) currentData.psm.items.forEach(i => psmSumTgt += i.tgtPeriode);
+            let pwpTgt = currentData.pwp?.tgtPeriode || 0;
+            let sgTgt = currentData.sg?.tgtPeriode || 0;
+
+            for(let k in kasirStats) {
+                let d = kasirStats[k];
+                let achvPsm = psmSumTgt > 0 ? ((d.psm/psmSumTgt)*100).toFixed(1) : 0;
+                let achvPwp = pwpTgt > 0 ? ((d.pwp/pwpTgt)*100).toFixed(1) : 0;
+                let achvSg = sgTgt > 0 ? ((d.sg/sgTgt)*100).toFixed(1) : 0;
+
+                html += `
+                <div style="border:1px solid #ddd; border-radius:8px; padding:10px; margin-bottom:10px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    <div style="font-weight:bold; color:var(--alfa-blue); border-bottom:1px dashed #ddd; padding-bottom:5px; margin-bottom:8px;">🧑‍💼 KASIR: ${k}</div>
+                    <table style="width:100%; text-align:center; font-size:11px;">
+                        <tr style="background:#f4f8fb; font-weight:bold; color:#555;">
+                            <td>Program</td><td>Terjual</td><td>Kontribusi (vs Tgt Toko)</td>
+                        </tr>
+                        <tr><td>PSM</td><td style="font-weight:bold;">${d.psm}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvPsm}%</td></tr>
+                        <tr><td>PWP</td><td style="font-weight:bold;">${d.pwp}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvPwp}%</td></tr>
+                        <tr><td>Sertis</td><td style="font-weight:bold;">${d.sg}</td><td style="color:var(--alfa-blue); font-weight:bold;">${achvSg}%</td></tr>
+                    </table>
+                </div>`;
+            }
+            
+            if(html === '') html = '<p style="text-align:center; font-size:12px; color:#888;">Belum ada data kasir di periode ini.</p>';
+            document.getElementById('kasir-result-container').innerHTML = html;
+        };
 
         // --- SIMPAN LAPORAN ---
         window.simpanLaporanKasir = async function() {
             const dateStr = document.getElementById('lap-date').value;
             if(!dateStr) return alert("Pilih tanggal!");
+            
+            // Ambil Data Nama Kasir
+            const kasirData = {
+                s1: document.getElementById('nama-kasir-s1').value.trim() || '',
+                s2: document.getElementById('nama-kasir-s2').value.trim() || '',
+                s3: document.getElementById('nama-kasir-s3').value.trim() || ''
+            };
+
             const monthStr = dateStr.substring(0,7);
             showLoading(true, "Menyimpan...");
 
@@ -490,7 +622,7 @@
                         totalHarian += (s1+s2+s3);
                     });
                     if(!currentData.psm.harian) currentData.psm.harian = {};
-                    currentData.psm.harian[dateStr] = { items: itemsRecord, total: totalHarian };
+                    currentData.psm.harian[dateStr] = { items: itemsRecord, total: totalHarian, kasir: kasirData };
                     
                     let grand = 0; Object.values(currentData.psm.harian).forEach(d => grand += d.total);
                     currentData.psm.totalAktual = grand;
@@ -504,7 +636,7 @@
                         let s2 = parseInt(document.getElementById(`lap-${type}-s2`).value||0);
                         let s3 = parseInt(document.getElementById(`lap-${type}-s3`).value||0);
                         if(!currentData[type].harian) currentData[type].harian = {};
-                        currentData[type].harian[dateStr] = { s1, s2, s3, total: (s1+s2+s3) };
+                        currentData[type].harian[dateStr] = { s1, s2, s3, total: (s1+s2+s3), kasir: kasirData };
                         let grand = 0; Object.values(currentData[type].harian).forEach(d => grand += d.total);
                         currentData[type].totalAktual = grand;
                         await setDoc(doc(db, "pps_targets", `pps_${type}_${monthStr}_${getAutoPeriod(dateStr, type)}`), currentData[type]);
@@ -514,6 +646,7 @@
 
                 alert("Laporan Tersimpan!");
                 recalcWidgets(dateStr);
+                calculateKasirStats();
                 
                 // Show AI Trigger Button
                 document.getElementById('btn-trigger-ai').style.display = 'block';
@@ -533,7 +666,6 @@
             boxAi.style.display = 'block';
             txtAi.innerHTML = '<i>Menganalisa kinerja & gestur psikologis pelanggan hari ini... Mohon tunggu 🤖</i>';
 
-            // Gather Data
             let psmTxt = "Tidak ada PSM";
             if(currentData.psm) {
                 psmTxt = currentData.psm.items.map((it, i) => {
@@ -542,7 +674,7 @@
                 }).join(", ");
             }
             let pwpTxt = currentData.pwp ? `PWP (Target: ${currentData.pwp.tgtHarian}, Terjual: ${currentData.pwp.harian?.[dateStr]?.total||0})` : "";
-            let sgTxt = currentData.sg ? `Serba Gratis (Target: ${currentData.sg.tgtHarian}, Terjual: ${currentData.sg.harian?.[dateStr]?.total||0})` : "";
+            let sgTxt = currentData.sg ? `Serba Gratis/Sertis (Target: ${currentData.sg.tgtHarian}, Terjual: ${currentData.sg.harian?.[dateStr]?.total||0})` : "";
 
             const prompt = `Anda adalah Mentor Kepala Toko Minimarket yang cerdas dan asik.
             Berikut pencapaian tim kasir hari ini:
@@ -570,7 +702,7 @@
             }
         };
 
-        // --- TARGET & ARSIP LOGIC (SAMA SEPERTI SEBELUMNYA) ---
+        // --- TARGET & ARSIP LOGIC ---
         window.addPsmItem = function() {
             const html = `<div style="display:flex; gap:10px; margin-bottom:10px;">
                 <input type="text" id="tgt-psm-name-${psmTargetCount}" class="form-control" placeholder="Nama Produk" style="flex:2;">
