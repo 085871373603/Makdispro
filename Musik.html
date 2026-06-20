@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melawan Dunia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #050505;
+            color: #dcdcdc;
+            font-family: 'Playfair Display', serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 2s ease-in-out;
+        }
+
+        /* Overlay untuk memulai musik (Syarat browser modern) */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 1.5s ease;
+        }
+
+        #start-screen p {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+            color: #888;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Container Slide */
+        #slide-container {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .slide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            font-size: 2rem;
+            line-height: 1.6;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 2s ease-in-out, visibility 2s;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Efek partikel/kabut sederhana di background */
+        .fog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, #050505 80%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @media (max-width: 600px) {
+            .slide {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Folder musik: pastikan Anda memiliki folder 'musik' dan file 'lagu-sedih.mp3' di dalamnya -->
+    <audio id="bgm" src="musik/lagu-sedih.mp3" loop></audio>
+
+    <div id="start-screen" onclick="startExperience()">
+        <p>[ Ketuk layar untuk menyelami ]</p>
+    </div>
+
+    <div class="fog"></div>
+
+    <div id="slide-container">
+        <div class="slide">
+            "Di sudut ruang yang temaram ini, aku bersembunyi dari bisingnya dunia yang tak pernah mau mengerti."
+        </div>
+        <div class="slide">
+            "Langkah demi langkah terasa kian berat. Memikul ekspektasi mereka yang perlahan mencekik leherku."
+        </div>
+        <div class="slide">
+            "Mereka bilang masa muda adalah masa keemasan.<br>Mengapa milikku hanya berisi karat dan genangan air mata?"
+        </div>
+        <div class="slide">
+            "Berkali-kali jatuh, hancur, menjadi kepingan... namun dipaksa merajut kembali senyum yang paling palsu."
+        </div>
+        <div class="slide">
+            "Namun, meski dada ini sesak dan tertatih... aku masih merangkak. Mencari setitik cahaya, mencoba memenangkan pertarungan melawan duniaku sendiri."
+        </div>
+    </div>
+
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const durationPerSlide = 11000; // 11 detik per slide
+
+        function startExperience() {
+            // Mulai musik
+            const bgm = document.getElementById('bgm');
+            bgm.play();
+
+            // Hilangkan layar awal
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+            }, 1500);
+
+            // Tampilkan slide pertama
+            slides[0].classList.add('active');
+
+            // Mulai rotasi slide
+            const slideInterval = setInterval(() => {
+                slides[slideIndex].classList.remove('active');
+                slideIndex++;
+
+                if (slideIndex < slides.length) {
+                    slides[slideIndex].classList.add('active');
+                } else {
+                    clearInterval(slideInterval);
+                }
+            }, durationPerSlide);
+
+            // Timer 60 detik (1 menit) untuk menutup/menggelapkan layar otomatis
+            setTimeout(() => {
+                // Menghitamkan layar secara perlahan
+                document.body.style.opacity = '0';
+                
+                setTimeout(() => {
+                    // Mencoba menutup tab (Beberapa browser akan memblokir ini jika tab tidak dibuka oleh JS)
+                    window.close();
+                    
+                    // Fallback jika browser memblokir window.close()
+                    document.body.innerHTML = ''; 
+                    bgm.pause();
+                }, 2000); // Tunggu efek fade out selesai
+
+            }, 58000); // Dipicu pada detik ke-58 agar pas 1 menit layar benar-benar tertutup
+        }
+    </script>
+</body>
+</html>
