@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master PSM - Generator Shelf Talker</title>
+    <title>Spreadsheet PSM - Generator Shelf Talker</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -284,7 +284,7 @@
     </div>
 
     <div class="win-tabs">
-        <div class="win-tab-active">SPREADSHEET SHELFT GENERATE-PSM</div>
+        <div class="win-tab-active">SPREADSHEET SHELFT GENERATE</div>
     </div>
 
     <div class="win-content">
@@ -337,7 +337,7 @@
 
         <div class="win-col">
             <div class="win-groupbox">
-                <div class="win-legend blue">PARAMETER LAYOUT</div>
+                <div class="win-legend blue">UKURAN LAYOUT</div>
                 <div class="form-row">
                     <div class="form-label" style="width: 90px;">Periode</div>
                     <select id="auto-periode" class="win-input"></select>
@@ -350,7 +350,7 @@
             </div>
 
             <div class="win-groupbox" style="flex: 1; padding: 10px;">
-                <div class="win-legend blue">DRAFT REKAP PRA CETAK</div>
+                <div class="win-legend blue">DRAFT CETAK</div>
                 <div class="table-container">
                     <table id="draftTable">
                         <thead>
@@ -380,7 +380,7 @@
 
     <div class="win-statusbar">
         <div class="status-pane" id="status-tanggal" style="flex: 0.6;">Tanggal : </div>
-        <div class="status-pane" id="status-db" style="flex: 0.9;">Status DB : LOAD...</div>
+        <div class="status-pane" id="status-db" style="flex: 0.9;">Firebase : LOAD...</div>
         <div class="status-pane" id="status-repo" style="flex: 1.5; text-align: right;">LOAD REPOSITORY...</div>
     </div>
 </div>
@@ -390,20 +390,19 @@
 <div id="qrModal" class="qr-modal-overlay">
     <div class="win-form qr-modal-box">
         <div class="win-header-text" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #808080; padding-bottom: 5px; margin-bottom: 10px;">
-            <span><b>QR DATA PROTOCOL (MULTI-PART)</b></span>
+            <span><b>QR TRANSFER DATA PROTOCOL</b></span>
             <button onclick="document.getElementById('qrModal').style.display='none'" class="win-btn" style="padding: 0px 5px; color: red;"><b>X</b></button>
         </div>
-        <p style="margin: 0 0 10px 0; font-family: Tahoma; font-size: 11px;">Silakan scan QR Code secara berurutan. Maks 5 File/QR.</p>
+        <p style="margin: 0 0 10px 0; font-family: Tahoma; font-size: 11px;">Pindai QR Code ini di aplikasi Label Receiver</p>
         
         <div class="qr-content-scroll" id="qrContainer">
-            </div>
+        </div>
     </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
 <script>
     // Konfigurasi Database Firebase
@@ -564,7 +563,7 @@
         const paneDb = document.getElementById("status-db");
         const paneRepo = document.getElementById("status-repo");
 
-        paneDb.innerText = "Status DB : LOADING...";
+        paneDb.innerText = "Firebase : LOADING...";
         paneDb.style.color = "#000";
         paneRepo.innerText = " LOAD REPOSITORY...";
 
@@ -572,10 +571,10 @@
         connectedRef.on("value", (snap) => {
             setTimeout(() => {
                 if (snap.val() === true) {
-                    paneDb.innerText = "Status DB : CONNECT";
+                    paneDb.innerText = "Firebase : CONNECT";
                     paneDb.style.color = "#006400";
                 } else {
-                    paneDb.innerText = "Status DB : DISCONNECT";
+                    paneDb.innerText = "Firebase : DISCONNECT";
                     paneDb.style.color = "#ff0000";
                 }
             }, 1000); 
@@ -646,7 +645,7 @@
         pdfContainer.innerHTML = allPages;
 
         const sekarang = new Date();
-        const fileName = `PSM_DCKW_${sekarang.getDate()}-${sekarang.getMonth()+1}_Waktu${sekarang.getHours()}${sekarang.getMinutes()}.pdf`;
+        const fileName = `PSM_😁_${sekarang.getDate()}-${sekarang.getMonth()+1}_Waktu${sekarang.getHours()}${sekarang.getMinutes()}.pdf`;
         
         pdfContainer.style.display = 'block';
         pdfContainer.style.position = 'relative'; 
@@ -681,7 +680,7 @@
     });
 
     // ==========================================================================
-    // LOGIKA GENERATE MULTI QR CODE (MAKSIMAL 5 ITEM PER QR)
+    // LOGIKA GENERATE MULTI QR CODE MENGGUNAKAN API TEC-IT (MAKS 5 ITEM PER QR)
     // ==========================================================================
     document.getElementById("btnQRCode").addEventListener("click", () => {
         if (currentPromoData.length === 0) {
@@ -703,6 +702,9 @@
             const chunkData = currentPromoData.slice(i * maksimalItemPerQR, (i + 1) * maksimalItemPerQR);
             const rawJsonData = JSON.stringify(chunkData);
 
+            // Encode data agar aman dikirim melalui URL
+            const encodedData = encodeURIComponent(rawJsonData);
+
             // Buat Kartu Pembungkus untuk masing-masing QR
             const card = document.createElement("div");
             card.className = "qr-part-card";
@@ -715,9 +717,21 @@
             title.innerText = `QR PART ${i + 1} DARI ${totalQR} (${chunkData.length} ITEM)`;
             card.appendChild(title);
 
-            // Buat Elemen Canvas untuk tempat menggambar QR
-            const canvas = document.createElement("canvas");
-            card.appendChild(canvas);
+            // Buat Elemen Image untuk memuat QR dari API TEC-IT
+            const imgQr = document.createElement("img");
+            imgQr.src = `https://qrcode.tec-it.com/API/QRCode?data=${encodedData}&backcolor=%23ffffff`;
+            imgQr.style.width = "220px"; 
+            imgQr.style.height = "220px";
+            imgQr.style.objectFit = "contain";
+            imgQr.alt = `QR Code Part ${i + 1}`;
+            
+            // Penanganan jika API gagal memuat gambar
+            imgQr.onerror = function() {
+                this.alt = "Gagal memuat QR. Teks JSON mungkin terlalu panjang untuk URL API.";
+                this.style.border = "1px solid red";
+            };
+            
+            card.appendChild(imgQr);
 
             // Buat Textbox (ReadOnly) untuk memperlihatkan Raw Data JSON
             const textarea = document.createElement("textarea");
@@ -733,16 +747,6 @@
 
             // Masukkan kartu ke dalam Container Scroll
             qrContainer.appendChild(card);
-
-            // Gambar QR Code menggunakan library QRious
-            new QRious({
-                element: canvas,
-                value: rawJsonData,
-                size: 220,      // Resolusi yang tajam tapi tidak terlalu memakan tempat
-                level: 'L',     // Level koreksi rendah agar kotak hitam lebih longgar
-                background: 'white',
-                foreground: 'black'
-            });
         }
     });
 
@@ -752,4 +756,4 @@
     jalankanEfekLoadingStatus();
 </script>
 </body>
-</html>
+    </html>
