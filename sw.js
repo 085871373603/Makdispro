@@ -1,6 +1,6 @@
 // Ingat: Ubah angka/nama versi ini SETIAP KALI kamu update kode HTML, CSS, JS, atau logo
 // Contoh: app-V2.3, app-V2.4, dst.
-const CACHE_NAME = 'app-V2'; 
+const CACHE_NAME = 'app-V2.2'; 
 const urlsToCache = [
   './',
   './index.html',
