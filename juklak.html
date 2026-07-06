@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juklak RTD Mobile</title>
+    
+    <!-- JsBarcode Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Tema Dark & Gold Bean Spot */
+            --primary: #FFC107; 
+            --primary-dark: #FF9800;
+            --surface: #1E1E1E; 
+            --background: #121212; 
+            --text-main: #FFFFFF;
+            --text-light: #B0B0B0;
+            --input-bg: rgba(255, 255, 255, 0.06);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --error: #CF6679;
+            --success: #03DAC6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        h1, h2, h3, .btn { font-family: 'Quicksand', sans-serif; }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            padding-bottom: 90px;
+        }
+
+        /* Header & Search */
+        header {
+            background-color: var(--surface);
+            padding: 20px 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .logo {
+            max-width: 150px;
+            height: auto;
+            filter: drop-shadow(0px 0px 10px rgba(255, 193, 7, 0.3));
+        }
+
+        .search-container { position: relative; width: 100%; }
+        .search-container i {
+            position: absolute; left: 18px; top: 50%;
+            transform: translateY(-50%); color: var(--primary); font-size: 18px;
+        }
+        .search-input {
+            width: 100%; padding: 16px 16px 16px 48px;
+            background-color: var(--input-bg); border: 2px solid transparent;
+            color: var(--text-main); border-radius: 30px; font-size: 16px;
+            outline: none; transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--primary); background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 12px rgba(255, 193, 7, 0.2);
+        }
+
+        /* FAB */
+        .fab-add {
+            position: fixed; bottom: 24px; right: 24px;
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000; border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; box-shadow: 0 8px 20px rgba(255, 193, 7, 0.4);
+            cursor: pointer; z-index: 20; border: none; transition: all 0.3s;
+        }
+        .fab-add:active { transform: scale(0.9); }
+
+        /* List Juklak */
+        .juklak-list {
+            padding: 20px 16px; display: flex; flex-direction: column; gap: 14px;
+        }
+        .juklak-item {
+            background: var(--surface); padding: 18px; border-radius: 16px;
+            border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer; display: flex; flex-direction: column; gap: 12px;
+        }
+        .juklak-item-content {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .juklak-item h3 { font-size: 17px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .juklak-item p { font-size: 13px; color: var(--primary); font-weight: 500; }
+        .icon-arrow {
+            width: 36px; height: 36px; background: rgba(255, 193, 7, 0.1);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+        }
+
+        /* Admin CRUD Actions in List */
+        .admin-actions {
+            display: flex; gap: 8px; border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+        .btn-action {
+            flex: 1; padding: 10px; border-radius: 10px; border: none; font-weight: 600;
+            font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: transform 0.2s;
+        }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-action.edit { background: rgba(3, 218, 198, 0.1); color: var(--success); }
+        .btn-action.delete { background: rgba(207, 102, 121, 0.1); color: var(--error); }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; backdrop-filter: blur(5px); transition: opacity 0.3s ease; padding: 16px;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--surface); width: 100%; max-width: 450px; max-height: 90vh;
+            border-radius: 24px; padding: 24px 20px; overflow-y: auto; position: relative;
+            transform: scale(0.9) translateY(20px); opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+            background: rgba(255,255,255,0.1); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
+            color: var(--text-light); transition: all 0.2s; z-index: 10;
+        }
+        .modal-close:hover { background: var(--error); color: #FFF; transform: rotate(90deg); }
+
+        /* Modal Headers */
+        .modal-header-icon { font-size: 48px; color: var(--primary); text-align: center; margin-bottom: 12px; margin-top: 10px; }
+        .modal-title { text-align: center; margin-bottom: 8px; font-size: 24px; color: #FFF; }
+        .modal-title span { color: var(--primary); }
+        .modal-subtitle { text-align: center; color: var(--text-light); font-size: 14px; margin-bottom: 28px; }
+
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-light); }
+        .form-input, .form-select {
+            width: 100%; padding: 14px; background-color: var(--input-bg); border: 2px solid transparent;
+            color: var(--text-main); border-radius: 12px; font-size: 15px; outline: none; transition: all 0.3s;
+        }
+        .form-input:focus, .form-select:focus { border-color: var(--primary); background-color: rgba(255, 255, 255, 0.1); }
+        .password-container { position: relative; }
+        .password-toggle { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-light); font-size: 18px; }
+        .btn {
+            width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px;
+        }
+        .btn-add-bahan {
+            width: 100%; padding: 14px; background: rgba(255, 193, 7, 0.1); color: var(--primary);
+            border: 2px dashed var(--primary); border-radius: 12px; font-size: 15px; font-weight: 600;
+            cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        /* Snackbar */
+        #snackbar {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
+            border-radius: 30px; padding: 14px 20px; position: fixed; z-index: 999; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-size: 14px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        #snackbar.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: -50px; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: -50px; opacity: 0;} }
+
+        /* Detail Modal Khusus */
+        #modalDetail .modal-content { background: var(--surface); padding: 24px 12px; max-width: 500px; }
+        .kertas-struk { background: #FFFFFF; border-radius: 8px; padding: 16px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; }
+        .kertas-struk::before {
+            content: ""; position: absolute; top: -6px; left: 0; right: 0; height: 6px;
+            background-size: 12px 12px; background-image: radial-gradient(circle at 6px 0, transparent 6px, #FFF 7px);
+        }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; }
+        .juklak-table { width: 100%; min-width: 320px; border-collapse: collapse; font-size: 12px; color: #000; }
+        .juklak-table th, .juklak-table td { border: 1px solid #333; padding: 6px 4px; }
+        .juklak-header { text-transform: uppercase; font-size: 20px; font-weight: 800; color: #FF9800; margin-bottom: 8px; text-align: center; }
+        .barcode-img { max-width: 100%; height: 50px; display: block; margin: 8px auto; }
+        
+        .row-green { background-color: #A5D6A7; color: #000; }
+        .row-brown { background-color: #D7CCC8; color: #000; }
+        .row-red { background-color: #EF9A9A; color: #000; }
+        .row-blue { background-color: #81D4FA; color: #000; }
+
+        /* Dynamic Input Ingredients */
+        .ingredient-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 16px; margin-bottom: 12px; display: grid;
+            grid-template-columns: 1fr 1fr; gap: 12px; position: relative;
+        }
+        .ingredient-card input, .ingredient-card select {
+            width: 100%; padding: 12px; background: var(--surface); border: 1px solid var(--border-color);
+            color: #FFF; border-radius: 8px; font-size: 14px;
+        }
+        .ingredient-card select { grid-column: span 2; }
+        .btn-delete-row {
+            position: absolute; top: -10px; right: -10px; background: var(--error); color: white;
+            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: none; cursor: pointer; box-shadow: 0 4px 8px rgba(207, 102, 121, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="logo_juklak.png" alt="Logo Bean Spot" class="logo" onerror="this.src='https://via.placeholder.com/160x60?text=BEAN+SPOT'">
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Cari resep menu...">
+        </div>
+    </header>
+
+    <div class="juklak-list" id="juklakList"></div>
+
+    <button class="fab-add" id="btnAddMenu">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- Modal Login -->
+    <div class="modal-overlay" id="modalLogin">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal('modalLogin')">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            
+            <div class="modal-header-icon"><i class="fa-solid fa-circle-user"></i></div>
+            <h2 class="modal-title">hmmmm <span>🤒</span></h2>
+            <p class="modal-subtitle">Silakan login untuk mengelola resep</p>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginUser" class="form-input" placeholder="email@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Kata Sandi</label>
+                <div class="password-container">
+                    <input type="password" id="loginPass" class="form-input" placeholder="Masukkan kata sandi">
+                    <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
+                </div>
+            </div>
+            <button class="btn" onclick="prosesLogin()">Masuk</button>
+        </div>
+    </div>
+
+    <!-- Modal Form CRUD (Tambah & Edit) -->
+    <div class="modal-overlay" id="modalAdd">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-close" onclick="closeModal('modalAdd')">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            
+            <div class="modal-header-icon" style="font-size: 40px; margin-bottom: 4px;">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <h2 class="modal-title" id="modalAddTitle">Menu <span>Baru</span></h2>
+            
+            <div class="form-group">
+                <label>Nama Produk</label>
+                <input type="text" id="inputNama" class="form-input" placeholder="NAMA MENU">
+            </div>
+            
+            <div class="form-group">
+                <label>Nomor PLU</label>
+                <input type="number" id="inputPLU" class="form-input" placeholder="PLU" oninput="generateBarcodePreview()">
+            </div>
+            
+            <div class="form-group">
+                <div style="background: #FFF; padding: 10px; border-radius: 12px; text-align: center; border: 2px dashed #CCC;">
+                    <img id="barcodePreview" class="barcode-img">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Bahan Baku (Raw Material)</label>
+                <div id="ingredientsContainer"></div>
+                <button type="button" class="btn-add-bahan" onclick="addIngredientRow()">
+                    <i class="fa-solid fa-plus"></i> Tambah Bahan Baku
+                </button>
+            </div>
+
+            <button class="btn" onclick="simpanMenu()" style="margin-top: 10px;">Simpan Resep</button>
+        </div>
+    </div>
+
+    <!-- Modal Detail Juklak -->
+    <div class="modal-overlay" id="modalDetail">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal('modalDetail')" style="color: #000; background:#EEE; z-index:20;">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <h2 class="modal-title" style="margin-top: 5px;">Detail <span>Resep</span></h2>
+            
+            <div class="kertas-struk" id="detailContent">
+                <!-- Data digenerate via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="snackbar">Notifikasi muncul di sini.</div>
+
+    <!-- Firebase SDK & Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtdEi2QFahN4hIUfbfq0nT783ds10xAZA",
+            authDomain: "appoprasional.firebaseapp.com",
+            projectId: "appoprasional",
+            storageBucket: "appoprasional.firebasestorage.app",
+            messagingSenderId: "425139544816",
+            appId: "1:425139544816:web:b18a40d3d73dd4650d1835",
+            databaseURL: "https://appoprasional-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        let dataJuklakGlobal = [];
+        window.isLoggedIn = false;
+        window.currentEditId = null; // Menyimpan ID data saat mode Edit
+        
+        // --- Sistem Auto Logout 1 Menit ---
+        let idleTimeout;
+        function resetIdleTimer() {
+            clearTimeout(idleTimeout);
+            if (window.isLoggedIn) {
+                idleTimeout = setTimeout(() => {
+                    signOut(auth).then(() => {
+                        window.isLoggedIn = false;
+                        closeModal('modalAdd');
+                        tampilSnackbar("Sesi berakhir karena tidak ada aktivitas.", false);
+                    });
+                }, 90000); 
+            }
+        }
+        ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => window.addEventListener(evt, resetIdleTimer));
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.isLoggedIn = true;
+                resetIdleTimer();
+            } else {
+                window.isLoggedIn = false;
+                clearTimeout(idleTimeout);
+            }
+            renderList(dataJuklakGlobal); // Re-render untuk show/hide tombol edit & hapus
+        });
+
+        const juklakRef = ref(db, 'juklak');
+        onValue(juklakRef, (snapshot) => {
+            const data = snapshot.val();
+            dataJuklakGlobal = [];
+            if (data) {
+                for (let key in data) {
+                    dataJuklakGlobal.push({ id: key, ...data[key] });
+                }
+            }
+            renderList(dataJuklakGlobal);
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = dataJuklakGlobal.filter(item => 
+                item.nama.toLowerCase().includes(keyword) || item.plu.includes(keyword)
+            );
+            renderList(filtered);
+        });
+
+        function renderList(dataArr) {
+            const container = document.getElementById('juklakList');
+            container.innerHTML = '';
+            if(dataArr.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-light); margin-top:20px;">Belum ada resep, silakan tambah baru!</p>';
+                return;
+            }
+            dataArr.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'juklak-item';
+                
+                let adminActions = '';
+                if(window.isLoggedIn) {
+                    // Tombol Edit & Hapus hanya muncul jika login
+                    adminActions = `
+                        <div class="admin-actions">
+                            <button class="btn-action edit" onclick="event.stopPropagation(); editMenu('${item.id}')">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button class="btn-action delete" onclick="event.stopPropagation(); deleteMenu('${item.id}')">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = `
+                    <div class="juklak-item-content">
+                        <div><h3>${item.nama}</h3><p>PLU: ${item.plu}</p></div>
+                        <div class="icon-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                    ${adminActions}
+                `;
+                div.onclick = () => bukaDetail(item);
+                container.appendChild(div);
+            });
+        }
+
+        // Fitur Delete Data (CRUD)
+        window.deleteMenu = function(id) {
+            if(confirm("Yakin ingin menghapus resep ini?")) {
+                remove(ref(db, 'juklak/' + id))
+                    .then(() => tampilSnackbar("Resep berhasil dihapus!", true))
+                    .catch((err) => tampilSnackbar("Gagal menghapus data: " + err.message));
+            }
+        };
+
+        // Fitur Buka Form Edit Data (CRUD)
+        window.editMenu = function(id) {
+            window.currentEditId = id; // Simpan ID yang sedang diedit
+            const item = dataJuklakGlobal.find(x => x.id === id);
+            
+            document.getElementById('modalAddTitle').innerHTML = 'Edit <span>Resep</span>';
+            document.getElementById('inputNama').value = item.nama;
+            document.getElementById('inputPLU').value = item.plu;
+            window.generateBarcodePreview();
+
+            const container = document.getElementById('ingredientsContainer');
+            container.innerHTML = ''; // Kosongkan bahan sebelumnya
+            
+            if(item.ingredients) {
+                item.ingredients.forEach(ing => {
+                    window.addIngredientRow(ing);
+                });
+            }
+
+            document.getElementById('modalAdd').classList.add('active');
+        };
+
+        // Fitur Simpan & Update (CRUD)
+        window.simpanMenu = function() {
+            if (!window.isLoggedIn) {
+                closeModal('modalAdd');
+                document.getElementById('modalLogin').classList.add('active');
+                return tampilSnackbar("Silakan login kembali!");
+            }
+            const nama = document.getElementById('inputNama').value.toUpperCase();
+            const plu = document.getElementById('inputPLU').value;
+            if(!nama || !plu) return tampilSnackbar("Nama Produk dan PLU wajib diisi!");
+
+            const ingredients = [];
+            const rows = document.querySelectorAll('.ingredient-card');
+            if(rows.length === 0) return tampilSnackbar("Tambahkan minimal 1 Bahan!");
+
+            rows.forEach(row => {
+                ingredients.push({
+                    raw: row.querySelector('.inp-raw').value.toUpperCase(),
+                    qty: row.querySelector('.inp-qty').value,
+                    utensil: row.querySelector('.inp-utensil').value.toUpperCase(),
+                    metode: row.querySelector('.inp-metode').value.toUpperCase(),
+                    warna: row.querySelector('.sel-warna').value
+                });
+            });
+
+            const newData = { nama, plu, ingredients };
+
+            if(window.currentEditId) {
+                // Proses Update Data (Edit)
+                update(ref(db, 'juklak/' + window.currentEditId), newData).then(() => {
+                    tampilSnackbar("Resep berhasil diperbarui!", true);
+                    closeModal('modalAdd');
+                    window.currentEditId = null;
+                }).catch(() => tampilSnackbar("Gagal memperbarui data."));
+            } else {
+                // Proses Simpan Data Baru (Create)
+                push(juklakRef, newData).then(() => {
+                    tampilSnackbar("Resep baru berhasil disimpan!", true);
+                    closeModal('modalAdd');
+                }).catch(() => tampilSnackbar("Gagal menyimpan data."));
+            }
+        };
+
+        window.bukaDetail = function(item) {
+            const barcodeTarget = item.plu + "2";
+            let rowsHtml = '';
+            
+            if(item.ingredients && item.ingredients.length > 0) {
+                let i = 0;
+                while (i < item.ingredients.length) {
+                    let currentIng = item.ingredients[i];
+                    let currentColor = currentIng.warna;
+                    
+                    let rowspan = 1;
+                    let j = i + 1;
+                    while (j < item.ingredients.length && item.ingredients[j].warna === currentColor) { rowspan++; j++; }
+
+                    let colorClass = '';
+                    if(currentColor === 'hijau') colorClass = 'row-green';
+                    else if(currentColor === 'cokelat') colorClass = 'row-brown';
+                    else if(currentColor === 'merah') colorClass = 'row-red';
+                    else if(currentColor === 'biru') colorClass = 'row-blue';
+
+                    for (let k = 0; k < rowspan; k++) {
+                        let ing = item.ingredients[i + k];
+                        rowsHtml += `<tr class="${colorClass}">`;
+                        rowsHtml += `<td style="text-align:center; font-weight:bold;">${i + k + 1}</td>`;
+                        rowsHtml += `<td>${ing.raw}</td>`;
+                        rowsHtml += `<td>${ing.qty}</td>`;
+                        
+                        if (k === 0) {
+                            rowsHtml += `<td rowspan="${rowspan}" style="text-align:center; vertical-align:middle; border: 1px solid #333;">${ing.utensil}</td>`;
+                            rowsHtml += `<td rowspan="${rowspan}" style="text-align:center; vertical-align:middle; border: 1px solid #333;">${ing.metode}</td>`;
+                        }
+                        rowsHtml += `</tr>`;
+                    }
+                    i += rowspan;
+                }
+            }
+
+            const html = `
+                <div style="border: 2px solid #333; padding: 10px; border-radius: 8px;">
+                    <h2 class="juklak-header">${item.nama}</h2>
+                    <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #000;">
+                        <tr><td style="width: 60px; font-weight: 800; border: 1px solid #333; padding:4px;">PLU</td><td style="font-weight: 800; border: 1px solid #333; padding:4px;">: ${item.plu}</td></tr>
+                        <tr><td style="font-weight: 800; border: 1px solid #333; padding:4px; vertical-align:middle;">BARCODE</td><td style="border: 1px solid #333; text-align: center; padding: 8px 4px;"><img id="detailBarcodeImg" class="barcode-img"></td></tr>
+                    </table>
+                    
+                    <div class="table-responsive">
+                        <table class="juklak-table">
+                            <tr style="background-color: #FFEB3B; font-weight: 800; color:#000;">
+                                <th style="width: 8%; text-align:center;">NO</th><th style="width: 32%;">BAHAN</th><th style="width: 15%;">QTY</th><th style="width: 25%;">ALAT</th><th style="width: 20%;">CARA</th>
+                            </tr>
+                            ${rowsHtml}
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detailContent').innerHTML = html;
+            document.getElementById('modalDetail').classList.add('active');
+            
+            JsBarcode("#detailBarcodeImg", barcodeTarget, { format: "CODE128", displayValue: false, height: 45, width: 2, margin: 0, lineColor: "#000" });
+        }
+
+        window.prosesLogin = function() {
+            const email = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            if(!email || !pass) return tampilSnackbar("Isi Email dan Password ya!");
+
+            signInWithEmailAndPassword(auth, email, pass).then(() => {
+                closeModal('modalLogin');
+                tampilSnackbar("Berhasil Login!", true);
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginPass').value = '';
+            }).catch(() => tampilSnackbar("Email atau Password salah."));
+        }
+    </script>
+
+    <!-- UI Scripts -->
+    <script>
+        document.getElementById('btnAddMenu').addEventListener('click', () => {
+            if (window.isLoggedIn) {
+                // Reset form untuk mode Create Baru
+                window.currentEditId = null; 
+                document.getElementById('modalAddTitle').innerHTML = 'Menu <span>Baru</span>';
+                document.getElementById('inputNama').value = '';
+                document.getElementById('inputPLU').value = '';
+                document.getElementById('ingredientsContainer').innerHTML = '';
+                document.getElementById('barcodePreview').removeAttribute('src');
+                
+                document.getElementById('modalAdd').classList.add('active');
+                window.addIngredientRow(); // Add 1 empty row
+            } else {
+                document.getElementById('modalLogin').classList.add('active');
+            }
+        });
+
+        window.closeModal = function(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const inp = document.getElementById('loginPass');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash'); this.classList.toggle('fa-eye');
+        });
+
+        window.tampilSnackbar = function(msg, isSuccess = false) {
+            const sb = document.getElementById("snackbar");
+            sb.innerText = msg;
+            sb.style.backgroundColor = isSuccess ? "var(--success)" : "var(--error)";
+            sb.style.color = isSuccess ? "#000" : "#FFF";
+            sb.className = "show";
+            setTimeout(() => { sb.className = sb.className.replace("show", ""); }, 3000);
+        }
+
+        window.generateBarcodePreview = function() {
+            const plu = document.getElementById('inputPLU').value;
+            if(plu) JsBarcode("#barcodePreview", plu + "2", { format: "CODE128", displayValue: true, fontSize: 16 });
+            else document.getElementById('barcodePreview').removeAttribute('src');
+        }
+
+        // Modifikasi fungsi addIngredientRow agar bisa menerima data (saat Edit)
+        window.addIngredientRow = function(initData = null) {
+            const container = document.getElementById('ingredientsContainer');
+            const row = document.createElement('div');
+            row.className = 'ingredient-card';
+            
+            const raw = initData ? initData.raw : '';
+            const qty = initData ? initData.qty : '';
+            const utensil = initData ? initData.utensil : '';
+            const metode = initData ? initData.metode : '';
+            const warna = initData ? initData.warna : 'kuning';
+
+            row.innerHTML = `
+                <button type="button" class="btn-delete-row" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+                <input type="text" class="inp-raw" placeholder="Bahan (Misal: Espresso)" value="${raw}">
+                <input type="text" class="inp-qty" placeholder="Takaran (Misal: 1 Shot)" value="${qty}">
+                <input type="text" class="inp-utensil" placeholder="Alat (Misal: Shaker)" value="${utensil}">
+                <input type="text" class="inp-metode" placeholder="Cara (Misal: Shake)" value="${metode}">
+                <select class="sel-warna">
+                    <option value="kuning" ${warna === 'kuning' ? 'selected' : ''}>-- Pilih Warna Label --</option>
+                    <option value="hijau" ${warna === 'hijau' ? 'selected' : ''}>🟢 Hijau (Di Aduk)</option>
+                    <option value="cokelat" ${warna === 'cokelat' ? 'selected' : ''}>🟤 Cokelat (Di Shake)</option>
+                    <option value="merah" ${warna === 'merah' ? 'selected' : ''}>🔴 Merah (Di Blender)</option>
+                    <option value="biru" ${warna === 'biru' ? 'selected' : ''}>🔵 Biru (Di Remas)</option>
+                </select>
+            `;
+            container.appendChild(row);
+        }
+    </script>
+</body>
+                  </html>
