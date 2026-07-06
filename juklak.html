@@ -281,7 +281,7 @@
             </div>
             
             <div class="form-group">
-                <label>Nomor PLU</label>
+                <label>PLU</label>
                 <input type="number" id="inputPLU" class="form-input" placeholder="PLU" oninput="generateBarcodePreview()">
             </div>
             
@@ -299,7 +299,7 @@
                 </button>
             </div>
 
-            <button class="btn" onclick="simpanMenu()" style="margin-top: 10px;">Simpan Resep</button>
+            <button class="btn" onclick="simpanMenu()" style="margin-top: 10px;">Simpan Menu</button>
         </div>
     </div>
 
@@ -354,7 +354,7 @@
                         closeModal('modalAdd');
                         tampilSnackbar("Sesi berakhir karena tidak ada aktivitas.", false);
                     });
-                }, 90000); 
+                }, 120000); 
             }
         }
         ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => window.addEventListener(evt, resetIdleTimer));
@@ -634,10 +634,10 @@
 
             row.innerHTML = `
                 <button type="button" class="btn-delete-row" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
-                <input type="text" class="inp-raw" placeholder="Bahan (Misal: Espresso)" value="${raw}">
-                <input type="text" class="inp-qty" placeholder="Takaran (Misal: 1 Shot)" value="${qty}">
-                <input type="text" class="inp-utensil" placeholder="Alat (Misal: Shaker)" value="${utensil}">
-                <input type="text" class="inp-metode" placeholder="Cara (Misal: Shake)" value="${metode}">
+                <input type="text" class="inp-raw" placeholder="RAW" value="${raw}">
+                <input type="text" class="inp-qty" placeholder="QTY" value="${qty}">
+                <input type="text" class="inp-utensil" placeholder="UTENSIL" value="${utensil}">
+                <input type="text" class="inp-metode" placeholder="METODE" value="${metode}">
                 <select class="sel-warna">
                     <option value="kuning" ${warna === 'kuning' ? 'selected' : ''}>-- Pilih Warna Label --</option>
                     <option value="hijau" ${warna === 'hijau' ? 'selected' : ''}>🟢 Hijau (Di Aduk)</option>
