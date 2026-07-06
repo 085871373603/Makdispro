@@ -550,7 +550,7 @@
                     <div class="table-responsive">
                         <table class="juklak-table">
                             <tr style="background-color: #FFEB3B; font-weight: 800; color:#000;">
-                                <th style="width: 8%; text-align:center;">NO</th><th style="width: 32%;">BAHAN</th><th style="width: 15%;">QTY</th><th style="width: 25%;">ALAT</th><th style="width: 20%;">CARA</th>
+                                <th style="width: 8%; text-align:center;">NO</th><th style="width: 32%;">BAHAN</th><th style="width: 15%;">QTY</th><th style="width: 25%;">ALAT</th><th style="width: 20%;">KETERANGAN</th>
                             </tr>
                             ${rowsHtml}
                         </table>
@@ -637,7 +637,7 @@
                 <input type="text" class="inp-raw" placeholder="RAW" value="${raw}">
                 <input type="text" class="inp-qty" placeholder="QTY" value="${qty}">
                 <input type="text" class="inp-utensil" placeholder="UTENSIL" value="${utensil}">
-                <input type="text" class="inp-metode" placeholder="METODE" value="${metode}">
+                <input type="text" class="inp-metode" placeholder="KETERANGAN" value="${metode}">
                 <select class="sel-warna">
                     <option value="kuning" ${warna === 'kuning' ? 'selected' : ''}>-- Pilih Warna Label --</option>
                     <option value="hijau" ${warna === 'hijau' ? 'selected' : ''}>🟢 Hijau (Di Aduk)</option>
