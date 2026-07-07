@@ -132,7 +132,6 @@
         <div class="splash-text">LOAD APLIKASI...</div>
     </div>
 
-    <!-- ELEMEN COACH MARK -->
     <div id="coach-overlay"></div>
     <div id="coach-tooltip" class="coach-tooltip">
         <div id="coach-arrow" class="coach-tooltip-arrow"></div>
@@ -142,7 +141,6 @@
 
     <div class="header">
         <div class="header-left">
-            <!-- Diberikan ID btn-menu untuk target Coach Mark -->
             <button class="hamburger" id="btn-menu" onclick="window.location.href='menu.html'">MENU</button>
             <div class="logo">TIMER MAXDIS</div>
         </div>
@@ -287,7 +285,6 @@
         let currentCoachStep = 0;
 
         function startCoachMark() {
-            // Cek apakah user sudah pernah melihat coach mark
             if (localStorage.getItem('coachMarkDone') === 'true') {
                 focusCurrentInput();
                 return;
@@ -297,10 +294,8 @@
         }
 
         function showCoachStep(index) {
-            // Hapus sorotan sebelumnya
             document.querySelectorAll('.coach-highlight').forEach(el => el.classList.remove('coach-highlight'));
 
-            // Jika panduan sudah selesai
             if (index >= coachSteps.length) {
                 document.getElementById('coach-overlay').style.display = 'none';
                 document.getElementById('coach-tooltip').style.display = 'none';
@@ -312,7 +307,6 @@
             const step = coachSteps[index];
             const targetEl = document.getElementById(step.id);
 
-            // Jika elemen tidak ditemukan (misal error HTML), lewati ke langkah selanjutnya
             if (!targetEl) {
                 currentCoachStep++;
                 showCoachStep(currentCoachStep);
@@ -329,9 +323,8 @@
 
             textEl.innerText = step.text;
             btnNext.innerText = index === coachSteps.length - 1 ? 'Mulai Kerja!' : 'Lanjut';
-            tooltip.style.display = 'flex'; // Tampilkan dulu untuk mendapat offsetHeight
+            tooltip.style.display = 'flex'; 
 
-            // Pengaturan Posisi Tooltip agar responsif
             if (step.align === 'bottom') {
                 tooltip.style.top = (rect.bottom + 15) + 'px';
                 tooltip.style.left = Math.max(10, rect.left) + 'px';
@@ -340,7 +333,6 @@
             } else if (step.align === 'top') {
                 tooltip.style.top = (rect.top - tooltip.offsetHeight - 15) + 'px';
                 
-                // Pastikan tooltip tidak keluar dari batas kanan/kiri layar hp
                 let leftPos = rect.left - (tooltip.offsetWidth / 2) + (rect.width / 2);
                 if (leftPos < 10) leftPos = 10;
                 if (leftPos + tooltip.offsetWidth > window.innerWidth - 10) {
@@ -349,15 +341,13 @@
                 tooltip.style.left = leftPos + 'px';
                 
                 arrow.className = 'coach-tooltip-arrow arrow-down';
-                // Posisikan panah tetap menunjuk ke target
                 arrow.style.left = Math.max(10, rect.left - leftPos + (rect.width / 2) - 10) + 'px';
             }
         }
 
-        // Tombol Lanjut pada Coach Mark diklik
         document.getElementById('coach-next').addEventListener('click', () => {
             currentCoachStep++;
-            setTimeout(() => showCoachStep(currentCoachStep), 50); // Jeda singkat agar UI transisi mulus
+            setTimeout(() => showCoachStep(currentCoachStep), 50);
         });
 
         function focusCurrentInput() {
@@ -367,14 +357,12 @@
             }
         }
 
-        // LOGIC LOADING SCREEN & INISIASI COACH MARK
         window.addEventListener('load', () => {
             const splashScreen = document.getElementById('splash-screen');
             setTimeout(() => {
                 splashScreen.style.opacity = '0';
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
-                    // Mulai proses panduan Coach Mark setelah Loading Screen hilang
                     startCoachMark(); 
                 }, 500);
             }, 3000); 
@@ -447,26 +435,69 @@
             playBeep();
         }
 
-        function finishLorong() {
-            document.getElementById('timerOverlay').style.display = 'none';
-            document.body.classList.remove('alarm-bg');
-            currentIndex++;
-            if (currentIndex >= lorongData.length) { alert("SEMUA LORONG SELESAI!"); currentIndex = 0; }
-            renderList();
-            setTimeout(() => { const nextInput = document.getElementById(`input-${currentIndex}`); if (nextInput) nextInput.focus(); }, 100);
-        }
+        // --- SISTEM ALARM 1 MENIT ---
+        let alarmInterval;
+        let alarmTimeout;
+        let audioCtx;
 
         function playBeep() {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) {
-                const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'square'; osc.frequency.value = 800; osc.start();
-                const now = ctx.currentTime;
-                gain.gain.setValueAtTime(1, now); gain.gain.setValueAtTime(0, now + 0.5);
-                gain.gain.setValueAtTime(1, now + 1.0); gain.gain.setValueAtTime(0, now + 1.5);
-                osc.stop(now + 2);
+            stopAlarm(); 
+
+            function triggerSingleBeep() {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    if (!audioCtx) audioCtx = new AudioContext();
+                    const osc = audioCtx.createOscillator(); 
+                    const gain = audioCtx.createGain();
+                    
+                    osc.connect(gain); 
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'square'; 
+                    osc.frequency.value = 800; 
+                    osc.start();
+                    
+                    const now = audioCtx.currentTime;
+                    gain.gain.setValueAtTime(1, now); 
+                    gain.gain.setValueAtTime(0, now + 0.5);
+                    osc.stop(now + 0.6);
+                }
             }
+
+            triggerSingleBeep();
+            alarmInterval = setInterval(triggerSingleBeep, 1000);
+
+            alarmTimeout = setTimeout(() => {
+                stopAlarm();
+            }, 60000);
+        }
+
+        function stopAlarm() {
+            if (alarmInterval) {
+                clearInterval(alarmInterval);
+                alarmInterval = null;
+            }
+            if (alarmTimeout) {
+                clearTimeout(alarmTimeout);
+                alarmTimeout = null;
+            }
+        }
+
+        function finishLorong() {
+            stopAlarm(); 
+            document.getElementById('timerOverlay').style.display = 'none';
+            document.getElementById('timerOverlay').classList.remove('alarm-bg'); 
+            
+            currentIndex++;
+            if (currentIndex >= lorongData.length) { 
+                alert("SEMUA LORONG SELESAI!"); 
+                currentIndex = 0; 
+            }
+            
+            renderList();
+            setTimeout(() => { 
+                const nextInput = document.getElementById(`input-${currentIndex}`); 
+                if (nextInput) nextInput.focus(); 
+            }, 100);
         }
 
         renderList();
