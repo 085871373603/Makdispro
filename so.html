@@ -387,7 +387,7 @@
                 btn.disabled = false;
             }
         } else {
-            showPopup("NIK tidak terdaftar dalam database toko!");
+            showPopup("Gagal Masuk/Akses Ditolak","NIK tidak terdaftar dalam database toko!");
         }
     });
 
@@ -467,7 +467,7 @@
         };
 
         if (currentShift === 2) {
-            showPopup("Konfirmasi Perubahan OH Shift 2", "Yakin ingin merubah onhand? Perubahan Onhand dilakukan Jika ada kekeliruan saat penghitungan, perubahan ini harus dilakukan sesudah EOD dan hitung ulang qty oh vs fisik.", executeSaveOnhand, true);
+            showPopup("Konfirmasi Perubahan OH Shift 2", "Yakin ingin merubah onhand? Perubahan Onhand dilakukan Jika ada kekeliruan saat penghitungan, perubahan ini harus dilakukan sesudah EOD dan hitung ulang qty oh vs fisik serta penjualan Shif 3 H+1", executeSaveOnhand, true);
         } else {
             executeSaveOnhand();
         }
