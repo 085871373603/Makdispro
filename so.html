@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>https://docs.google.com/spreadsheets/d/1TsJJq9ppH6Hgw7GbhIbswvc0OKZjpXfJ-qunDvWBE_0/edit?usp=drivesdk</title>
+    <style>
+        :root {
+            --primary: #d32f2f;      /* Merah Ritel */
+            --primary-dark: #b71c1c;
+            --secondary: #388e3c;    /* Hijau Stabil */
+            --warning: #fbc02d;      /* Kuning Nyaman */
+            --blue: #1976d2;
+            --bg: #ffffff;           /* Background Putih Bersih */
+            --card-bg: #f8f9fa;
+            --text: #212121;
+            --border: #e0e0e0;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Desain Standar Container Mobile */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg);
+            padding: 15px;
+            min-height: 95vh;
+        }
+        
+        h2, h3 { text-align: center; margin-bottom: 15px; color: var(--primary); font-weight: 700; }
+        
+        .info-bar { 
+            background: var(--card-bg); 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            font-size: 13px; 
+            color: var(--text); 
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            line-height: 1.5;
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 13px; color: #555; }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            font-size: 15px; 
+            background: #fafafa;
+            color: var(--text);
+            transition: 0.2s;
+        }
+        input:focus, select:focus { border-color: var(--primary); background: #fff; outline: none; }
+        
+        /* Modifikasi Tombol Bertema Merah-Hijau-Kuning */
+        button {
+            width: 100%; padding: 12px; border: none; border-radius: 6px;
+            font-size: 14px; font-weight: bold; color: white; cursor: pointer;
+            margin-top: 8px; background-color: var(--primary);
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        button.btn-success { background-color: var(--secondary); }
+        button.btn-warning { background-color: var(--warning); color: #000; }
+        button.btn-secondary { background-color: var(--blue); }
+        
+        .hidden { display: none !important; }
+        
+        /* Tabel Optimal untuk Layar HP */
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; border-radius: 6px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
+        th, td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+        th { background-color: var(--card-bg); color: #555; font-weight: 600; }
+        td input { width: 55px; padding: 6px; text-align: center; font-size: 13px; border: 1px solid var(--border); border-radius: 4px; }
+        
+        .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
+        .nav-grid button { margin-top: 0; padding: 10px 4px; font-size: 11px; }
+
+        .report-box { border: 1px solid var(--border); padding: 12px; margin-top: 10px; border-radius: 6px; font-size: 13px; background: var(--card-bg); }
+        .badge { background: var(--warning); color: #000; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        
+        /* Desain Kustom Komunikasi Pop-up Modal */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center;
+            justify-content: center; z-index: 1000; padding: 20px;
+        }
+        .modal-content {
+            background: #fff; padding: 20px; border-radius: 8px;
+            width: 100%; max-width: 360px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .modal-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: var(--primary); }
+        .modal-text { font-size: 14px; margin-bottom: 20px; color: #555; line-height: 1.4; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons button { margin-top: 0; }
+
+        /* Item List UI untuk CRUD */
+        .crud-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border: 1px solid var(--border); border-radius: 6px;
+            margin-bottom: 8px; background: #fff; font-size: 13px;
+        }
+        .crud-actions { display: flex; gap: 4px; }
+        .crud-actions button { padding: 6px 10px; font-size: 11px; margin: 0; width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app-container">
+    
+    <!-- SECTION LOGIN -->
+    <div id="login-section">
+        <h2>Login</h2>
+        <div class="form-group">
+            <input type="number" id="input-nik" placeholder="NIK">
+        </div>
+        <button id="btn-login" class="btn-success">MASUK</button>
+    </div>
+
+    <!-- SECTION DASHBOARD UTAMA -->
+    <div id="main-section" class="hidden">
+        <div class="nav-grid">
+            <button id="nav-so" class="btn-success">Stock Opname</button>
+            <button id="nav-report" class="btn-secondary">Report</button>
+            <button id="nav-settings" class="btn-warning">⚙️ Atur</button>
+            <button id="btn-logout" style="background-color: red;">Log Out</button>
+        </div>
+
+        <div class="info-bar" id="info-bar"></div> 
+
+        <!-- FORM INPUT ONHAND (Muncul 1x sehari) -->
+        <div id="onhand-form" class="hidden">
+            <h3>Input Onhand</h3>
+            <p style="font-size: 12px; margin-bottom: 10px; color: red; text-align: left;">*Onhand hanya diinput 1x dalam sehari</p>
+            <div class="table-responsive">
+                <table id="onhand-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Deskripsi</th>
+                            <th>Input Qty OH</th>
+                        </tr>
+                    </thead>
+                    <tbody id="onhand-tbody">
+                        <!-- Render Otomatis via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="btn-save-onhand" class="btn-success">SIMPAN ONHAND</button>
+        </div>
+
+        <!-- FORM INPUT KERTAS KERJA SO -->
+        <div id="so-form" class="hidden">
+            <h3>Kertas Kerja SO (Shift <span id="lbl-shift"></span>)</h3>
+          <p style="font-size: 12px; margin-bottom: 10px; color: red; text-align: left;">*) Tidak perlu hitung penjualan shift sebelumnya (input penjulan shift sendiri aja).</p>
+            <div class="table-responsive" id="so-table-container"></div>
+            <button id="btn-save-so" class="btn-success">Simpan Data </button>
+        </div>
+
+        <!-- MENU REPORT -->
+        <div id="report-section" class="hidden">
+            <h3>Report</h3>
+            <div class="form-group">
+                <label>Pilih Tanggal:</label>
+                <input type="date" id="report-date">
+            </div>
+            <button id="btn-view-report" class="btn-secondary">Preview</button>
+            <div id="report-result" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- MENU SETTINGS (CRUD USER & ITEM) -->
+        <div id="settings-section" class="hidden">
+            <h3>Genaral</h3>
+            
+            <div style="border-bottom: 2px solid var(--border); margin-bottom: 15px; padding-bottom: 15px;">
+                <h4>Kelola user</h4>
+                <div class="form-group" style="margin-top: 8px;">
+                    <input type="number" id="crud-user-nik" placeholder="NIK" style="margin-bottom: 5px;">
+                    <input type="text" id="crud-user-name" placeholder="Nama">
+                    <button id="btn-add-user" class="btn-success">Tambah User</button>
+                </div>
+                <div id="crud-user-list"></div>
+            </div>
+
+            <div>
+                <h4>Kelola Item SO</h4>
+                <div class="form-group" style="margin-top: 8px;">
+                    <input type="number" id="crud-item-plu" placeholder="PLU" style="margin-bottom: 5px;">
+                    <input type="text" id="crud-item-name" placeholder="Nama Item">
+                    <button id="btn-add-item" class="btn-success">Tambah Item</button>
+                </div>
+                <div id="crud-item-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TEMPLATE MODAL CUSTOM POPUP -->
+<div id="custom-modal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-title" id="modal-title">Pemberitahuan</div>
+        <div class="modal-text" id="modal-text">Isi pesan di sini...</div>
+        <div class="modal-buttons" id="modal-actions">
+            <!-- Tombol dinamis diatur via JS -->
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtdEi2QFahN4hIUfbfq0nT783ds10xAZA",
+        authDomain: "appoprasional.firebaseapp.com",
+        databaseURL: "https://appoprasional-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "appoprasional",
+        storageBucket: "appoprasional.firebasestorage.app",
+        messagingSenderId: "425139544816",
+        appId: "1:425139544816:web:b18a40d3d73dd4650d1835",
+        measurementId: "G-EPJ6SXSFVB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Default Local Data Master
+    let users = {
+        "24106346": "RANA ARIFIN",
+        "24104137": "SEPTIANI ISWANTI",
+        "20062995": "RESA DZAKARIA",
+        "17082422": "RAYNALDI SINAGA",
+        "22087129": "JEANE PHIALSA",
+        "22112100": "INTAN VANESA PUTRI",
+        "23013059": "TENDI RUSMAN",
+        "20085159": "FAISAL PRATAMA GUSTIAN",
+        "25090069": "WILDAN DANU PRATAMA"
+    };
+
+    let items = [
+        { id: "418604", name: "CUP 16 OZ" },
+        { id: "418605", name: "CUP 8OZ" }
+    ];
+
+    let currentUser = "";
+    let currentNIK = "";
+    let systemDate = "";
+    let systemTime = "";
+    let currentShift = 0;
+    
+    let todayOnhand = {};
+    let prevSales = {}; 
+
+    const secLogin = document.getElementById('login-section');
+    const secMain = document.getElementById('main-section');
+    const secOnhand = document.getElementById('onhand-form');
+    const secSO = document.getElementById('so-form');
+    const secReport = document.getElementById('report-section');
+    const secSettings = document.getElementById('settings-section');
+
+    // Kustom Pop-up Helper
+    function showPopup(title, message, callback = null, isConfirm = false) {
+        const modal = document.getElementById('custom-modal');
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = message;
+        
+        const actionsContainer = document.getElementById('modal-actions');
+        actionsContainer.innerHTML = '';
+
+        if (isConfirm) {
+            const btnCancel = document.createElement('button');
+            btnCancel.innerText = "Batal";
+            btnCancel.style.backgroundColor = "#757575";
+            btnCancel.onclick = () => modal.classList.add('hidden');
+            
+            const btnConfirm = document.createElement('button');
+            btnConfirm.innerText = "Ya, Lanjutkan";
+            btnConfirm.className = "btn-success";
+            btnConfirm.onclick = () => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            };
+            actionsContainer.appendChild(btnCancel);
+            actionsContainer.appendChild(btnConfirm);
+        } else {
+            const btnOk = document.createElement('button');
+            btnOk.innerText = "OK";
+            btnOk.className = "btn-secondary";
+            btnOk.onclick = () => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            };
+            actionsContainer.appendChild(btnOk);
+        }
+        modal.classList.remove('hidden');
+    }
+    
+    function updateDateTime() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        systemDate = `${y}-${m}-${d}`; 
+        
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        systemTime = `${hh}:${mm}`;
+
+        const hour = now.getHours();
+        if (hour >= 22 || hour < 7) currentShift = 3; 
+        else if (hour >= 7 && hour < 15) currentShift = 1; 
+        else currentShift = 2; 
+
+        document.getElementById('info-bar').innerHTML = `
+            👤 <b>User:</b> ${currentUser} | ${currentNIK} <br>
+            <b>Tgl:</b> ${systemDate} | <b>Jam:</b> ${systemTime} | <b>Shift:</b> ${currentShift}
+        `;
+        document.getElementById('lbl-shift').innerText = currentShift;
+    }
+
+    async function cleanupOldData() {
+        try {
+            const dbRef = ref(db, 'so_cup');
+            const snapshot = await get(dbRef);
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const limitDate = new Date();
+                limitDate.setDate(limitDate.getDate() - 3);
+                const limitDateStr = limitDate.toISOString().split('T')[0];
+
+                for (const dateKey in data) {
+                    if (dateKey < limitDateStr) {
+                        await remove(ref(db, `so_cup/${dateKey}`));
+                    }
+                }
+            }
+        } catch(e) { console.log("Cleanup terlewat", e); }
+    }
+
+    async function syncSettingsData() {
+        try {
+            const userSnap = await get(ref(db, 'metadata/users'));
+            if(userSnap.exists()) users = userSnap.val();
+            
+            const itemSnap = await get(ref(db, 'metadata/items'));
+            if(itemSnap.exists()) {
+                items = Object.keys(itemSnap.val()).map(k => ({id: k, name: itemSnap.val()[k]}));
+            }
+        } catch(e) { console.log("Gagal sync master data", e); }
+    }
+
+    document.getElementById('btn-login').addEventListener('click', async (e) => {
+        const btn = e.target;
+        const nik = document.getElementById('input-nik').value;
+        
+        await syncSettingsData();
+
+        if (users[nik]) {
+            btn.innerHTML = "Memuat...";
+            btn.disabled = true;
+            
+            try {
+                currentUser = users[nik];
+                currentNIK = nik;
+                updateDateTime();
+                await cleanupOldData(); 
+                await initMainApp();
+                secLogin.classList.add('hidden');
+                secMain.classList.remove('hidden');
+            } catch(error) {
+                showPopup("Error Sistem", "Gagal menyambungkan ke real-time server database.");
+            } finally {
+                btn.innerHTML = "MASUK";
+                btn.disabled = false;
+            }
+        } else {
+            showPopup("Akses Ditolak", "NIK tidak terdaftar dalam database tim toko!");
+        }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        secLogin.classList.remove('hidden');
+        secMain.classList.add('hidden');
+        document.getElementById('input-nik').value = "";
+    });
+
+    async function initMainApp() {
+        secReport.classList.add('hidden');
+        secSettings.classList.add('hidden');
+        const dbRef = ref(db, `so_cup/${systemDate}`);
+        const snapshot = await get(dbRef);
+        
+        items.forEach(item => { prevSales[item.id] = 0; });
+
+        if (snapshot.exists() && snapshot.val().onhand) {
+            todayOnhand = snapshot.val().onhand;
+            secOnhand.classList.add('hidden');
+            secSO.classList.remove('hidden');
+            
+            const shiftsData = snapshot.val().shifts || {};
+            
+            if (currentShift === 1 || currentShift === 2) {
+                if (shiftsData["3"] && shiftsData["3"].items) {
+                    items.forEach(item => { prevSales[item.id] += Number(shiftsData["3"].items[item.id]?.penjualan || 0); });
+                }
+            }
+            if (currentShift === 2) {
+                if (shiftsData["1"] && shiftsData["1"].items) {
+                    items.forEach(item => { prevSales[item.id] += Number(shiftsData["1"].items[item.id]?.penjualan || 0); });
+                }
+            }
+            renderSOTable();
+        } else {
+            renderOnhandForm();
+            secOnhand.classList.remove('hidden');
+            secSO.classList.add('hidden');
+        }
+    }
+
+    function renderOnhandForm() {
+        let html = "";
+        items.forEach(item => {
+            html += `<tr>
+                <td style="text-align: left;">${item.name}<br><b>(${item.id})</b></td>
+                <td><input type="number" id="onhand-${item.id}" value="0" min="0"></td>
+            </tr>`;
+        });
+        document.getElementById('onhand-tbody').innerHTML = html;
+    }
+
+    document.getElementById('btn-save-onhand').addEventListener('click', (e) => {
+        let empty = false;
+        items.forEach(item => {
+            if(document.getElementById(`onhand-${item.id}`).value === "") empty = true;
+        });
+
+        if (empty) { 
+            showPopup("Gagal menyimpan", "Isi Qty tidak boleh kosong! (Isi angka 0 jika barang kosong)"); 
+            return; 
+        }
+
+        const executeSaveOnhand = async () => {
+            const onhandData = { "user": currentUser, "timestamp": systemTime };
+            items.forEach(item => {
+                onhandData[item.id] = Number(document.getElementById(`onhand-${item.id}`).value);
+            });
+
+            try {
+                await set(ref(db, `so_cup/${systemDate}/onhand`), onhandData);
+                showPopup("Sukses", "Data Onhand Berhasil Disimpan!", () => { initMainApp(); });
+            } catch (error) {
+                showPopup("Gagal", "Error menyimpan data: " + error.message);
+            }
+        };
+
+        if (currentShift === 2) {
+            showPopup("Konfirmasi Shift 2", "Yakin ingin merubah onhand? pastikan sudah EOD dan qty sesuai.", executeSaveOnhand, true);
+        } else {
+            executeSaveOnhand();
+        }
+    });
+
+    function renderSOTable() {
+        let html = `<table><tr>
+            <th>Dskrps</th>
+            <th>OH</th>
+            <th>Rak</th>
+            <th>Gdg</th>
+            <th>Sales</th>
+            <th>Slsih</th>
+        </tr>`;
+        items.forEach(item => {
+            const oh = todayOnhand[item.id] || 0;
+            html += `<tr>
+                <td style="text-align:left; font-size:11px; font-weight:bold;">${item.name}</td>
+                <td>${oh}</td>
+                <td><input type="number" class="so-input" data-id="${item.id}" data-type="rak" value="0"></td>
+                <td><input type="number" class="so-input" data-id="${item.id}" data-type="gudang" value="0"></td>
+                <td><input type="number" class="so-input" data-id="${item.id}" data-type="jual" value="0"></td>
+                <td id="selisih-${item.id}" style="font-weight:bold;">0</td>
+            </tr>`;
+        });
+        html += `</table>`;
+        document.getElementById('so-table-container').innerHTML = html;
+
+        document.querySelectorAll('.so-input').forEach(el => {
+            el.addEventListener('input', calculateSelisih);
+        });
+
+        items.forEach(item => {
+            const firstInput = document.querySelector(`.so-input[data-id="${item.id}"]`);
+            if(firstInput) firstInput.dispatchEvent(new Event('input'));
+        });
+    }
+
+    function calculateSelisih(e) {
+        const id = e.target.getAttribute('data-id');
+        const rak = Number(document.querySelector(`.so-input[data-id="${id}"][data-type="rak"]`)?.value || 0);
+        const gudang = Number(document.querySelector(`.so-input[data-id="${id}"][data-type="gudang"]`)?.value || 0);
+        const jualShiftIni = Number(document.querySelector(`.so-input[data-id="${id}"][data-type="jual"]`)?.value || 0);
+        
+        const oh = Number(todayOnhand[id] || 0);
+        const totalJual = Number(prevSales[id] || 0) + jualShiftIni; 
+        
+        const selisih = (rak + gudang + totalJual) - oh;
+        
+        const elSelisih = document.getElementById(`selisih-${id}`);
+        if(elSelisih) {
+            elSelisih.innerText = selisih;
+            elSelisih.style.color = selisih === 0 ? "var(--secondary)" : "var(--primary)";
+        }
+    }
+
+    document.getElementById('btn-save-so').addEventListener('click', async (e) => {
+        const btn = e.target;
+        let soData = { user: currentUser, timestamp: systemTime, items: {} };
+
+        items.forEach(item => {
+            const rak = Number(document.querySelector(`.so-input[data-id="${item.id}"][data-type="rak"]`)?.value || 0);
+            const gudang = Number(document.querySelector(`.so-input[data-id="${item.id}"][data-type="gudang"]`)?.value || 0);
+            const jual = Number(document.querySelector(`.so-input[data-id="${item.id}"][data-type="jual"]`)?.value || 0);
+            const selisih = Number(document.getElementById(`selisih-${item.id}`).innerText);
+            soData.items[item.id] = { rak, gudang, penjualan: jual, selisih };
+        });
+
+        btn.innerHTML = "Menyimpan...";
+        btn.disabled = true;
+
+        try {
+            await set(ref(db, `so_cup/${systemDate}/shifts/${currentShift}`), soData);
+            showPopup("Sukses", `Kertas Kerja Shift ${currentShift} Berhasil Disimpan!`);
+        } catch (error) {
+            showPopup("Gagal", "Error: " + error.message);
+        } finally {
+            btn.innerHTML = "Simpan Data SO";
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('nav-so').addEventListener('click', () => {
+        secReport.classList.add('hidden');
+        secSettings.classList.add('hidden');
+        initMainApp();
+    });
+
+    document.getElementById('nav-report').addEventListener('click', () => {
+        secOnhand.classList.add('hidden');
+        secSO.classList.add('hidden');
+        secSettings.classList.add('hidden');
+        secReport.classList.remove('hidden');
+        
+        const dtPicker = document.getElementById('report-date');
+        dtPicker.max = systemDate;
+        const minDate = new Date();
+        minDate.setDate(minDate.getDate() - 3);
+        dtPicker.min = minDate.toISOString().split('T')[0];
+        dtPicker.value = systemDate;
+    });
+
+    document.getElementById('nav-settings').addEventListener('click', () => {
+        secOnhand.classList.add('hidden');
+        secSO.classList.add('hidden');
+        secReport.classList.add('hidden');
+        secSettings.classList.remove('hidden');
+        renderCRUDLists();
+    });
+
+    function renderCRUDLists() {
+        let userHtml = "";
+        Object.keys(users).forEach(nik => {
+            userHtml += `<div class="crud-item">
+                <span><b>${nik}</b> - ${users[nik]}</span>
+                <div class="crud-actions">
+                    <button class="btn-warning" onclick="editUser('${nik}')">Edit</button>
+                    <button style="background:#d32f2f;" onclick="deleteUser('${nik}')">Delete</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById('crud-user-list').innerHTML = userHtml;
+
+        let itemHtml = "";
+        items.forEach(item => {
+            itemHtml += `<div class="crud-item">
+                <span><b>${item.id}</b> - ${item.name}</span>
+                <div class="crud-actions">
+                    <button class="btn-warning" onclick="editItem('${item.id}')">Edit</button>
+                    <button style="background:#d32f2f;" onclick="deleteItem('${item.id}')">Delete</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById('crud-item-list').innerHTML = itemHtml;
+    }
+
+    document.getElementById('btn-add-user').addEventListener('click', async () => {
+        const nik = document.getElementById('crud-user-nik').value;
+        const name = document.getElementById('crud-user-name').value.toUpperCase();
+        if(!nik || !name) { showPopup("Error", "Semua kolom user wajib diisi!"); return; }
+        
+        users[nik] = name;
+        await set(ref(db, 'metadata/users'), users);
+        document.getElementById('crud-user-nik').value = "";
+        document.getElementById('crud-user-name').value = "";
+        renderCRUDLists();
+    });
+
+    document.getElementById('btn-add-item').addEventListener('click', async () => {
+        const plu = document.getElementById('crud-item-plu').value;
+        const name = document.getElementById('crud-item-name').value.toUpperCase();
+        if(!plu || !name) { showPopup("Error", "Semua kolom item wajib diisi!"); return; }
+        
+        const itemUpdate = {};
+        items.push({id: plu, name: name});
+        items.forEach(i => { itemUpdate[i.id] = i.name; });
+        
+        await set(ref(db, 'metadata/items'), itemUpdate);
+        document.getElementById('crud-item-plu').value = "";
+        document.getElementById('crud-item-name').value = "";
+        renderCRUDLists();
+    });
+
+    window.deleteUser = function(nik) {
+        showPopup("Hapus User", `Yakin ingin menghapus ${users[nik]}?`, async () => {
+            delete users[nik];
+            await set(ref(db, 'metadata/users'), users);
+            renderCRUDLists();
+        }, true);
+    };
+
+    window.editUser = function(nik) {
+        const newName = prompt("Ubah Nama Karyawan:", users[nik]);
+        if (newName) {
+            users[nik] = newName.toUpperCase();
+            set(ref(db, 'metadata/users'), users).then(() => renderCRUDLists());
+        }
+    };
+
+    window.deleteItem = function(plu) {
+        showPopup("Hapus Item", `Yakin ingin menghapus item PLU ${plu}?`, async () => {
+            items = items.filter(i => i.id !== plu);
+            const itemUpdate = {};
+            items.forEach(i => { itemUpdate[i.id] = i.name; });
+            await set(ref(db, 'metadata/items'), itemUpdate);
+            renderCRUDLists();
+        }, true);
+    };
+
+    window.editItem = function(plu) {
+        const currentItem = items.find(i => i.id === plu);
+        const newName = prompt("Ubah Nama Item:", currentItem ? currentItem.name : "");
+        if (newName) {
+            items.forEach(i => { if(i.id === plu) i.name = newName.toUpperCase(); });
+            const itemUpdate = {};
+            items.forEach(i => { itemUpdate[i.id] = i.name; });
+            set(ref(db, 'metadata/items'), itemUpdate).then(() => renderCRUDLists());
+        }
+    };
+
+    document.getElementById('btn-view-report').addEventListener('click', async () => {
+        const tgl = document.getElementById('report-date').value;
+        const resDiv = document.getElementById('report-result');
+        resDiv.innerHTML = "<i>Memuat laporan...</i>";
+
+        try {
+            const snapshot = await get(ref(db, `so_cup/${tgl}`));
+            if (!snapshot.exists()) {
+                resDiv.innerHTML = "<p style='color:var(--primary); font-weight:bold;'>Data kosong/tidak ditemukan.</p>";
+                return;
+            }
+
+            const data = snapshot.val();
+            let html = `<h4>Report SO Tanggal: ${tgl}</h4>`;
+            
+            if (data.onhand) {
+                html += `<div class="report-box" style="border-left: 5px solid var(--secondary); background:#fff;">
+                    <strong>Onhand Awal di input Oleh: ${data.onhand.user}</strong><br>`;
+                items.forEach(item => {
+                    html += `${item.name}: ${data.onhand[item.id] || 0} pcs<br>`;
+                });
+                html += `</div>`;
+            }
+
+            if (data.shifts) {
+                [3, 1, 2].forEach(s => {
+                    if (data.shifts[s]) {
+                        const shiftData = data.shifts[s];
+                        html += `<div class="report-box">
+                            <span class="badge">Shift ${s}</span> <strong>${shiftData.user}</strong> <small>(${shiftData.timestamp})</small><br><br>
+                            <table style="width:100%;">
+                                <tr><th>Desk</th><th>Rak</th><th>Gdg</th><th>Jual</th><th>Selisih</th></tr>`;
+                        
+                        items.forEach(item => {
+                            const itm = shiftData.items?.[item.id] || {rak:0, gudang:0, penjualan:0, selisih:0};
+                            html += `<tr>
+                                <td style="text-align:left; font-size:11px;">${item.name}</td>
+                                <td>${itm.rak}</td>
+                                <td>${itm.gudang}</td>
+                                <td>${itm.penjualan}</td>
+                                <td style="color:${itm.selisih == 0 ? 'var(--secondary)' : 'var(--primary)'}; font-weight:bold;">${itm.selisih}</td>
+                            </tr>`;
+                        });
+                        html += `</table></div>`;
+                    } else {
+                        html += `<div class="report-box"><span class="badge" style="background:#bdc3c7; color:#fff;">Shift ${s}</span> Belum Input Kertas Kerja.</div>`;
+                    }
+                });
+            }
+            resDiv.innerHTML = html;
+        } catch (error) {
+            resDiv.innerHTML = `<p style='color:red;'>Gagal memuat data.</p>`;
+        }
+    });
+</script>
+</body>
+</html>
+
