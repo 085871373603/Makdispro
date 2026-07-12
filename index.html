@@ -73,10 +73,10 @@
         /* --- TIMER MODAL --- */
         .timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .timer-big { font-size: 6rem; font-weight: bold; color: #333; margin: 10px 0; font-family: monospace; }
-        .timer-info { font-size: 1.2rem; margin-bottom: 10px; color: #666; font-weight: 500;}
-        .btn-action { margin-top: 20px; padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; border: none; background: #e51b23; color: white; cursor: pointer; text-transform: uppercase; font-weight: bold; box-shadow: 0 4px 10px rgba(229, 27, 35, 0.3); }
+        .timer-info { font-size: 1.2rem; margin-bottom: 30px; color: #666; font-weight: 500;}
+        .btn-action { padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; border: none; background: #e51b23; color: white; cursor: pointer; text-transform: uppercase; font-weight: bold; box-shadow: 0 4px 10px rgba(229, 27, 35, 0.3); }
         .alarm-bg { animation: flashRed 1s infinite; background-color: #e51b23; }
-        .alarm-bg .timer-big, .alarm-bg .timer-info, .alarm-bg #aiTipDisplay { color: white !important; }
+        .alarm-bg .timer-big, .alarm-bg .timer-info { color: white; }
         @keyframes flashRed { 0% { background-color: #e51b23; } 50% { background-color: #ff5252; } 100% { background-color: #e51b23; } }
 
         /* --- ANIMASI KERANJANG ALFAMART --- */
@@ -200,42 +200,10 @@
 
         <div class="timer-big" id="timerDisplay">00:00</div>
         <div class="timer-info">Mengerjakan...</div>
-        
-        <!-- ELEMENT BARU UNTUK TIPS AI -->
-        <div id="aiTipDisplay" style="margin-top: 10px; font-size: 14px; font-style: italic; max-width: 90%; text-align: center; color: #005eaa; min-height: 45px;"></div>
-
         <button class="btn-action" id="btnNext" style="display: none;" onclick="finishLorong()">LANJUT LORONG BERIKUTNYA</button>
     </div>
 
     <script>
-        // --- API GEMINI ---
-        const GEMINI_API_KEY = "AQ.Ab8RN6K4jKq4ZdBU3ky92xqJVLduv-lb0DeG9QxDPpWwmAD9ww"; 
-
-        async function mintaTipsAI(qty, menit) {
-            const tipBox = document.getElementById('aiTipDisplay');
-            tipBox.innerHTML = "🤖 AI sedang memikirkan...";
-
-            const prompt = `Saya harus memajang ${qty} item barang ke rak gondola lorong dalam waktu ${menit.toFixed(1)} menit. Berikan 1 tips operasional sangat singkat (maksimal 2 kalimat) cara menyusunnya agar cepat, rapi, dan sesuai standar FEFO.`;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const result = await response.json();
-                
-                if (result.candidates) {
-                    let aiText = result.candidates[0].content.parts[0].text.replace(/\*/g, '');
-                    tipBox.innerHTML = `💡 <b>Tips AI:</b> ${aiText}`;
-                }
-            } catch (error) {
-                tipBox.innerHTML = "💡 Tips: Pastikan FEFO (First Expired First Out) dan tarik barang lama ke depan.";
-            }
-        }
-
         // --- SISTEM ANTI LAYAR MATI (WAKE LOCK) ---
         let wakeLock = null;
         async function requestWakeLock() {
@@ -424,6 +392,7 @@
 
             const minutes = qty / 12;
             const totalMilliseconds = Math.ceil(minutes * 60) * 1000;
+            
             const targetEndTime = Date.now() + totalMilliseconds;
             
             const overlay = document.getElementById('timerOverlay');
@@ -433,9 +402,6 @@
             overlay.classList.remove('alarm-bg');
 
             updateTimerText(Math.ceil(totalMilliseconds / 1000));
-            
-            // Panggil API Gemini
-            mintaTipsAI(qty, minutes);
             
             countdownInterval = setInterval(() => {
                 const now = Date.now();
@@ -521,9 +487,6 @@
             document.getElementById('timerOverlay').style.display = 'none';
             document.getElementById('timerOverlay').classList.remove('alarm-bg'); 
             
-            // Bersihkan teks AI untuk lorong berikutnya
-            document.getElementById('aiTipDisplay').innerHTML = '';
-            
             currentIndex++;
             if (currentIndex >= lorongData.length) { 
                 alert("SEMUA LORONG SELESAI!"); 
@@ -573,5 +536,4 @@
         }
     </script>
 </body>
-</html>
-
+    </html>
