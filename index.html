@@ -111,10 +111,92 @@
         .coach-tooltip-arrow { position: absolute; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; }
         .arrow-up { top: -10px; border-bottom: 10px solid white; }
         .arrow-down { bottom: -10px; border-top: 10px solid white; }
+
+/* --- POPUP DEPRECATED (PERMANEN) --- */
+#deprecated-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Latar belakang gelap pekat */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999; /* Z-index tertinggi agar menutupi semuanya, termasuk splash screen */
+}
+
+.deprecated-box {
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.deprecated-icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.deprecated-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #e51b23;
+    margin-bottom: 15px;
+}
+
+.deprecated-desc {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.btn-pindah {
+    background-color: #005eaa; /* Warna biru agar kontras dengan tema merah */
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 94, 170, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+        
     </style>
 </head>
 <body>
 
+<!-- POPUP PERMANEN APLIKASI KADALUARSA -->
+<div id="deprecated-overlay">
+    <div class="deprecated-box">
+        <div class="deprecated-icon">⚠️</div>
+        <div class="deprecated-title">Informasi :</div>
+        <div class="deprecated-desc">
+            Penyimpanan penuh😁 Apk <b>baru tersedia</b>.<br><br>
+            Silakan beralih ke laman baru untuk melanjutkan😁🙏.
+        </div>
+        <!-- Menggunakan tag <a> agar langsung berfungsi sebagai link tanpa JS tambahan -->
+        <a href="https://apktoko.arinex.my.id" class="btn-pindah">Alihkan</a>
+    </div>
+</div>
+
+    
     <div id="update-popup">
         <div class="update-box">
             <div class="update-icon">🚀</div>
