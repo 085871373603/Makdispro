@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'maxdis-cache-v2026.08.22.02';
+const CACHE_VERSION = 'cache-v2026.08.22.02';
 const CACHE_NAME = CACHE_VERSION;
 
 /*
